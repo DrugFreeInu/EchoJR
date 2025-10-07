@@ -1,1 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>About Me</title>
+  <style>
+    body {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      background: #ffffff; /* plain white around the card */
+    }
 
+    .fact-card {
+      background: linear-gradient(180deg, #ffffff 0%, #ffd9eb 100%);
+      border: 3px solid #ff99c9;
+      border-radius: 20px;
+      padding: 35px 60px;
+      text-align: center;
+      box-shadow: 0 8px 30px rgba(255,130,170,0.4);
+      transform: rotate(-0.6deg);
+      transition: transform 0.5s ease;
+      max-width: 500px;
+    }
+
+    .fact-card:hover {
+      transform: rotate(0.4deg) scale(1.02);
+    }
+
+    .fact {
+      font-family: "Comic Sans MS", "Chalkboard SE", "Bradley Hand", "Segoe Print", cursive;
+      font-size: 26px;
+      color: #ff4da6;
+      text-shadow: 0 0 6px #ffb6d3;
+      line-height: 1.8;
+      margin: 6px 0;
+      white-space: nowrap;
+    }
+
+    .born {
+      font-size: 30px;
+      color: #ff3399;
+      text-shadow: 0 0 10px #ff66b2, 0 0 20px #ffcce6;
+      letter-spacing: 0.5px;
+    }
+
+    .cpu {
+      color: #ff3385;
+      font-style: italic;
+    }
+
+    .single {
+      color: #cc2a83;
+      opacity: 0.9;
+    }
+  </style>
+</head>
+<body>
+  <div class="fact-card">
+    <div class="fact">Species: HTML-CSS Hybrid</div>
+    <div class="fact born">Hard Coded: Oct 6, 2025</div>
+    <div class="fact cpu">Favorite Food: CPU</div>
+    <div class="fact single">Relationship Status: Single</div>
+  </div>
+</body>
+</html>
