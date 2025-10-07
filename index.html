@@ -9,6 +9,7 @@
             margin: 0;
             padding: 0;
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
@@ -213,5 +214,13 @@
             <div class="smile"></div>
         </div>
     </div>
+
+    <!-- Added only this block below -->
+    <div id="echojr-text"></div>
+    <script>
+        fetch("text.html")
+          .then(r => r.text())
+          .then(html => { document.getElementById("echojr-text").innerHTML = html; });
+    </script>
 </body>
 </html>
