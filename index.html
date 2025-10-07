@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -17,184 +16,181 @@
             font-family: 'Comic Sans MS', cursive, sans-serif;
         }
 
-```
-    .robot-container {
-        position: relative;
-        width: 300px;
-        height: 350px;
-    }
+        .robot-container {
+            position: relative;
+            width: 300px;
+            height: 350px;
+        }
 
-    /* Birthday Hat */
-    .hat {
-        position: absolute;
-        top: 20px;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 0;
-        height: 0;
-        border-left: 50px solid transparent;
-        border-right: 50px solid transparent;
-        border-bottom: 90px solid #FF6B9D;
-        z-index: 10;
-    }
+        /* Birthday Hat */
+        .hat {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 50px solid transparent;
+            border-right: 50px solid transparent;
+            border-bottom: 90px solid #FF6B9D;
+            z-index: 10;
+        }
 
-    .hat-stripes {
-        position: absolute;
-        top: 20px;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 100px;
-        height: 90px;
-        overflow: hidden;
-        clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
-        z-index: 11;
-    }
+        .hat-stripes {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 90px;
+            overflow: hidden;
+            clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+            z-index: 11;
+        }
 
-    .stripe {
-        position: absolute;
-        width: 150px;
-        height: 8px;
-        background: #fff;
-        opacity: 0.4;
-        left: 50%;
-        transform: translateX(-50%);
-    }
+        .stripe {
+            position: absolute;
+            width: 150px;
+            height: 8px;
+            background: #fff;
+            opacity: 0.4;
+            left: 50%;
+            transform: translateX(-50%);
+        }
 
-    .stripe1 { top: 15px; }
-    .stripe2 { top: 35px; }
-    .stripe3 { top: 55px; }
-    .stripe4 { top: 75px; }
+        .stripe1 { top: 15px; }
+        .stripe2 { top: 35px; }
+        .stripe3 { top: 55px; }
+        .stripe4 { top: 75px; }
 
-    .hat::after {
-        content: '';
-        position: absolute;
-        top: -12px;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 16px;
-        height: 16px;
-        background: #FFD93D;
-        border-radius: 50%;
-        border: 2px solid #333;
-    }
+        .hat::after {
+            content: '';
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 16px;
+            height: 16px;
+            background: #FFD93D;
+            border-radius: 50%;
+            border: 2px solid #333;
+        }
 
-    /* Robot Head/Face */
-    .head {
-        position: absolute;
-        top: 110px;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 180px;
-        height: 160px;
-        background: #9e9e9e;
-        border-radius: 25px;
-        border: 4px solid #333;
-        box-shadow: 0 8px 16px rgba(0,0,0,0.2), inset 0 0 0 8px #757575;
-    }
+        /* Robot Head/Face */
+        .head {
+            position: absolute;
+            top: 110px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 180px;
+            height: 160px;
+            background: #9e9e9e;
+            border-radius: 25px;
+            border: 4px solid #333;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2), inset 0 0 0 8px #757575;
+        }
 
-    /* Antenna */
-    .antenna {
-        position: absolute;
-        top: -25px;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 4px;
-        height: 20px;
-        background: #333;
-    }
+        /* Antenna */
+        .antenna {
+            position: absolute;
+            top: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 4px;
+            height: 20px;
+            background: #333;
+        }
 
-    .antenna::after {
-        content: '';
-        position: absolute;
-        top: -8px;
-        left: -4px;
-        width: 12px;
-        height: 12px;
-        background: #FF6B9D;
-        border-radius: 50%;
-        border: 2px solid #333;
-    }
+        .antenna::after {
+            content: '';
+            position: absolute;
+            top: -8px;
+            left: -4px;
+            width: 12px;
+            height: 12px;
+            background: #FF6B9D;
+            border-radius: 50%;
+            border: 2px solid #333;
+        }
 
-    /* Eyes */
-    .eyes {
-        position: absolute;
-        top: 40px;
-        left: 50%;
-        transform: translateX(-50%);
-        display: flex;
-        gap: 30px;
-    }
+        /* Eyes */
+        .eyes {
+            position: absolute;
+            top: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 30px;
+        }
 
-    .eye {
-        width: 40px;
-        height: 40px;
-        background: radial-gradient(circle, #ffffff 20%, #00f6ff 50%, #0088ff 80%);
-        border-radius: 50%;
-        position: relative;
-        box-shadow: 0 0 15px rgba(0, 255, 255, 0.7);
-        animation: blink 5s infinite;
-    }
+        .eye {
+            width: 40px;
+            height: 40px;
+            background: radial-gradient(circle, #ffffff 20%, #00f6ff 50%, #0088ff 80%);
+            border-radius: 50%;
+            position: relative;
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.7);
+            animation: blink 5s infinite;
+        }
 
-    .eye::before {
-        content: '';
-        position: absolute;
-        width: 15px;
-        height: 15px;
-        background: #000;
-        border-radius: 50%;
-        top: 10px;
-        left: 10px;
-        box-shadow: 0 0 5px rgba(255, 255, 255, 0.8);
-        animation: pupil-move 3s ease-in-out infinite;
-    }
+        .eye::before {
+            content: '';
+            position: absolute;
+            width: 15px;
+            height: 15px;
+            background: #000;
+            border-radius: 50%;
+            top: 10px;
+            left: 10px;
+            box-shadow: 0 0 5px rgba(255, 255, 255, 0.8);
+            animation: pupil-move 3s ease-in-out infinite;
+        }
 
-    @keyframes blink {
-        0%, 10%, 90%, 100% { transform: scaleY(1); }
-        5% { transform: scaleY(0.1); }
-    }
+        @keyframes blink {
+            0%, 10%, 90%, 100% { transform: scaleY(1); }
+            5% { transform: scaleY(0.1); }
+        }
 
-    @keyframes pupil-move {
-        0%, 100% { transform: translate(0, 0); }
-        50% { transform: translate(5px, 2px); }
-    }
+        @keyframes pupil-move {
+            0%, 100% { transform: translate(0, 0); }
+            50% { transform: translate(5px, 2px); }
+        }
 
-    /* Smile */
-    .smile {
-        position: absolute;
-        top: 105px;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 60px;
-        height: 25px;
-        border: 3px solid #000;
-        border-top: none;
-        border-radius: 0 0 60px 60px;
-        background: transparent;
-    }
+        /* Smile */
+        .smile {
+            position: absolute;
+            top: 105px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 25px;
+            border: 3px solid #000;
+            border-top: none;
+            border-radius: 0 0 60px 60px;
+            background: transparent;
+        }
 
-    /* Cheeks */
-    .cheek {
-        position: absolute;
-        top: 80px;
-        width: 30px;
-        height: 30px;
-        background: radial-gradient(circle, rgba(255, 153, 153, 0.4), rgba(255, 102, 102, 0.4));
-        border-radius: 50%;
-        box-shadow: 0 0 10px rgba(255, 102, 102, 0.3);
-        animation: blush 3s ease-in-out infinite;
-        opacity: 0.4;
-    }
+        /* Cheeks */
+        .cheek {
+            position: absolute;
+            top: 80px;
+            width: 30px;
+            height: 30px;
+            background: radial-gradient(circle, rgba(255, 153, 153, 0.4), rgba(255, 102, 102, 0.4));
+            border-radius: 50%;
+            box-shadow: 0 0 10px rgba(255, 102, 102, 0.3);
+            animation: blush 3s ease-in-out infinite;
+            opacity: 0.4;
+        }
 
-    .cheek.left { left: 20px; }
-    .cheek.right { right: 20px; }
+        .cheek.left { left: 20px; }
+        .cheek.right { right: 20px; }
 
-    @keyframes blush {
-        0%, 100% { transform: scale(1); }
-        50% { transform: scale(1.1); }
-    }
-</style>
-```
-
+        @keyframes blush {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+    </style>
 </head>
 <body>
     <div class="robot-container">
@@ -206,19 +202,16 @@
             <div class="stripe stripe4"></div>
         </div>
 
-```
-    <div class="head">
-        <div class="antenna"></div>
-        <div class="eyes">
-            <div class="eye"></div>
-            <div class="eye"></div>
+        <div class="head">
+            <div class="antenna"></div>
+            <div class="eyes">
+                <div class="eye"></div>
+                <div class="eye"></div>
+            </div>
+            <div class="cheek left"></div>
+            <div class="cheek right"></div>
+            <div class="smile"></div>
         </div>
-        <div class="cheek left"></div>
-        <div class="cheek right"></div>
-        <div class="smile"></div>
     </div>
-</div>
-```
-
 </body>
 </html>
