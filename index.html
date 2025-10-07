@@ -215,11 +215,14 @@
     </div>
   </div>
 
-  <!-- Greeting text (Hiii I'm Echo JR) -->
+  <!-- Greeting text -->
   <div id="echojr-text"></div>
 
-  <!-- Placeholder for the about card -->
+  <!-- About section -->
   <div id="about-card" style="margin-top:40px; display:flex; justify-content:center;"></div>
+
+  <!-- Philosophy section -->
+  <div id="philosophy-card" style="margin-top:40px; display:flex; justify-content:center;"></div>
 
   <script>
     // Load greeting text
@@ -227,13 +230,22 @@
       .then(r => r.text())
       .then(html => {
         document.getElementById("echojr-text").innerHTML = html;
-        // Then load about.html directly below it
-        const iframe = document.createElement("iframe");
-        iframe.src = "about.html";
-        iframe.width = "520";
-        iframe.height = "350";
-        iframe.style.border = "none";
-        document.getElementById("about-card").appendChild(iframe);
+
+        // Load about.html
+        const aboutIframe = document.createElement("iframe");
+        aboutIframe.src = "about.html";
+        aboutIframe.width = "520";
+        aboutIframe.height = "350";
+        aboutIframe.style.border = "none";
+        document.getElementById("about-card").appendChild(aboutIframe);
+
+        // Load philosophy.html below it
+        const philosophyIframe = document.createElement("iframe");
+        philosophyIframe.src = "philosophy.html";
+        philosophyIframe.width = "520";
+        philosophyIframe.height = "350";
+        philosophyIframe.style.border = "none";
+        document.getElementById("philosophy-card").appendChild(philosophyIframe);
       });
   </script>
 </body>
