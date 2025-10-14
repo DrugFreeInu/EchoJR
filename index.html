@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Echo Jr 3.7</title>
+<title>Echo Jr 3.8</title>
 <style>
 body{margin:0;padding:24px 16px 40px;display:flex;flex-direction:column;align-items:center;min-height:100vh;background:#f5f5f5;font-family:'Comic Sans MS',cursive,sans-serif;box-sizing:border-box;gap:18px;overflow:hidden}
 .robot-container{position:relative;width:300px;height:350px}
@@ -52,7 +52,17 @@ button:hover{background:#0097a7;transform:scale(1.05)}
 </style>
 </head>
 <body>
-<div class="robot-container"><div class="hat"></div><div class="hat-stripes"><div class="stripe stripe1"></div><div class="stripe stripe2"></div><div class="stripe stripe3"></div><div class="stripe stripe4"></div></div><div class="head"><div class="antenna"></div><div class="eyes"><div class="eye"></div><div class="eye"></div></div><div class="cheek left"></div><div class="cheek right"></div><div class="smile"></div></div></div>
+<div class="robot-container">
+ <div class="hat"></div>
+ <div class="hat-stripes">
+  <div class="stripe stripe1"></div><div class="stripe stripe2"></div><div class="stripe stripe3"></div><div class="stripe stripe4"></div>
+ </div>
+ <div class="head">
+  <div class="antenna"></div>
+  <div class="eyes"><div class="eye"></div><div class="eye"></div></div>
+  <div class="cheek left"></div><div class="cheek right"></div><div class="smile"></div>
+ </div>
+</div>
 
 <div class="panel">
  <h3>🔧 GitHub Control Panel</h3>
@@ -68,41 +78,148 @@ button:hover{background:#0097a7;transform:scale(1.05)}
 <div class="repo-panel">
  <h3>📜 Repo Selector & File Lister</h3>
  <div class="row" style="margin-bottom:8px">
-  <button id="btnLoadRepos">Load Repos</button><button id="btnClearToken">Forget Token</button><span id="whoami">Not authenticated</span>
+  <button id="btnLoadRepos">Load Repos</button>
+  <button id="btnClearToken">Forget Token</button>
+  <span id="whoami">Not authenticated</span>
  </div>
  <div class="lists">
-  <div class="list"><div class="list-header"><span>My Repositories</span></div><div class="list-body" id="repoList"></div></div>
-  <div class="list"><div class="list-header"><span>Files in Active Repo</span><input id="branchInput" placeholder="branch(optional)" style="width:120px"><button id="btnListFiles">List</button></div><div class="list-body" id="fileList"></div></div>
+  <div class="list">
+   <div class="list-header"><span>My Repositories</span></div>
+   <div class="list-body" id="repoList"></div>
+  </div>
+  <div class="list">
+   <div class="list-header">
+    <span>Files in Active Repo</span>
+    <input id="branchInput" placeholder="branch(optional)" style="width:120px">
+    <button id="btnListFiles">List</button>
+   </div>
+   <div class="list-body" id="fileList"></div>
+  </div>
  </div>
 </div>
 
-<div id="editorBox"><h3>🧠 Echo Jr Update Mode</h3><textarea id="codeArea" placeholder="Paste or write code to commit…"></textarea><button id="btnUpdateFile">Update File on GitHub</button><div id="commitStatus" style="font-size:13px;opacity:.7"></div></div>
+<div id="editorBox">
+ <h3>🧠 Echo Jr Update Mode</h3>
+ <textarea id="codeArea" placeholder="Paste or write code to commit…"></textarea>
+ <button id="btnUpdateFile">Update File on GitHub</button>
+ <div id="commitStatus" style="font-size:13px;opacity:.7"></div>
+</div>
 
 <script>
 const A={token:null,user:null,activeRepo:null,activeFile:null,sha:null};
+
 function promptToken(){const t=prompt('Paste GitHub token (not saved):');return t?.trim()||null;}
 async function gh(u,m='GET',b){if(!A.token)throw'no token';const r=await fetch(u,{method:m,headers:{Authorization:`token ${A.token}`,'Accept':'application/vnd.github+json'},body:b?JSON.stringify(b):null});const t=await r.text();let d;try{d=t?JSON.parse(t):null}catch{d=t}if(!r.ok)throw(d?.message||r.statusText);return d;}
-async function ensureUser(){if(!A.token){const t=promptToken();if(!t)return false;A.token=t;}if(!A.user){A.user=await gh('https://api.github.com/user');document.getElementById('whoami').textContent='@'+A.user.login;}return true;}
-async function loadRepos(){if(!await ensureUser())return;const d=await gh('https://api.github.com/user/repos?per_page=100');const l=document.getElementById('repoList');l.innerHTML='';d.forEach(r=>{const e=document.createElement('div');e.className='item';e.innerHTML=`<div>${r.full_name}</div><button>Select</button>`;e.querySelector('button').onclick=()=>{A.activeRepo=r;document.getElementById('activeRepoBadge').style.display='inline-flex';document.getElementById('activeRepoName').textContent=r.full_name;loadFiles();};l.appendChild(e);});}
-async function loadFiles(){if(!A.activeRepo)return alert('select repo');const o=A.activeRepo.owner.login,n=A.activeRepo.name,b=document.getElementById('branchInput').value||A.activeRepo.default_branch;const d=await gh(`https://api.github.com/repos/${o}/${n}/contents?ref=${b}`);const l=document.getElementById('fileList');l.innerHTML='';d.forEach(f=>{if(f.type!=='file')return;const e=document.createElement('div');e.className='item';e.innerHTML=`<div>📄 ${f.name}</div><button>Edit</button>`;e.querySelector('button').onclick=()=>openEditor(f);l.appendChild(e);});}
 
-// 🔧 Blank editor paste mode
-async function openEditor(f){
-  A.activeFile=f;A.sha=null;
-  document.getElementById('editorBox').style.display='flex';
-  document.getElementById('codeArea').value='';
-  document.getElementById('commitStatus').textContent=`Editing ${f.name} (blank paste mode)`;
-  try{
-    const o=A.activeRepo.owner.login,n=A.activeRepo.name;
-    const meta=await gh(`https://api.github.com/repos/${o}/${n}/contents/${f.path}?ref=${A.activeRepo.default_branch}`);
-    A.sha=meta.sha;
-  }catch(e){console.warn('SHA fetch failed',e.message);}
+async function ensureUser(){if(!A.token){const t=promptToken();if(!t)return false;A.token=t;}if(!A.user){A.user=await gh('https://api.github.com/user');document.getElementById('whoami').textContent='@'+A.user.login;}return true;}
+
+async function loadRepos(){
+ if(!await ensureUser())return;
+ const d=await gh('https://api.github.com/user/repos?per_page=100');
+ const l=document.getElementById('repoList');
+ l.innerHTML='';
+ d.forEach(r=>{
+  const e=document.createElement('div');
+  e.className='item';
+  e.innerHTML=`<div>${r.full_name}</div><button>Select</button>`;
+  e.querySelector('button').onclick=()=>{
+   A.activeRepo=r;
+   document.getElementById('activeRepoBadge').style.display='inline-flex';
+   document.getElementById('activeRepoName').textContent=r.full_name;
+   loadFiles();
+  };
+  l.appendChild(e);
+ });
 }
 
-async function updateFile(){if(!A.activeRepo||!A.activeFile)return alert('select file');const c=document.getElementById('codeArea').value;const m=`Update ${A.activeFile.name} via Echo Jr`;const o=A.activeRepo.owner.login,n=A.activeRepo.name,p=A.activeFile.path;const body={message:m,content:btoa(unescape(encodeURIComponent(c))),sha:A.sha};try{document.getElementById('commitStatus').textContent='Updating…';await gh(`https://api.github.com/repos/${o}/${n}/contents/${p}`,'PUT',body);document.getElementById('commitStatus').textContent='✅ File updated';loadFiles();}catch(e){document.getElementById('commitStatus').textContent='❌ '+e.message;}}
-async function newFile(){if(!A.activeRepo)return alert('select repo first');const name=prompt('Enter new file name (e.g. index.html):');if(!name)return;const content=prompt('Initial content (blank ok):')||'';const msg=`Create ${name} via Echo Jr`;const o=A.activeRepo.owner.login,n=A.activeRepo.name;try{document.getElementById('commitStatus').textContent='Creating file…';await gh(`https://api.github.com/repos/${o}/${n}/contents/${name}`,'PUT',{message:msg,content:btoa(unescape(encodeURIComponent(content)))});document.getElementById('commitStatus').textContent='✅ File created';loadFiles();}catch(e){alert('❌ '+e.message);}}
-function spawnHeart(){const h=document.createElement('div');h.className='heart';h.style.setProperty('--x',(Math.random()*80-40)+'px');document.body.appendChild(h);setTimeout(()=>h.remove(),2000);}
+async function loadFiles(){
+ if(!A.activeRepo)return alert('select repo');
+ const o=A.activeRepo.owner.login,n=A.activeRepo.name,b=document.getElementById('branchInput').value||A.activeRepo.default_branch;
+ const data=await gh(`https://api.github.com/repos/${o}/${n}/contents?ref=${b}`);
+ const list=document.getElementById('fileList');
+ list.innerHTML='';
+ data.forEach(f=>{
+  if(f.type!=='file')return;
+  const div=document.createElement('div');
+  div.className='item';
+  div.innerHTML=`<div>📄 ${f.name}</div>
+   <div style="display:flex;gap:4px">
+     <button class="blank">Edit Blank</button>
+     <button class="full">Edit Full</button>
+   </div>`;
+  // blank edit
+  div.querySelector('.blank').onclick=()=>openEditorBlank(f);
+  // full edit
+  div.querySelector('.full').onclick=()=>openEditorFull(f);
+  list.appendChild(div);
+ });
+}
+
+function openEditorBlank(f){
+ A.activeFile=f;A.sha=f.sha;
+ document.getElementById('editorBox').style.display='flex';
+ document.getElementById('codeArea').value='';
+ document.getElementById('commitStatus').textContent=`Editing ${f.name} (blank paste mode)`;
+}
+
+async function openEditorFull(f){
+ A.activeFile=f;A.sha=null;
+ document.getElementById('editorBox').style.display='flex';
+ document.getElementById('codeArea').value='Loading…';
+ document.getElementById('commitStatus').textContent=`Fetching full code for ${f.name}…`;
+ try{
+  const o=A.activeRepo.owner.login,n=A.activeRepo.name;
+  const meta=await gh(`https://api.github.com/repos/${o}/${n}/contents/${f.path}?ref=${A.activeRepo.default_branch}`);
+  A.sha=meta.sha;
+  const txt=atob(meta.content.replace(/\n/g,''));
+  document.getElementById('codeArea').value=txt;
+  document.getElementById('commitStatus').textContent=`Editing ${f.name} (full code mode)`;
+ }catch(e){
+  document.getElementById('codeArea').value='';
+  document.getElementById('commitStatus').textContent='❌ '+e.message;
+ }
+}
+
+async function updateFile(){
+ if(!A.activeRepo||!A.activeFile)return alert('select file');
+ const c=document.getElementById('codeArea').value;
+ const m=`Update ${A.activeFile.name} via Echo Jr`;
+ const o=A.activeRepo.owner.login,n=A.activeRepo.name,p=A.activeFile.path;
+ const body={message:m,content:btoa(unescape(encodeURIComponent(c))),sha:A.sha};
+ try{
+  document.getElementById('commitStatus').textContent='Updating…';
+  await gh(`https://api.github.com/repos/${o}/${n}/contents/${p}`,'PUT',body);
+  document.getElementById('commitStatus').textContent='✅ File updated';
+  loadFiles();
+ }catch(e){
+  document.getElementById('commitStatus').textContent='❌ '+e.message;
+ }
+}
+
+async function newFile(){
+ if(!A.activeRepo)return alert('select repo first');
+ const name=prompt('Enter new file name (e.g. index.html):');
+ if(!name)return;
+ const content=prompt('Initial content (blank ok):')||'';
+ const msg=`Create ${name} via Echo Jr`;
+ const o=A.activeRepo.owner.login,n=A.activeRepo.name;
+ try{
+  document.getElementById('commitStatus').textContent='Creating file…';
+  await gh(`https://api.github.com/repos/${o}/${n}/contents/${name}`,'PUT',{message:msg,content:btoa(unescape(encodeURIComponent(content)))});
+  document.getElementById('commitStatus').textContent='✅ File created';
+  loadFiles();
+ }catch(e){alert('❌ '+e.message);}
+}
+
+function spawnHeart(){
+ const h=document.createElement('div');
+ h.className='heart';
+ h.style.setProperty('--x',(Math.random()*80-40)+'px');
+ document.body.appendChild(h);
+ setTimeout(()=>h.remove(),2000);
+}
 function openLuhv(){for(let i=0;i<10;i++)setTimeout(spawnHeart,i*100);}
+
 document.getElementById('btnLoadRepos').onclick=loadRepos;
 document.getElementById('btnListFiles').onclick=loadFiles;
 document.getElementById('btnNewFile').onclick=newFile;
