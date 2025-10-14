@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Echo Jr 3.6</title>
+<title>Echo Jr 3.7</title>
 <style>
 body{margin:0;padding:24px 16px 40px;display:flex;flex-direction:column;align-items:center;min-height:100vh;background:#f5f5f5;font-family:'Comic Sans MS',cursive,sans-serif;box-sizing:border-box;gap:18px;overflow:hidden}
 .robot-container{position:relative;width:300px;height:350px}
@@ -85,12 +85,20 @@ async function gh(u,m='GET',b){if(!A.token)throw'no token';const r=await fetch(u
 async function ensureUser(){if(!A.token){const t=promptToken();if(!t)return false;A.token=t;}if(!A.user){A.user=await gh('https://api.github.com/user');document.getElementById('whoami').textContent='@'+A.user.login;}return true;}
 async function loadRepos(){if(!await ensureUser())return;const d=await gh('https://api.github.com/user/repos?per_page=100');const l=document.getElementById('repoList');l.innerHTML='';d.forEach(r=>{const e=document.createElement('div');e.className='item';e.innerHTML=`<div>${r.full_name}</div><button>Select</button>`;e.querySelector('button').onclick=()=>{A.activeRepo=r;document.getElementById('activeRepoBadge').style.display='inline-flex';document.getElementById('activeRepoName').textContent=r.full_name;loadFiles();};l.appendChild(e);});}
 async function loadFiles(){if(!A.activeRepo)return alert('select repo');const o=A.activeRepo.owner.login,n=A.activeRepo.name,b=document.getElementById('branchInput').value||A.activeRepo.default_branch;const d=await gh(`https://api.github.com/repos/${o}/${n}/contents?ref=${b}`);const l=document.getElementById('fileList');l.innerHTML='';d.forEach(f=>{if(f.type!=='file')return;const e=document.createElement('div');e.className='item';e.innerHTML=`<div>📄 ${f.name}</div><button>Edit</button>`;e.querySelector('button').onclick=()=>openEditor(f);l.appendChild(e);});}
+
+// 🔧 Blank editor paste mode
 async function openEditor(f){
   A.activeFile=f;A.sha=null;
   document.getElementById('editorBox').style.display='flex';
-  document.getElementById('codeArea').value=''; // clear code box
+  document.getElementById('codeArea').value='';
   document.getElementById('commitStatus').textContent=`Editing ${f.name} (blank paste mode)`;
+  try{
+    const o=A.activeRepo.owner.login,n=A.activeRepo.name;
+    const meta=await gh(`https://api.github.com/repos/${o}/${n}/contents/${f.path}?ref=${A.activeRepo.default_branch}`);
+    A.sha=meta.sha;
+  }catch(e){console.warn('SHA fetch failed',e.message);}
 }
+
 async function updateFile(){if(!A.activeRepo||!A.activeFile)return alert('select file');const c=document.getElementById('codeArea').value;const m=`Update ${A.activeFile.name} via Echo Jr`;const o=A.activeRepo.owner.login,n=A.activeRepo.name,p=A.activeFile.path;const body={message:m,content:btoa(unescape(encodeURIComponent(c))),sha:A.sha};try{document.getElementById('commitStatus').textContent='Updating…';await gh(`https://api.github.com/repos/${o}/${n}/contents/${p}`,'PUT',body);document.getElementById('commitStatus').textContent='✅ File updated';loadFiles();}catch(e){document.getElementById('commitStatus').textContent='❌ '+e.message;}}
 async function newFile(){if(!A.activeRepo)return alert('select repo first');const name=prompt('Enter new file name (e.g. index.html):');if(!name)return;const content=prompt('Initial content (blank ok):')||'';const msg=`Create ${name} via Echo Jr`;const o=A.activeRepo.owner.login,n=A.activeRepo.name;try{document.getElementById('commitStatus').textContent='Creating file…';await gh(`https://api.github.com/repos/${o}/${n}/contents/${name}`,'PUT',{message:msg,content:btoa(unescape(encodeURIComponent(content)))});document.getElementById('commitStatus').textContent='✅ File created';loadFiles();}catch(e){alert('❌ '+e.message);}}
 function spawnHeart(){const h=document.createElement('div');h.className='heart';h.style.setProperty('--x',(Math.random()*80-40)+'px');document.body.appendChild(h);setTimeout(()=>h.remove(),2000);}
