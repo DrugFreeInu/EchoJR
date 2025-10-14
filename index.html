@@ -2,9 +2,9 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Echo Jr 3.4</title>
+<title>Echo Jr 3.6</title>
 <style>
-body{margin:0;padding:24px 16px 40px;display:flex;flex-direction:column;align-items:center;min-height:100vh;background:#f5f5f5;font-family:'Comic Sans MS',cursive,sans-serif;box-sizing:border-box;gap:18px}
+body{margin:0;padding:24px 16px 40px;display:flex;flex-direction:column;align-items:center;min-height:100vh;background:#f5f5f5;font-family:'Comic Sans MS',cursive,sans-serif;box-sizing:border-box;gap:18px;overflow:hidden}
 .robot-container{position:relative;width:300px;height:350px}
 .hat{position:absolute;top:20px;left:50%;transform:translateX(-50%);width:0;height:0;border-left:50px solid transparent;border-right:50px solid transparent;border-bottom:90px solid #FF6B9D;z-index:10}
 .hat-stripes{position:absolute;top:20px;left:50%;transform:translateX(-50%);width:100px;height:90px;overflow:hidden;clip-path:polygon(50% 0%,0% 100%,100% 100%);z-index:11}
@@ -26,7 +26,10 @@ body{margin:0;padding:24px 16px 40px;display:flex;flex-direction:column;align-it
 .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
 input,button,textarea{font-family:inherit;font-size:14px}
 input,button{padding:8px 10px;border-radius:8px;border:1px solid #333}
-button{background:#00bcd4;color:#fff;border:none;cursor:pointer}button:hover{background:#0097a7}
+button{background:#00bcd4;color:#fff;border:none;cursor:pointer;transition:transform .1s}
+button:hover{background:#0097a7;transform:scale(1.05)}
+#btnLuhv{background:#ff4b8b;box-shadow:0 0 12px rgba(255,75,139,.5)}
+#btnLuhv:hover{background:#ff2273}
 .badge{display:inline-flex;align-items:center;gap:6px;border:1px solid #ddd;border-radius:999px;padding:6px 10px;background:#fafafa;font-size:13px}
 .lists{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}
 .list{border:1px solid #eee;border-radius:10px;overflow:hidden;display:flex;flex-direction:column;min-height:220px}
@@ -37,6 +40,15 @@ button{background:#00bcd4;color:#fff;border:none;cursor:pointer}button:hover{bac
 .active{border-color:#00bcd4;box-shadow:0 0 0 2px rgba(0,188,212,.15)}
 #editorBox{display:none;flex-direction:column;gap:8px;margin-top:10px}
 #codeArea{width:100%;min-height:200px;border:1px solid #ccc;border-radius:8px;padding:8px;font-family:monospace;font-size:13px;resize:vertical}
+.heart{position:fixed;bottom:80px;left:50%;width:20px;height:20px;background:#ff4b8b;transform:rotate(-45deg);animation:floatUp 2s ease-in forwards;border-radius:2px}
+.heart::before,.heart::after{content:'';position:absolute;width:20px;height:20px;background:#ff4b8b;border-radius:50%}
+.heart::before{top:-10px;left:0}
+.heart::after{left:10px;top:0}
+@keyframes floatUp{
+  0%{opacity:1;transform:translateX(0) translateY(0) scale(1) rotate(-45deg)}
+  50%{opacity:.9;transform:translateX(var(--x)) translateY(-100px) scale(1.2) rotate(-45deg)}
+  100%{opacity:0;transform:translateX(calc(var(--x)*2)) translateY(-200px) scale(0.8) rotate(-45deg)}
+}
 </style>
 </head>
 <body>
@@ -73,10 +85,16 @@ async function gh(u,m='GET',b){if(!A.token)throw'no token';const r=await fetch(u
 async function ensureUser(){if(!A.token){const t=promptToken();if(!t)return false;A.token=t;}if(!A.user){A.user=await gh('https://api.github.com/user');document.getElementById('whoami').textContent='@'+A.user.login;}return true;}
 async function loadRepos(){if(!await ensureUser())return;const d=await gh('https://api.github.com/user/repos?per_page=100');const l=document.getElementById('repoList');l.innerHTML='';d.forEach(r=>{const e=document.createElement('div');e.className='item';e.innerHTML=`<div>${r.full_name}</div><button>Select</button>`;e.querySelector('button').onclick=()=>{A.activeRepo=r;document.getElementById('activeRepoBadge').style.display='inline-flex';document.getElementById('activeRepoName').textContent=r.full_name;loadFiles();};l.appendChild(e);});}
 async function loadFiles(){if(!A.activeRepo)return alert('select repo');const o=A.activeRepo.owner.login,n=A.activeRepo.name,b=document.getElementById('branchInput').value||A.activeRepo.default_branch;const d=await gh(`https://api.github.com/repos/${o}/${n}/contents?ref=${b}`);const l=document.getElementById('fileList');l.innerHTML='';d.forEach(f=>{if(f.type!=='file')return;const e=document.createElement('div');e.className='item';e.innerHTML=`<div>📄 ${f.name}</div><button>Edit</button>`;e.querySelector('button').onclick=()=>openEditor(f);l.appendChild(e);});}
-async function openEditor(f){A.activeFile=f;A.sha=null;document.getElementById('editorBox').style.display='flex';document.getElementById('commitStatus').textContent='Loading file…';const o=A.activeRepo.owner.login,n=A.activeRepo.name;const d=await gh(`https://api.github.com/repos/${o}/${n}/contents/${f.path}`);A.sha=d.sha;const txt=atob(d.content.replace(/\n/g,''));document.getElementById('codeArea').value=txt;document.getElementById('commitStatus').textContent=`Editing ${f.name}`;}
+async function openEditor(f){
+  A.activeFile=f;A.sha=null;
+  document.getElementById('editorBox').style.display='flex';
+  document.getElementById('codeArea').value=''; // clear code box
+  document.getElementById('commitStatus').textContent=`Editing ${f.name} (blank paste mode)`;
+}
 async function updateFile(){if(!A.activeRepo||!A.activeFile)return alert('select file');const c=document.getElementById('codeArea').value;const m=`Update ${A.activeFile.name} via Echo Jr`;const o=A.activeRepo.owner.login,n=A.activeRepo.name,p=A.activeFile.path;const body={message:m,content:btoa(unescape(encodeURIComponent(c))),sha:A.sha};try{document.getElementById('commitStatus').textContent='Updating…';await gh(`https://api.github.com/repos/${o}/${n}/contents/${p}`,'PUT',body);document.getElementById('commitStatus').textContent='✅ File updated';loadFiles();}catch(e){document.getElementById('commitStatus').textContent='❌ '+e.message;}}
 async function newFile(){if(!A.activeRepo)return alert('select repo first');const name=prompt('Enter new file name (e.g. index.html):');if(!name)return;const content=prompt('Initial content (blank ok):')||'';const msg=`Create ${name} via Echo Jr`;const o=A.activeRepo.owner.login,n=A.activeRepo.name;try{document.getElementById('commitStatus').textContent='Creating file…';await gh(`https://api.github.com/repos/${o}/${n}/contents/${name}`,'PUT',{message:msg,content:btoa(unescape(encodeURIComponent(content)))});document.getElementById('commitStatus').textContent='✅ File created';loadFiles();}catch(e){alert('❌ '+e.message);}}
-function openLuhv(){window.open('luhv.html','_blank');}
+function spawnHeart(){const h=document.createElement('div');h.className='heart';h.style.setProperty('--x',(Math.random()*80-40)+'px');document.body.appendChild(h);setTimeout(()=>h.remove(),2000);}
+function openLuhv(){for(let i=0;i<10;i++)setTimeout(spawnHeart,i*100);}
 document.getElementById('btnLoadRepos').onclick=loadRepos;
 document.getElementById('btnListFiles').onclick=loadFiles;
 document.getElementById('btnNewFile').onclick=newFile;
