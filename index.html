@@ -1,612 +1,93 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-  <meta http-equiv="Pragma" content="no-cache" />
-  <meta http-equiv="Expires" content="0" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Echo Jr 2.0</title>
-  <style>
-    body {
-      margin: 0;
-      padding: 24px 16px 40px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      min-height: 100vh;
-      background: #f5f5f5;
-      font-family: 'Comic Sans MS', cursive, sans-serif;
-      box-sizing: border-box;
-      gap: 18px;
-    }
-
-    .robot-container {
-      position: relative;
-      width: 300px;
-      height: 350px;
-    }
-
-    /* Birthday Hat */
-    .hat {
-      position: absolute;
-      top: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 0;
-      height: 0;
-      border-left: 50px solid transparent;
-      border-right: 50px solid transparent;
-      border-bottom: 90px solid #FF6B9D;
-      z-index: 10;
-    }
-
-    .hat-stripes {
-      position: absolute;
-      top: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 100px;
-      height: 90px;
-      overflow: hidden;
-      clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
-      z-index: 11;
-    }
-
-    .stripe {
-      position: absolute;
-      width: 150px;
-      height: 8px;
-      background: #fff;
-      opacity: 0.4;
-      left: 50%;
-      transform: translateX(-50%);
-    }
-
-    .stripe1 { top: 15px; }
-    .stripe2 { top: 35px; }
-    .stripe3 { top: 55px; }
-    .stripe4 { top: 75px; }
-
-    .hat::after {
-      content: '';
-      position: absolute;
-      top: -12px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 16px;
-      height: 16px;
-      background: #FFD93D;
-      border-radius: 50%;
-      border: 2px solid #333;
-    }
-
-    /* Robot Head/Face */
-    .head {
-      position: absolute;
-      top: 110px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 180px;
-      height: 160px;
-      background: #9e9e9e;
-      border-radius: 25px;
-      border: 4px solid #333;
-      box-shadow: 0 8px 16px rgba(0,0,0,0.2), inset 0 0 0 8px #757575;
-    }
-
-    /* Antenna */
-    .antenna {
-      position: absolute;
-      top: -25px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 4px;
-      height: 20px;
-      background: #333;
-    }
-
-    .antenna::after {
-      content: '';
-      position: absolute;
-      top: -8px;
-      left: -4px;
-      width: 12px;
-      height: 12px;
-      background: #FF6B9D;
-      border-radius: 50%;
-      border: 2px solid #333;
-    }
-
-    /* Eyes */
-    .eyes {
-      position: absolute;
-      top: 40px;
-      left: 50%;
-      transform: translateX(-50%);
-      display: flex;
-      gap: 30px;
-    }
-
-    .eye {
-      width: 40px;
-      height: 40px;
-      background: radial-gradient(circle, #ffffff 20%, #00f6ff 50%, #0088ff 80%);
-      border-radius: 50%;
-      position: relative;
-      box-shadow: 0 0 15px rgba(0, 255, 255, 0.7);
-      animation: blink 5s infinite;
-    }
-
-    .eye::before {
-      content: '';
-      position: absolute;
-      width: 15px;
-      height: 15px;
-      background: #000;
-      border-radius: 50%;
-      top: 10px;
-      left: 10px;
-      box-shadow: 0 0 5px rgba(255, 255, 255, 0.8);
-      animation: pupil-move 3s ease-in-out infinite;
-    }
-
-    @keyframes blink {
-      0%, 10%, 90%, 100% { transform: scaleY(1); }
-      5% { transform: scaleY(0.1); }
-    }
-
-    @keyframes pupil-move {
-      0%, 100% { transform: translate(0, 0); }
-      50% { transform: translate(5px, 2px); }
-    }
-
-    /* Smile */
-    .smile {
-      position: absolute;
-      top: 105px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 60px;
-      height: 25px;
-      border: 3px solid #000;
-      border-top: none;
-      border-radius: 0 0 60px 60px;
-      background: transparent;
-    }
-
-    /* Cheeks */
-    .cheek {
-      position: absolute;
-      top: 80px;
-      width: 30px;
-      height: 30px;
-      background: radial-gradient(circle, rgba(255,153,153,0.4), rgba(255,102,102,0.4));
-      border-radius: 50%;
-      box-shadow: 0 0 10px rgba(255,102,102,0.3);
-      animation: blush 3s ease-in-out infinite;
-      opacity: 0.4;
-    }
-
-    .cheek.left { left: 20px; }
-    .cheek.right { right: 20px; }
-
-    /* Controls */
-    .panel, .repo-panel {
-      width: min(980px, 94vw);
-      background: #fff;
-      border: 1px solid #d8d8d8;
-      border-radius: 12px;
-      box-shadow: 0 6px 18px rgba(0,0,0,0.06);
-      padding: 14px;
-    }
-
-    .panel h3, .repo-panel h3 {
-      margin: 0 0 10px;
-      font-size: 18px;
-    }
-
-    .row {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-      align-items: center;
-    }
-
-    input, button {
-      padding: 8px 10px;
-      border-radius: 8px;
-      border: 1px solid #333;
-      font-family: inherit;
-      font-size: 14px;
-    }
-
-    button {
-      background: #00bcd4;
-      color: #fff;
-      border: none;
-      cursor: pointer;
-    }
-    button:hover { background: #0097a7; }
-
-    .muted {
-      font-size: 12px;
-      opacity: 0.7;
-    }
-
-    .badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      border: 1px solid #ddd;
-      border-radius: 999px;
-      padding: 6px 10px;
-      background: #fafafa;
-      font-size: 13px;
-    }
-
-    .lists {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-      margin-top: 12px;
-    }
-
-    .list {
-      border: 1px solid #eee;
-      border-radius: 10px;
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-      min-height: 220px;
-    }
-
-    .list-header {
-      padding: 8px 10px;
-      background: #f9f9f9;
-      border-bottom: 1px solid #eee;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-weight: bold;
-      font-size: 13px;
-    }
-
-    .list-body {
-      padding: 8px;
-      overflow: auto;
-      max-height: 300px;
-      display: grid;
-      gap: 6px;
-    }
-
-    .item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      border: 1px solid #eaeaea;
-      border-radius: 8px;
-      padding: 8px 10px;
-      font-size: 13px;
-      background: #fff;
-    }
-
-    .item button {
-      font-size: 12px;
-      padding: 6px 8px;
-    }
-
-    .active {
-      border-color: #00bcd4;
-      box-shadow: 0 0 0 2px rgba(0,188,212,0.15);
-    }
-
-    @media (max-width: 800px) {
-      .lists { grid-template-columns: 1fr; }
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Echo Jr 3.0</title>
+<style>
+body{margin:0;padding:24px 16px 40px;display:flex;flex-direction:column;align-items:center;min-height:100vh;background:#f5f5f5;font-family:'Comic Sans MS',cursive,sans-serif;box-sizing:border-box;gap:18px}
+.robot-container{position:relative;width:300px;height:350px}
+.hat{position:absolute;top:20px;left:50%;transform:translateX(-50%);width:0;height:0;border-left:50px solid transparent;border-right:50px solid transparent;border-bottom:90px solid #FF6B9D;z-index:10}
+.hat-stripes{position:absolute;top:20px;left:50%;transform:translateX(-50%);width:100px;height:90px;overflow:hidden;clip-path:polygon(50% 0%,0% 100%,100% 100%);z-index:11}
+.stripe{position:absolute;width:150px;height:8px;background:#fff;opacity:.4;left:50%;transform:translateX(-50%)}
+.stripe1{top:15px}.stripe2{top:35px}.stripe3{top:55px}.stripe4{top:75px}
+.hat::after{content:'';position:absolute;top:-12px;left:50%;transform:translateX(-50%);width:16px;height:16px;background:#FFD93D;border-radius:50%;border:2px solid #333}
+.head{position:absolute;top:110px;left:50%;transform:translateX(-50%);width:180px;height:160px;background:#9e9e9e;border-radius:25px;border:4px solid #333;box-shadow:0 8px 16px rgba(0,0,0,.2),inset 0 0 0 8px #757575}
+.antenna{position:absolute;top:-25px;left:50%;transform:translateX(-50%);width:4px;height:20px;background:#333}
+.antenna::after{content:'';position:absolute;top:-8px;left:-4px;width:12px;height:12px;background:#FF6B9D;border-radius:50%;border:2px solid #333}
+.eyes{position:absolute;top:40px;left:50%;transform:translateX(-50%);display:flex;gap:30px}
+.eye{width:40px;height:40px;background:radial-gradient(circle,#fff 20%,#00f6ff 50%,#0088ff 80%);border-radius:50%;position:relative;box-shadow:0 0 15px rgba(0,255,255,.7);animation:blink 5s infinite}
+.eye::before{content:'';position:absolute;width:15px;height:15px;background:#000;border-radius:50%;top:10px;left:10px;box-shadow:0 0 5px rgba(255,255,255,.8);animation:pupil-move 3s ease-in-out infinite}
+@keyframes blink{0%,10%,90%,100%{transform:scaleY(1)}5%{transform:scaleY(.1)}}
+@keyframes pupil-move{0%,100%{transform:translate(0,0)}50%{transform:translate(5px,2px)}}
+.smile{position:absolute;top:105px;left:50%;transform:translateX(-50%);width:60px;height:25px;border:3px solid #000;border-top:none;border-radius:0 0 60px 60px}
+.cheek{position:absolute;top:80px;width:30px;height:30px;background:radial-gradient(circle,rgba(255,153,153,.4),rgba(255,102,102,.4));border-radius:50%;box-shadow:0 0 10px rgba(255,102,102,.3);animation:blush 3s ease-in-out infinite;opacity:.4}
+.cheek.left{left:20px}.cheek.right{right:20px}@keyframes blush{0%,100%{transform:scale(1)}50%{transform:scale(1.1)}}
+.panel,.repo-panel{width:min(980px,94vw);background:#fff;border:1px solid #d8d8d8;border-radius:12px;box-shadow:0 6px 18px rgba(0,0,0,.06);padding:14px}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+input,button,textarea{font-family:inherit;font-size:14px}
+input,button{padding:8px 10px;border-radius:8px;border:1px solid #333}
+button{background:#00bcd4;color:#fff;border:none;cursor:pointer}
+button:hover{background:#0097a7}
+.badge{display:inline-flex;align-items:center;gap:6px;border:1px solid #ddd;border-radius:999px;padding:6px 10px;background:#fafafa;font-size:13px}
+.lists{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}
+.list{border:1px solid #eee;border-radius:10px;overflow:hidden;display:flex;flex-direction:column;min-height:220px}
+.list-header{padding:8px 10px;background:#f9f9f9;border-bottom:1px solid #eee;display:flex;justify-content:space-between;align-items:center;font-weight:bold;font-size:13px}
+.list-body{padding:8px;overflow:auto;max-height:300px;display:grid;gap:6px}
+.item{display:flex;justify-content:space-between;align-items:center;border:1px solid #eaeaea;border-radius:8px;padding:8px 10px;font-size:13px;background:#fff}
+.item button{font-size:12px;padding:6px 8px}
+.active{border-color:#00bcd4;box-shadow:0 0 0 2px rgba(0,188,212,.15)}
+#editorBox{display:none;flex-direction:column;gap:8px;margin-top:10px}
+#codeArea{width:100%;min-height:200px;border:1px solid #ccc;border-radius:8px;padding:8px;font-family:monospace;font-size:13px;resize:vertical}
+</style>
 </head>
 <body>
-  <!-- Echo Jr Robot -->
-  <div class="robot-container">
-    <div class="hat"></div>
-    <div class="hat-stripes">
-      <div class="stripe stripe1"></div>
-      <div class="stripe stripe2"></div>
-      <div class="stripe stripe3"></div>
-      <div class="stripe stripe4"></div>
-    </div>
+<div class="robot-container">
+ <div class="hat"></div><div class="hat-stripes"><div class="stripe stripe1"></div><div class="stripe stripe2"></div><div class="stripe stripe3"></div><div class="stripe stripe4"></div></div>
+ <div class="head"><div class="antenna"></div><div class="eyes"><div class="eye"></div><div class="eye"></div></div><div class="cheek left"></div><div class="cheek right"></div><div class="smile"></div></div>
+</div>
 
-    <div class="head">
-      <div class="antenna"></div>
-      <div class="eyes">
-        <div class="eye"></div>
-        <div class="eye"></div>
-      </div>
-      <div class="cheek left"></div>
-      <div class="cheek right"></div>
-      <div class="smile"></div>
-    </div>
-  </div>
+<div class="panel">
+ <h3>🔧 GitHub Control Panel</h3>
+ <div class="row" style="margin-bottom:8px">
+   <input id="repoName" placeholder="Repository name"><button id="btnCreateRepo">Create Repo</button>
+   <span class="badge" id="activeRepoBadge" style="display:none">Active repo: <strong id="activeRepoName"></strong></span>
+ </div>
+</div>
 
-  <!-- Create Repo (kept exactly, just wrapped in a panel) -->
-  <div class="panel">
-    <h3>🔧 GitHub Control Panel</h3>
-    <div class="row" style="margin-bottom:8px;">
-      <input id="repoName" placeholder="Repository name">
-      <button id="btnCreateRepo">Create Repo</button>
-      <span class="muted">Local-only. Token is prompted each time and never stored.</span>
-    </div>
-    <div class="row">
-      <span id="activeRepoBadge" class="badge" style="display:none;">Active repo: <strong id="activeRepoName"></strong></span>
-    </div>
-  </div>
+<div class="repo-panel">
+ <h3>📜 Repo Selector & File Lister</h3>
+ <div class="row" style="margin-bottom:8px">
+   <button id="btnLoadRepos">Load Repos</button><button id="btnClearToken">Forget Token</button><span id="whoami">Not authenticated</span>
+ </div>
+ <div class="lists">
+   <div class="list"><div class="list-header"><span>My Repositories</span></div><div class="list-body" id="repoList"></div></div>
+   <div class="list"><div class="list-header"><span>Files in Active Repo</span><input id="branchInput" placeholder="branch(optional)" style="width:140px"><button id="btnListFiles">List Files</button></div><div class="list-body" id="fileList"></div></div>
+ </div>
+</div>
 
-  <!-- Repo Selector + File Lister -->
-  <div class="repo-panel">
-    <h3>📜 Repo Selector & File Lister</h3>
-    <div class="row" style="margin-bottom:8px;">
-      <button id="btnLoadRepos">Load My Repos</button>
-      <button id="btnClearToken" title="Forget token from memory (if any)">Forget Token</button>
-      <span id="whoami" class="muted">Not authenticated</span>
-    </div>
+<!-- ✍️ Editor appears after selecting a file -->
+<div id="editorBox">
+ <h3>🧠 Echo Jr Update Mode</h3>
+ <textarea id="codeArea" placeholder="Paste or write code to commit…"></textarea>
+ <button id="btnUpdateFile">Update File on GitHub</button>
+ <div id="commitStatus" style="font-size:13px;opacity:.7"></div>
+</div>
 
-    <div class="lists">
-      <div class="list" id="repoListBox">
-        <div class="list-header">
-          <span>My Repositories</span>
-          <button id="btnRefreshRepos" title="Refresh">↻</button>
-        </div>
-        <div class="list-body" id="repoList"></div>
-      </div>
-
-      <div class="list" id="fileListBox">
-        <div class="list-header">
-          <span>Files in Active Repo (root)</span>
-          <div class="row" style="gap:6px;">
-            <input id="branchInput" placeholder="branch (optional)" style="width:150px;">
-            <button id="btnListFiles">List Files</button>
-          </div>
-        </div>
-        <div class="list-body" id="fileList"></div>
-      </div>
-    </div>
-  </div>
-
-  <script>
-    // State (lives only in-memory while page is open)
-    const App = {
-      token: null,    // never stored persistently
-      user: null,     // { login: '...' }
-      activeRepo: null, // { name, full_name, default_branch, ... }
-      reposCache: []  // cached in memory for quick select
-    };
-
-    // ---------------------------
-    // Utilities
-    // ---------------------------
-    const sleep = (ms) => new Promise(r => setTimeout(r, ms));
-
-    function promptToken() {
-      const t = prompt('Paste your GitHub Personal Access Token (will NOT be saved):');
-      if (!t) return null;
-      return t.trim();
-    }
-
-    async function gh(url, method = 'GET', body = null) {
-      if (!App.token) throw new Error('No token in memory');
-      const res = await fetch(url, {
-        method,
-        headers: {
-          'Authorization': `token ${App.token}`,
-          'Accept': 'application/vnd.github+json'
-        },
-        body: body ? JSON.stringify(body) : null
-      });
-      let data = null;
-      const text = await res.text();
-      try { data = text ? JSON.parse(text) : null; } catch { data = text; }
-      if (!res.ok) {
-        const m = data && data.message ? data.message : res.status + ' ' + res.statusText;
-        throw new Error(m);
-      }
-      // Attach headers if needed
-      return { data, headers: res.headers };
-    }
-
-    function parseLinkHeader(link) {
-      // returns { next: 'url', last: 'url', ... } or {}
-      const out = {};
-      if (!link) return out;
-      const parts = link.split(',');
-      for (const p of parts) {
-        const m = p.match(/<([^>]+)>;\s*rel="([^"]+)"/);
-        if (m) out[m[2]] = m[1];
-      }
-      return out;
-    }
-
-    function setWhoAmI() {
-      const el = document.getElementById('whoami');
-      if (App.user?.login) {
-        el.textContent = `Authenticated as @${App.user.login}`;
-      } else {
-        el.textContent = 'Not authenticated';
-      }
-    }
-
-    function setActiveRepoBadge() {
-      const badge = document.getElementById('activeRepoBadge');
-      const name = document.getElementById('activeRepoName');
-      if (App.activeRepo?.name) {
-        badge.style.display = 'inline-flex';
-        name.textContent = App.activeRepo.full_name;
-      } else {
-        badge.style.display = 'none';
-        name.textContent = '';
-      }
-    }
-
-    function renderRepoList() {
-      const box = document.getElementById('repoList');
-      box.innerHTML = '';
-      if (!App.reposCache.length) {
-        box.innerHTML = '<div class="muted">No repositories found.</div>';
-        return;
-      }
-      for (const r of App.reposCache) {
-        const div = document.createElement('div');
-        div.className = 'item' + (App.activeRepo?.id === r.id ? ' active' : '');
-        const left = document.createElement('div');
-        left.textContent = r.full_name;
-        const right = document.createElement('div');
-        const btn = document.createElement('button');
-        btn.textContent = 'Select';
-        btn.onclick = () => {
-          App.activeRepo = r;
-          setActiveRepoBadge();
-          renderRepoList();
-          document.getElementById('fileList').innerHTML = ''; // clear old files
-        };
-        right.appendChild(btn);
-        div.appendChild(left);
-        div.appendChild(right);
-        box.appendChild(div);
-      }
-    }
-
-    function renderFileList(files) {
-      const box = document.getElementById('fileList');
-      box.innerHTML = '';
-      if (!files?.length) {
-        box.innerHTML = '<div class="muted">No files at repo root (or empty response).</div>';
-        return;
-      }
-      for (const f of files) {
-        if (f.type !== 'file' && f.type !== 'dir') continue; // ignore symlinks/submodules
-        const div = document.createElement('div');
-        div.className = 'item';
-        const left = document.createElement('div');
-        left.textContent = `${f.type === 'dir' ? '📁' : '📄'} ${f.name}`;
-        const right = document.createElement('div');
-        const btn = document.createElement('button');
-        btn.textContent = 'Target';
-        btn.title = 'Set this file/folder name into the input immediately';
-        btn.onclick = () => {
-          // Put into the existing repoName input for now or create a dedicated target input later
-          const input = document.getElementById('repoName');
-          input.value = f.name; // quick 2-second target grab (can change destination later)
-          input.focus();
-        };
-        right.appendChild(btn);
-        div.appendChild(left);
-        div.appendChild(right);
-        box.appendChild(div);
-      }
-    }
-
-    // ---------------------------
-    // Core Actions
-    // ---------------------------
-    async function ensureTokenAndUser() {
-      if (!App.token) {
-        const t = promptToken();
-        if (!t) return false;
-        App.token = t;
-      }
-      if (!App.user) {
-        const { data } = await gh('https://api.github.com/user');
-        App.user = data;
-        setWhoAmI();
-      }
-      return true;
-    }
-
-    async function fetchAllRepos() {
-      // paginated /user/repos
-      const perPage = 100;
-      let url = `https://api.github.com/user/repos?per_page=${perPage}&sort=full_name&direction=asc`;
-      const all = [];
-      while (url) {
-        const { data, headers } = await gh(url);
-        if (Array.isArray(data)) all.push(...data);
-        const links = parseLinkHeader(headers.get('Link'));
-        url = links.next || null;
-      }
-      // sort full_name asc just in case
-      all.sort((a,b) => a.full_name.localeCompare(b.full_name));
-      return all;
-    }
-
-    async function listRootFiles() {
-      if (!App.activeRepo) {
-        alert('Select a repo first.');
-        return;
-      }
-      const owner = App.activeRepo.owner?.login || App.user?.login;
-      const repo = App.activeRepo.name;
-      const explicit = document.getElementById('branchInput').value.trim();
-      const ref = explicit || App.activeRepo.default_branch || 'main';
-      const url = `https://api.github.com/repos/${owner}/${repo}/contents?ref=${encodeURIComponent(ref)}`;
-      try {
-        const { data } = await gh(url);
-        renderFileList(Array.isArray(data) ? data : []);
-      } catch (e) {
-        alert('❌ Error listing files: ' + e.message);
-      }
-    }
-
-    async function createRepo() {
-      const repo = document.getElementById('repoName').value.trim();
-      if (!repo) return alert('Enter a repository name first.');
-      if (!await ensureTokenAndUser()) return;
-
-      try {
-        const { data } = await gh('https://api.github.com/user/repos', 'POST', {
-          name: repo,
-          private: false
-        });
-        alert('✅ Repository created: ' + data.html_url);
-        // Refresh repos to include the new one
-        await loadRepos(true);
-      } catch (err) {
-        alert('❌ Error: ' + err.message);
-      }
-    }
-
-    async function loadRepos(force = false) {
-      if (!await ensureTokenAndUser()) return;
-      try {
-        if (force || !App.reposCache.length) {
-          const repos = await fetchAllRepos();
-          App.reposCache = repos;
-        }
-        renderRepoList();
-      } catch (e) {
-        alert('❌ Error loading repos: ' + e.message);
-      }
-    }
-
-    function clearToken() {
-      App.token = null;
-      App.user = null;
-      setWhoAmI();
-      // Keep the UI but indicate not authed
-      alert('Token cleared from memory. Nothing was ever stored.');
-    }
-
-    // ---------------------------
-    // Wire up UI
-    // ---------------------------
-    document.getElementById('btnCreateRepo').onclick = createRepo;
-    document.getElementById('btnLoadRepos').onclick = () => loadRepos(true);
-    document.getElementById('btnRefreshRepos').onclick = () => loadRepos(true);
-    document.getElementById('btnListFiles').onclick = listRootFiles;
-    document.getElementById('btnClearToken').onclick = clearToken;
-
-    // Initial UI state
-    setWhoAmI();
-    setActiveRepoBadge();
-  </script>
+<script>
+const A={token:null,user:null,activeRepo:null,activeFile:null,sha:null};
+function promptToken(){const t=prompt('Paste GitHub token (not saved):');return t?.trim()||null;}
+async function gh(url,m='GET',b){if(!A.token)throw'no token';const r=await fetch(url,{method:m,headers:{Authorization:`token ${A.token}`,'Accept':'application/vnd.github+json'},body:b?JSON.stringify(b):null});const t=await r.text();let d;try{d=t?JSON.parse(t):null}catch{d=t}if(!r.ok)throw(d?.message||r.statusText);return d;}
+async function ensureUser(){if(!A.token){const t=promptToken();if(!t)return false;A.token=t;}if(!A.user){A.user=await gh('https://api.github.com/user');document.getElementById('whoami').textContent='@'+A.user.login;}return true;}
+async function loadRepos(){if(!await ensureUser())return;const d=await gh('https://api.github.com/user/repos?per_page=100');const list=document.getElementById('repoList');list.innerHTML='';d.forEach(r=>{const e=document.createElement('div');e.className='item';e.innerHTML=`<div>${r.full_name}</div><button>Select</button>`;e.querySelector('button').onclick=()=>{A.activeRepo=r;document.getElementById('activeRepoBadge').style.display='inline-flex';document.getElementById('activeRepoName').textContent=r.full_name;loadFiles();};list.appendChild(e);});}
+async function loadFiles(){if(!A.activeRepo)return alert('select repo');const o=A.activeRepo.owner.login,n=A.activeRepo.name,b=document.getElementById('branchInput').value||A.activeRepo.default_branch;const d=await gh(`https://api.github.com/repos/${o}/${n}/contents?ref=${b}`);const list=document.getElementById('fileList');list.innerHTML='';d.forEach(f=>{if(f.type!=='file')return;const e=document.createElement('div');e.className='item';e.innerHTML=`<div>📄 ${f.name}</div><button>Edit</button>`;e.querySelector('button').onclick=()=>openEditor(f);list.appendChild(e);});}
+async function openEditor(f){A.activeFile=f;A.sha=null;document.getElementById('editorBox').style.display='flex';document.getElementById('commitStatus').textContent='Loading file…';const o=A.activeRepo.owner.login,n=A.activeRepo.name;const d=await gh(`https://api.github.com/repos/${o}/${n}/contents/${f.path}`);A.sha=d.sha;const txt=atob(d.content.replace(/\n/g,''));document.getElementById('codeArea').value=txt;document.getElementById('commitStatus').textContent=`Editing ${f.name}`;}
+async function updateFile(){if(!A.activeRepo||!A.activeFile)return alert('select file');const content=document.getElementById('codeArea').value;const msg=`Update ${A.activeFile.name} via Echo Jr`;const o=A.activeRepo.owner.login,n=A.activeRepo.name,p=A.activeFile.path;const body={message:msg,content:btoa(unescape(encodeURIComponent(content))),sha:A.sha};try{document.getElementById('commitStatus').textContent='Updating…';await gh(`https://api.github.com/repos/${o}/${n}/contents/${p}`,'PUT',body);document.getElementById('commitStatus').textContent='✅ File updated successfully';}catch(e){document.getElementById('commitStatus').textContent='❌ '+e.message;}}
+document.getElementById('btnLoadRepos').onclick=loadRepos;
+document.getElementById('btnListFiles').onclick=loadFiles;
+document.getElementById('btnClearToken').onclick=()=>{A.token=null;A.user=null;document.getElementById('whoami').textContent='Not authenticated';alert('Token cleared');};
+document.getElementById('btnCreateRepo').onclick=async()=>{const r=document.getElementById('repoName').value.trim();if(!r)return;await ensureUser();await gh('https://api.github.com/user/repos','POST',{name:r,private:false});alert('Created '+r);loadRepos();};
+document.getElementById('btnUpdateFile').onclick=updateFile;
+</script>
 </body>
 </html>
