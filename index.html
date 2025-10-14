@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Echo Jr 3.2</title>
+<title>Echo Jr 3.3</title>
 <style>
 body{margin:0;padding:24px 16px 40px;display:flex;flex-direction:column;align-items:center;min-height:100vh;background:#f5f5f5;font-family:'Comic Sans MS',cursive,sans-serif;box-sizing:border-box;gap:18px}
 .robot-container{position:relative;width:300px;height:350px}
@@ -40,15 +40,14 @@ button{background:#00bcd4;color:#fff;border:none;cursor:pointer}button:hover{bac
 </style>
 </head>
 <body>
-<div class="robot-container">
- <div class="hat"></div><div class="hat-stripes"><div class="stripe stripe1"></div><div class="stripe stripe2"></div><div class="stripe stripe3"></div><div class="stripe stripe4"></div></div>
- <div class="head"><div class="antenna"></div><div class="eyes"><div class="eye"></div><div class="eye"></div></div><div class="cheek left"></div><div class="cheek right"></div><div class="smile"></div></div>
-</div>
+<div class="robot-container"><div class="hat"></div><div class="hat-stripes"><div class="stripe stripe1"></div><div class="stripe stripe2"></div><div class="stripe stripe3"></div><div class="stripe stripe4"></div></div><div class="head"><div class="antenna"></div><div class="eyes"><div class="eye"></div><div class="eye"></div></div><div class="cheek left"></div><div class="cheek right"></div><div class="smile"></div></div></div>
 
 <div class="panel">
  <h3>🔧 GitHub Control Panel</h3>
  <div class="row" style="margin-bottom:8px">
-  <input id="repoName" placeholder="Repository name"><button id="btnCreateRepo">Create Repo</button>
+  <input id="repoName" placeholder="Repository name">
+  <button id="btnCreateRepo">Create Repo</button>
+  <button id="btnNewFile">New File</button>
   <span class="badge" id="activeRepoBadge" style="display:none">Active repo: <strong id="activeRepoName"></strong></span>
  </div>
 </div>
@@ -60,26 +59,11 @@ button{background:#00bcd4;color:#fff;border:none;cursor:pointer}button:hover{bac
  </div>
  <div class="lists">
   <div class="list"><div class="list-header"><span>My Repositories</span></div><div class="list-body" id="repoList"></div></div>
-  <div class="list">
-   <div class="list-header">
-    <span>Files in Active Repo</span>
-    <div style="display:flex;gap:6px;align-items:center">
-     <input id="branchInput" placeholder="branch(optional)" style="width:120px">
-     <button id="btnListFiles">List</button>
-     <button id="btnNewFile">New File</button>
-    </div>
-   </div>
-   <div class="list-body" id="fileList"></div>
-  </div>
+  <div class="list"><div class="list-header"><span>Files in Active Repo</span><input id="branchInput" placeholder="branch(optional)" style="width:120px"><button id="btnListFiles">List</button></div><div class="list-body" id="fileList"></div></div>
  </div>
 </div>
 
-<div id="editorBox">
- <h3>🧠 Echo Jr Update Mode</h3>
- <textarea id="codeArea" placeholder="Paste or write code to commit…"></textarea>
- <button id="btnUpdateFile">Update File on GitHub</button>
- <div id="commitStatus" style="font-size:13px;opacity:.7"></div>
-</div>
+<div id="editorBox"><h3>🧠 Echo Jr Update Mode</h3><textarea id="codeArea" placeholder="Paste or write code to commit…"></textarea><button id="btnUpdateFile">Update File on GitHub</button><div id="commitStatus" style="font-size:13px;opacity:.7"></div></div>
 
 <script>
 const A={token:null,user:null,activeRepo:null,activeFile:null,sha:null};
@@ -90,7 +74,7 @@ async function loadRepos(){if(!await ensureUser())return;const d=await gh('https
 async function loadFiles(){if(!A.activeRepo)return alert('select repo');const o=A.activeRepo.owner.login,n=A.activeRepo.name,b=document.getElementById('branchInput').value||A.activeRepo.default_branch;const d=await gh(`https://api.github.com/repos/${o}/${n}/contents?ref=${b}`);const l=document.getElementById('fileList');l.innerHTML='';d.forEach(f=>{if(f.type!=='file')return;const e=document.createElement('div');e.className='item';e.innerHTML=`<div>📄 ${f.name}</div><button>Edit</button>`;e.querySelector('button').onclick=()=>openEditor(f);l.appendChild(e);});}
 async function openEditor(f){A.activeFile=f;A.sha=null;document.getElementById('editorBox').style.display='flex';document.getElementById('commitStatus').textContent='Loading file…';const o=A.activeRepo.owner.login,n=A.activeRepo.name;const d=await gh(`https://api.github.com/repos/${o}/${n}/contents/${f.path}`);A.sha=d.sha;const txt=atob(d.content.replace(/\n/g,''));document.getElementById('codeArea').value=txt;document.getElementById('commitStatus').textContent=`Editing ${f.name}`;}
 async function updateFile(){if(!A.activeRepo||!A.activeFile)return alert('select file');const c=document.getElementById('codeArea').value;const m=`Update ${A.activeFile.name} via Echo Jr`;const o=A.activeRepo.owner.login,n=A.activeRepo.name,p=A.activeFile.path;const body={message:m,content:btoa(unescape(encodeURIComponent(c))),sha:A.sha};try{document.getElementById('commitStatus').textContent='Updating…';await gh(`https://api.github.com/repos/${o}/${n}/contents/${p}`,'PUT',body);document.getElementById('commitStatus').textContent='✅ File updated';loadFiles();}catch(e){document.getElementById('commitStatus').textContent='❌ '+e.message;}}
-async function newFile(){if(!A.activeRepo)return alert('select repo first');const name=prompt('Enter new file name (e.g. index.html):');if(!name)return;const content=prompt('Initial content (leave blank for empty file):')||'';const msg=`Create ${name} via Echo Jr`;const o=A.activeRepo.owner.login,n=A.activeRepo.name;try{document.getElementById('commitStatus').textContent='Creating file…';await gh(`https://api.github.com/repos/${o}/${n}/contents/${name}`,'PUT',{message:msg,content:btoa(unescape(encodeURIComponent(content)))});document.getElementById('commitStatus').textContent='✅ File created';loadFiles();}catch(e){alert('❌ '+e.message);}}
+async function newFile(){if(!A.activeRepo)return alert('select repo first');const name=prompt('Enter new file name (e.g. index.html):');if(!name)return;const content=prompt('Initial content (blank ok):')||'';const msg=`Create ${name} via Echo Jr`;const o=A.activeRepo.owner.login,n=A.activeRepo.name;try{document.getElementById('commitStatus').textContent='Creating file…';await gh(`https://api.github.com/repos/${o}/${n}/contents/${name}`,'PUT',{message:msg,content:btoa(unescape(encodeURIComponent(content)))});document.getElementById('commitStatus').textContent='✅ File created';loadFiles();}catch(e){alert('❌ '+e.message);}}
 document.getElementById('btnLoadRepos').onclick=loadRepos;
 document.getElementById('btnListFiles').onclick=loadFiles;
 document.getElementById('btnNewFile').onclick=newFile;
