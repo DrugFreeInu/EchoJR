@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Birthday Robot Face</title>
+  <title>Echo Jr 2.0</title>
   <style>
     body {
       margin: 0;
@@ -177,9 +177,9 @@
       top: 80px;
       width: 30px;
       height: 30px;
-      background: radial-gradient(circle, rgba(255, 153, 153, 0.4), rgba(255, 102, 102, 0.4));
+      background: radial-gradient(circle, rgba(255,153,153,0.4), rgba(255,102,102,0.4));
       border-radius: 50%;
-      box-shadow: 0 0 10px rgba(255, 102, 102, 0.3);
+      box-shadow: 0 0 10px rgba(255,102,102,0.3);
       animation: blush 3s ease-in-out infinite;
       opacity: 0.4;
     }
@@ -190,6 +190,30 @@
     @keyframes blush {
       0%, 100% { transform: scale(1); }
       50% { transform: scale(1.1); }
+    }
+
+    /* Panel */
+    .panel {
+      margin-top: 60px;
+      text-align: center;
+    }
+
+    input, button {
+      padding: 6px 10px;
+      border-radius: 6px;
+      border: 1px solid #333;
+      font-family: inherit;
+    }
+
+    button {
+      background: #00bcd4;
+      color: #fff;
+      border: none;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #0097a7;
     }
   </style>
 </head>
@@ -215,38 +239,40 @@
     </div>
   </div>
 
-  <!-- Greeting text -->
-  <div id="echojr-text"></div>
-
-  <!-- About section -->
-  <div id="about-card" style="margin-top:40px; display:flex; justify-content:center;"></div>
-
-  <!-- Philosophy section -->
-  <div id="philosophy-card" style="margin-top:40px; display:flex; justify-content:center;"></div>
+  <!-- 🔧 GitHub Control Panel -->
+  <div class="panel">
+    <input id="repoName" placeholder="Repository name">
+    <button onclick="createRepo()">Create Repo</button>
+  </div>
 
   <script>
-    // Load greeting text
-    fetch("text.html")
-      .then(r => r.text())
-      .then(html => {
-        document.getElementById("echojr-text").innerHTML = html;
+    // 🔒 Local bridge — prompt for token each time; nothing saved or uploaded.
+    async function createRepo() {
+      const repo = document.getElementById('repoName').value.trim();
+      if (!repo) return alert('Enter a repository name first.');
+      const token = prompt('Paste your GitHub Personal Access Token (not saved):');
+      if (!token) return;
 
-        // Load about.html
-        const aboutIframe = document.createElement("iframe");
-        aboutIframe.src = "about.html";
-        aboutIframe.width = "520";
-        aboutIframe.height = "350";
-        aboutIframe.style.border = "none";
-        document.getElementById("about-card").appendChild(aboutIframe);
+      try {
+        const res = await fetch('https://api.github.com/user/repos', {
+          method: 'POST',
+          headers: {
+            'Authorization': `token ${token}`,
+            'Accept': 'application/vnd.github+json'
+          },
+          body: JSON.stringify({ name: repo, private: false })
+        });
 
-        // Load philosophy.html below it
-        const philosophyIframe = document.createElement("iframe");
-        philosophyIframe.src = "philosophy.html";
-        philosophyIframe.width = "520";
-        philosophyIframe.height = "350";
-        philosophyIframe.style.border = "none";
-        document.getElementById("philosophy-card").appendChild(philosophyIframe);
-      });
+        const data = await res.json();
+        if (res.ok) {
+          alert('✅ Repository created: ' + data.html_url);
+        } else {
+          alert('❌ Error: ' + (data.message || JSON.stringify(data)));
+        }
+      } catch (err) {
+        alert('⚠️ Network error: ' + err.message);
+      }
+    }
   </script>
 </body>
 </html>
