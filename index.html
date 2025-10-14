@@ -2,19 +2,23 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Echo Jr 2.0</title>
   <style>
     body {
       margin: 0;
-      padding: 0;
+      padding: 24px 16px 40px;
       display: flex;
       flex-direction: column;
-      justify-content: center;
       align-items: center;
       min-height: 100vh;
       background: #f5f5f5;
       font-family: 'Comic Sans MS', cursive, sans-serif;
+      box-sizing: border-box;
+      gap: 18px;
     }
 
     .robot-container {
@@ -187,22 +191,34 @@
     .cheek.left { left: 20px; }
     .cheek.right { right: 20px; }
 
-    @keyframes blush {
-      0%, 100% { transform: scale(1); }
-      50% { transform: scale(1.1); }
+    /* Controls */
+    .panel, .repo-panel {
+      width: min(980px, 94vw);
+      background: #fff;
+      border: 1px solid #d8d8d8;
+      border-radius: 12px;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+      padding: 14px;
     }
 
-    /* Panel */
-    .panel {
-      margin-top: 60px;
-      text-align: center;
+    .panel h3, .repo-panel h3 {
+      margin: 0 0 10px;
+      font-size: 18px;
+    }
+
+    .row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      align-items: center;
     }
 
     input, button {
-      padding: 6px 10px;
-      border-radius: 6px;
+      padding: 8px 10px;
+      border-radius: 8px;
       border: 1px solid #333;
       font-family: inherit;
+      font-size: 14px;
     }
 
     button {
@@ -211,13 +227,87 @@
       border: none;
       cursor: pointer;
     }
+    button:hover { background: #0097a7; }
 
-    button:hover {
-      background: #0097a7;
+    .muted {
+      font-size: 12px;
+      opacity: 0.7;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border: 1px solid #ddd;
+      border-radius: 999px;
+      padding: 6px 10px;
+      background: #fafafa;
+      font-size: 13px;
+    }
+
+    .lists {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 12px;
+    }
+
+    .list {
+      border: 1px solid #eee;
+      border-radius: 10px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      min-height: 220px;
+    }
+
+    .list-header {
+      padding: 8px 10px;
+      background: #f9f9f9;
+      border-bottom: 1px solid #eee;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-weight: bold;
+      font-size: 13px;
+    }
+
+    .list-body {
+      padding: 8px;
+      overflow: auto;
+      max-height: 300px;
+      display: grid;
+      gap: 6px;
+    }
+
+    .item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border: 1px solid #eaeaea;
+      border-radius: 8px;
+      padding: 8px 10px;
+      font-size: 13px;
+      background: #fff;
+    }
+
+    .item button {
+      font-size: 12px;
+      padding: 6px 8px;
+    }
+
+    .active {
+      border-color: #00bcd4;
+      box-shadow: 0 0 0 2px rgba(0,188,212,0.15);
+    }
+
+    @media (max-width: 800px) {
+      .lists { grid-template-columns: 1fr; }
     }
   </style>
 </head>
 <body>
+  <!-- Echo Jr Robot -->
   <div class="robot-container">
     <div class="hat"></div>
     <div class="hat-stripes">
@@ -239,40 +329,284 @@
     </div>
   </div>
 
-  <!-- 🔧 GitHub Control Panel -->
+  <!-- Create Repo (kept exactly, just wrapped in a panel) -->
   <div class="panel">
-    <input id="repoName" placeholder="Repository name">
-    <button onclick="createRepo()">Create Repo</button>
+    <h3>🔧 GitHub Control Panel</h3>
+    <div class="row" style="margin-bottom:8px;">
+      <input id="repoName" placeholder="Repository name">
+      <button id="btnCreateRepo">Create Repo</button>
+      <span class="muted">Local-only. Token is prompted each time and never stored.</span>
+    </div>
+    <div class="row">
+      <span id="activeRepoBadge" class="badge" style="display:none;">Active repo: <strong id="activeRepoName"></strong></span>
+    </div>
+  </div>
+
+  <!-- Repo Selector + File Lister -->
+  <div class="repo-panel">
+    <h3>📜 Repo Selector & File Lister</h3>
+    <div class="row" style="margin-bottom:8px;">
+      <button id="btnLoadRepos">Load My Repos</button>
+      <button id="btnClearToken" title="Forget token from memory (if any)">Forget Token</button>
+      <span id="whoami" class="muted">Not authenticated</span>
+    </div>
+
+    <div class="lists">
+      <div class="list" id="repoListBox">
+        <div class="list-header">
+          <span>My Repositories</span>
+          <button id="btnRefreshRepos" title="Refresh">↻</button>
+        </div>
+        <div class="list-body" id="repoList"></div>
+      </div>
+
+      <div class="list" id="fileListBox">
+        <div class="list-header">
+          <span>Files in Active Repo (root)</span>
+          <div class="row" style="gap:6px;">
+            <input id="branchInput" placeholder="branch (optional)" style="width:150px;">
+            <button id="btnListFiles">List Files</button>
+          </div>
+        </div>
+        <div class="list-body" id="fileList"></div>
+      </div>
+    </div>
   </div>
 
   <script>
-    // 🔒 Local bridge — prompt for token each time; nothing saved or uploaded.
+    // State (lives only in-memory while page is open)
+    const App = {
+      token: null,    // never stored persistently
+      user: null,     // { login: '...' }
+      activeRepo: null, // { name, full_name, default_branch, ... }
+      reposCache: []  // cached in memory for quick select
+    };
+
+    // ---------------------------
+    // Utilities
+    // ---------------------------
+    const sleep = (ms) => new Promise(r => setTimeout(r, ms));
+
+    function promptToken() {
+      const t = prompt('Paste your GitHub Personal Access Token (will NOT be saved):');
+      if (!t) return null;
+      return t.trim();
+    }
+
+    async function gh(url, method = 'GET', body = null) {
+      if (!App.token) throw new Error('No token in memory');
+      const res = await fetch(url, {
+        method,
+        headers: {
+          'Authorization': `token ${App.token}`,
+          'Accept': 'application/vnd.github+json'
+        },
+        body: body ? JSON.stringify(body) : null
+      });
+      let data = null;
+      const text = await res.text();
+      try { data = text ? JSON.parse(text) : null; } catch { data = text; }
+      if (!res.ok) {
+        const m = data && data.message ? data.message : res.status + ' ' + res.statusText;
+        throw new Error(m);
+      }
+      // Attach headers if needed
+      return { data, headers: res.headers };
+    }
+
+    function parseLinkHeader(link) {
+      // returns { next: 'url', last: 'url', ... } or {}
+      const out = {};
+      if (!link) return out;
+      const parts = link.split(',');
+      for (const p of parts) {
+        const m = p.match(/<([^>]+)>;\s*rel="([^"]+)"/);
+        if (m) out[m[2]] = m[1];
+      }
+      return out;
+    }
+
+    function setWhoAmI() {
+      const el = document.getElementById('whoami');
+      if (App.user?.login) {
+        el.textContent = `Authenticated as @${App.user.login}`;
+      } else {
+        el.textContent = 'Not authenticated';
+      }
+    }
+
+    function setActiveRepoBadge() {
+      const badge = document.getElementById('activeRepoBadge');
+      const name = document.getElementById('activeRepoName');
+      if (App.activeRepo?.name) {
+        badge.style.display = 'inline-flex';
+        name.textContent = App.activeRepo.full_name;
+      } else {
+        badge.style.display = 'none';
+        name.textContent = '';
+      }
+    }
+
+    function renderRepoList() {
+      const box = document.getElementById('repoList');
+      box.innerHTML = '';
+      if (!App.reposCache.length) {
+        box.innerHTML = '<div class="muted">No repositories found.</div>';
+        return;
+      }
+      for (const r of App.reposCache) {
+        const div = document.createElement('div');
+        div.className = 'item' + (App.activeRepo?.id === r.id ? ' active' : '');
+        const left = document.createElement('div');
+        left.textContent = r.full_name;
+        const right = document.createElement('div');
+        const btn = document.createElement('button');
+        btn.textContent = 'Select';
+        btn.onclick = () => {
+          App.activeRepo = r;
+          setActiveRepoBadge();
+          renderRepoList();
+          document.getElementById('fileList').innerHTML = ''; // clear old files
+        };
+        right.appendChild(btn);
+        div.appendChild(left);
+        div.appendChild(right);
+        box.appendChild(div);
+      }
+    }
+
+    function renderFileList(files) {
+      const box = document.getElementById('fileList');
+      box.innerHTML = '';
+      if (!files?.length) {
+        box.innerHTML = '<div class="muted">No files at repo root (or empty response).</div>';
+        return;
+      }
+      for (const f of files) {
+        if (f.type !== 'file' && f.type !== 'dir') continue; // ignore symlinks/submodules
+        const div = document.createElement('div');
+        div.className = 'item';
+        const left = document.createElement('div');
+        left.textContent = `${f.type === 'dir' ? '📁' : '📄'} ${f.name}`;
+        const right = document.createElement('div');
+        const btn = document.createElement('button');
+        btn.textContent = 'Target';
+        btn.title = 'Set this file/folder name into the input immediately';
+        btn.onclick = () => {
+          // Put into the existing repoName input for now or create a dedicated target input later
+          const input = document.getElementById('repoName');
+          input.value = f.name; // quick 2-second target grab (can change destination later)
+          input.focus();
+        };
+        right.appendChild(btn);
+        div.appendChild(left);
+        div.appendChild(right);
+        box.appendChild(div);
+      }
+    }
+
+    // ---------------------------
+    // Core Actions
+    // ---------------------------
+    async function ensureTokenAndUser() {
+      if (!App.token) {
+        const t = promptToken();
+        if (!t) return false;
+        App.token = t;
+      }
+      if (!App.user) {
+        const { data } = await gh('https://api.github.com/user');
+        App.user = data;
+        setWhoAmI();
+      }
+      return true;
+    }
+
+    async function fetchAllRepos() {
+      // paginated /user/repos
+      const perPage = 100;
+      let url = `https://api.github.com/user/repos?per_page=${perPage}&sort=full_name&direction=asc`;
+      const all = [];
+      while (url) {
+        const { data, headers } = await gh(url);
+        if (Array.isArray(data)) all.push(...data);
+        const links = parseLinkHeader(headers.get('Link'));
+        url = links.next || null;
+      }
+      // sort full_name asc just in case
+      all.sort((a,b) => a.full_name.localeCompare(b.full_name));
+      return all;
+    }
+
+    async function listRootFiles() {
+      if (!App.activeRepo) {
+        alert('Select a repo first.');
+        return;
+      }
+      const owner = App.activeRepo.owner?.login || App.user?.login;
+      const repo = App.activeRepo.name;
+      const explicit = document.getElementById('branchInput').value.trim();
+      const ref = explicit || App.activeRepo.default_branch || 'main';
+      const url = `https://api.github.com/repos/${owner}/${repo}/contents?ref=${encodeURIComponent(ref)}`;
+      try {
+        const { data } = await gh(url);
+        renderFileList(Array.isArray(data) ? data : []);
+      } catch (e) {
+        alert('❌ Error listing files: ' + e.message);
+      }
+    }
+
     async function createRepo() {
       const repo = document.getElementById('repoName').value.trim();
       if (!repo) return alert('Enter a repository name first.');
-      const token = prompt('Paste your GitHub Personal Access Token (not saved):');
-      if (!token) return;
+      if (!await ensureTokenAndUser()) return;
 
       try {
-        const res = await fetch('https://api.github.com/user/repos', {
-          method: 'POST',
-          headers: {
-            'Authorization': `token ${token}`,
-            'Accept': 'application/vnd.github+json'
-          },
-          body: JSON.stringify({ name: repo, private: false })
+        const { data } = await gh('https://api.github.com/user/repos', 'POST', {
+          name: repo,
+          private: false
         });
-
-        const data = await res.json();
-        if (res.ok) {
-          alert('✅ Repository created: ' + data.html_url);
-        } else {
-          alert('❌ Error: ' + (data.message || JSON.stringify(data)));
-        }
+        alert('✅ Repository created: ' + data.html_url);
+        // Refresh repos to include the new one
+        await loadRepos(true);
       } catch (err) {
-        alert('⚠️ Network error: ' + err.message);
+        alert('❌ Error: ' + err.message);
       }
     }
+
+    async function loadRepos(force = false) {
+      if (!await ensureTokenAndUser()) return;
+      try {
+        if (force || !App.reposCache.length) {
+          const repos = await fetchAllRepos();
+          App.reposCache = repos;
+        }
+        renderRepoList();
+      } catch (e) {
+        alert('❌ Error loading repos: ' + e.message);
+      }
+    }
+
+    function clearToken() {
+      App.token = null;
+      App.user = null;
+      setWhoAmI();
+      // Keep the UI but indicate not authed
+      alert('Token cleared from memory. Nothing was ever stored.');
+    }
+
+    // ---------------------------
+    // Wire up UI
+    // ---------------------------
+    document.getElementById('btnCreateRepo').onclick = createRepo;
+    document.getElementById('btnLoadRepos').onclick = () => loadRepos(true);
+    document.getElementById('btnRefreshRepos').onclick = () => loadRepos(true);
+    document.getElementById('btnListFiles').onclick = listRootFiles;
+    document.getElementById('btnClearToken').onclick = clearToken;
+
+    // Initial UI state
+    setWhoAmI();
+    setActiveRepoBadge();
   </script>
 </body>
 </html>
