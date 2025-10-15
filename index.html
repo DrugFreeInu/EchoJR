@@ -73,6 +73,22 @@ html,body{
   text-shadow:0 0 10px rgba(255,107,157,.2);
 }
 #timer span{color:#ff6b9d;font-weight:600;}
+
+#luhv{
+  margin-top:25px;
+  background:#ff6b9d;
+  color:white;
+  border:none;
+  font-size:18px;
+  font-weight:600;
+  border-radius:30px;
+  padding:12px 30px;
+  cursor:pointer;
+  box-shadow:0 4px 14px rgba(255,107,157,.4);
+  transition:transform .15s ease,box-shadow .15s ease;
+}
+#luhv:hover{transform:scale(1.05);box-shadow:0 6px 18px rgba(255,107,157,.5);}
+#count{margin-top:10px;font-size:16px;color:#ff6b9d;font-weight:600;}
 </style>
 </head>
 <body>
@@ -90,13 +106,17 @@ html,body{
   </div>
   <div id="timer">Echo Jr since Oct 6 2025 · DFI since <span>now</span></div>
 
+  <button id="luhv">LUHV 💖</button>
+  <div id="count"></div>
+
 <script>
 (function(){
+  // Timer
   const key='dfi_start';
   let start;
   try{start=parseInt(localStorage.getItem(key),10);}catch{start=NaN;}
   if(!start||Number.isNaN(start)){start=Date.now();try{localStorage.setItem(key,start);}catch{}}
-  function update(){
+  function updateTimer(){
     const diff=Math.floor((Date.now()-start)/1000);
     const d=Math.floor(diff/86400);
     const h=Math.floor((diff%86400)/3600);
@@ -104,8 +124,21 @@ html,body{
     const s=diff%60;
     document.querySelector('#timer span').textContent=`${d} d ${h} h ${m} m ${s} s`;
   }
-  update();
-  setInterval(update,1000);
+  updateTimer();
+  setInterval(updateTimer,1000);
+
+  // LUHV counter
+  const luvKey='dfi_luhv_total';
+  let luhv=parseInt(localStorage.getItem(luvKey)||'0',10);
+  const btn=document.getElementById('luhv');
+  const count=document.getElementById('count');
+  function render(){count.textContent=`Total LUHV: ${luhv.toLocaleString()}`;}
+  render();
+  btn.addEventListener('click',()=>{
+    luhv++;
+    localStorage.setItem(luvKey,luhv);
+    render();
+  });
 })();
 </script>
 </body>
