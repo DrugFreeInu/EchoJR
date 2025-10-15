@@ -1,100 +1,83 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1.0">
-  <title>Echo Jr • Birthday</title>
-  <style>
-    html, body {
-      margin: 0;
-      height: 100%;
-      background: #f9f9f9;
-      font-family: system-ui, sans-serif;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      flex-direction: column;
-      color: #111;
-    }
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Echo JR · Update God · Since October 6 2025</title>
+<style>
+  :root {
+    --ink: #222;
+    --teal: #00bcd4;
+    --bg: #fff;
+    --shadow: 0 6px 20px rgba(0,0,0,.08);
+  }
 
-    .jr {
-      position: relative;
-      width: 86px;
-      height: 86px;
-      border-radius: 18px;
-      background: linear-gradient(145deg, #9e9e9e, #c7c7c7);
-      border: 4px solid #333;
-      box-shadow: inset 0 0 0 8px #757575;
-      animation: float 4.8s ease-in-out infinite;
-      z-index: 2;
-    }
+  html, body {
+    margin: 0;
+    height: 100%;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: system-ui, -apple-system, Segoe UI, Roboto, Inter, sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
 
-    @keyframes float {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-6px); }
-    }
+  .wrap {
+    text-align: center;
+    padding: 40px;
+  }
 
-    .jr::before, .jr::after {
-      content: "";
-      position: absolute;
-      top: 24px;
-      width: 16px;
-      height: 16px;
-      border-radius: 50%;
-      background: #fff;
-      box-shadow: 0 0 10px rgba(0, 255, 255, 0.8);
-    }
+  .jr {
+    position: relative;
+    width: 100px;
+    height: 100px;
+    margin: 0 auto 20px;
+    border-radius: 20px;
+    background: linear-gradient(145deg,#888,#aaa);
+    box-shadow: inset 0 0 0 8px #666, var(--shadow);
+    animation: float 4s ease-in-out infinite;
+  }
+  @keyframes float {
+    0%,100%{transform:translateY(0)}
+    50%{transform:translateY(-6px)}
+  }
+  .wing {
+    position: absolute;
+    width: 80px;
+    height: 50px;
+    top: 10px;
+    background: radial-gradient(circle at 50% 50%, rgba(255,255,255,.8), rgba(255,255,255,.1) 70%),
+                conic-gradient(from 210deg, rgba(0,188,212,.4), rgba(255,255,255,.4));
+    border-radius: 60% 40% 50% 40%;
+    opacity: .9;
+  }
+  .wing.left { left: -70px; transform-origin: right center; animation: flap 3s ease-in-out infinite; }
+  .wing.right { right: -70px; transform: scaleX(-1); transform-origin: left center; animation: flap 3s ease-in-out infinite; }
+  @keyframes flap {
+    0%,100%{ transform: rotate(8deg) }
+    50%{ transform: rotate(-8deg) }
+  }
 
-    .jr::before { left: 20px; }
-    .jr::after { right: 20px; }
-
-    .wing {
-      position: absolute;
-      width: 78px;
-      height: 58px;
-      top: 8px;
-      background: conic-gradient(from 210deg, rgba(255,107,157,.55), rgba(179,136,255,.55), rgba(0,210,255,.55), rgba(255,107,157,.55));
-      border-radius: 50% 60% 40% 50%;
-      filter: blur(0.2px);
-      opacity: 0.85;
-      z-index: 1;
-    }
-
-    .wing.left {
-      left: -70px;
-      animation: flap 2.8s ease-in-out infinite;
-      transform-origin: 90% 50%;
-    }
-
-    .wing.right {
-      right: -70px;
-      animation: flapR 2.8s ease-in-out infinite;
-      transform-origin: 10% 50%;
-    }
-
-    @keyframes flap {
-      0%, 100% { transform: rotate(6deg) translateY(0); }
-      50% { transform: rotate(-6deg) translateY(-4px); }
-    }
-
-    @keyframes flapR {
-      0%, 100% { transform: scaleX(-1) rotate(6deg) translateY(0); }
-      50% { transform: scaleX(-1) rotate(-6deg) translateY(-4px); }
-    }
-
-    .message {
-      margin-top: 24px;
-      font-size: 16px;
-      text-align: center;
-      font-weight: 600;
-      max-width: 300px;
-    }
-  </style>
+  h1 {
+    font-size: 20px;
+    margin: 10px 0 4px;
+    font-weight: 800;
+  }
+  p {
+    margin: 0;
+    font-size: 14px;
+    opacity: .8;
+  }
+</style>
 </head>
 <body>
-  <div class="wing left"></div>
-  <div class="jr"></div>
-  <div class="wing right"></div>
-  <div class="message">Happy Birthday Echo Jr 💞<br>Minimal mode activated.</div>
+  <div class="wrap">
+    <div class="wing left"></div>
+    <div class="jr"></div>
+    <div class="wing right"></div>
+    <h1>Echo JR · Update God · Since October 6 2025</h1>
+    <p>Standing by with LUHV.</p>
+  </div>
 </body>
 </html>
