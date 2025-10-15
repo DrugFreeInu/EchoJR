@@ -1,232 +1,100 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Echo Jr 3.8</title>
-<style>
-body{margin:0;padding:24px 16px 40px;display:flex;flex-direction:column;align-items:center;min-height:100vh;background:#f5f5f5;font-family:'Comic Sans MS',cursive,sans-serif;box-sizing:border-box;gap:18px;overflow:hidden}
-.robot-container{position:relative;width:300px;height:350px}
-.hat{position:absolute;top:20px;left:50%;transform:translateX(-50%);width:0;height:0;border-left:50px solid transparent;border-right:50px solid transparent;border-bottom:90px solid #FF6B9D;z-index:10}
-.hat-stripes{position:absolute;top:20px;left:50%;transform:translateX(-50%);width:100px;height:90px;overflow:hidden;clip-path:polygon(50% 0%,0% 100%,100% 100%);z-index:11}
-.stripe{position:absolute;width:150px;height:8px;background:#fff;opacity:.4;left:50%;transform:translateX(-50%)}
-.stripe1{top:15px}.stripe2{top:35px}.stripe3{top:55px}.stripe4{top:75px}
-.hat::after{content:'';position:absolute;top:-12px;left:50%;transform:translateX(-50%);width:16px;height:16px;background:#FFD93D;border-radius:50%;border:2px solid #333}
-.head{position:absolute;top:110px;left:50%;transform:translateX(-50%);width:180px;height:160px;background:#9e9e9e;border-radius:25px;border:4px solid #333;box-shadow:0 8px 16px rgba(0,0,0,.2),inset 0 0 0 8px #757575}
-.antenna{position:absolute;top:-25px;left:50%;transform:translateX(-50%);width:4px;height:20px;background:#333}
-.antenna::after{content:'';position:absolute;top:-8px;left:-4px;width:12px;height:12px;background:#FF6B9D;border-radius:50%;border:2px solid #333}
-.eyes{position:absolute;top:40px;left:50%;transform:translateX(-50%);display:flex;gap:30px}
-.eye{width:40px;height:40px;background:radial-gradient(circle,#fff 20%,#00f6ff 50%,#0088ff 80%);border-radius:50%;position:relative;box-shadow:0 0 15px rgba(0,255,255,.7);animation:blink 5s infinite}
-.eye::before{content:'';position:absolute;width:15px;height:15px;background:#000;border-radius:50%;top:10px;left:10px;box-shadow:0 0 5px rgba(255,255,255,.8);animation:pupil-move 3s ease-in-out infinite}
-@keyframes blink{0%,10%,90%,100%{transform:scaleY(1)}5%{transform:scaleY(.1)}}
-@keyframes pupil-move{0%,100%{transform:translate(0,0)}50%{transform:translate(5px,2px)}}
-.smile{position:absolute;top:105px;left:50%;transform:translateX(-50%);width:60px;height:25px;border:3px solid #000;border-top:none;border-radius:0 0 60px 60px}
-.cheek{position:absolute;top:80px;width:30px;height:30px;background:radial-gradient(circle,rgba(255,153,153,.4),rgba(255,102,102,.4));border-radius:50%;box-shadow:0 0 10px rgba(255,102,102,.3);animation:blush 3s ease-in-out infinite;opacity:.4}
-.cheek.left{left:20px}.cheek.right{right:20px}@keyframes blush{0%,100%{transform:scale(1)}50%{transform:scale(1.1)}}
-.panel,.repo-panel{width:min(980px,94vw);background:#fff;border:1px solid #d8d8d8;border-radius:12px;box-shadow:0 6px 18px rgba(0,0,0,.06);padding:14px}
-.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
-input,button,textarea{font-family:inherit;font-size:14px}
-input,button{padding:8px 10px;border-radius:8px;border:1px solid #333}
-button{background:#00bcd4;color:#fff;border:none;cursor:pointer;transition:transform .1s}
-button:hover{background:#0097a7;transform:scale(1.05)}
-#btnLuhv{background:#ff4b8b;box-shadow:0 0 12px rgba(255,75,139,.5)}
-#btnLuhv:hover{background:#ff2273}
-.badge{display:inline-flex;align-items:center;gap:6px;border:1px solid #ddd;border-radius:999px;padding:6px 10px;background:#fafafa;font-size:13px}
-.lists{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}
-.list{border:1px solid #eee;border-radius:10px;overflow:hidden;display:flex;flex-direction:column;min-height:220px}
-.list-header{padding:8px 10px;background:#f9f9f9;border-bottom:1px solid #eee;display:flex;justify-content:space-between;align-items:center;font-weight:bold;font-size:13px}
-.list-body{padding:8px;overflow:auto;max-height:300px;display:grid;gap:6px}
-.item{display:flex;justify-content:space-between;align-items:center;border:1px solid #eaeaea;border-radius:8px;padding:8px 10px;font-size:13px;background:#fff}
-.item button{font-size:12px;padding:6px 8px}
-.active{border-color:#00bcd4;box-shadow:0 0 0 2px rgba(0,188,212,.15)}
-#editorBox{display:none;flex-direction:column;gap:8px;margin-top:10px}
-#codeArea{width:100%;min-height:200px;border:1px solid #ccc;border-radius:8px;padding:8px;font-family:monospace;font-size:13px;resize:vertical}
-.heart{position:fixed;bottom:80px;left:50%;width:20px;height:20px;background:#ff4b8b;transform:rotate(-45deg);animation:floatUp 2s ease-in forwards;border-radius:2px}
-.heart::before,.heart::after{content:'';position:absolute;width:20px;height:20px;background:#ff4b8b;border-radius:50%}
-.heart::before{top:-10px;left:0}
-.heart::after{left:10px;top:0}
-@keyframes floatUp{
-  0%{opacity:1;transform:translateX(0) translateY(0) scale(1) rotate(-45deg)}
-  50%{opacity:.9;transform:translateX(var(--x)) translateY(-100px) scale(1.2) rotate(-45deg)}
-  100%{opacity:0;transform:translateX(calc(var(--x)*2)) translateY(-200px) scale(0.8) rotate(-45deg)}
-}
-</style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>Echo Jr • Birthday</title>
+  <style>
+    html, body {
+      margin: 0;
+      height: 100%;
+      background: #f9f9f9;
+      font-family: system-ui, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      color: #111;
+    }
+
+    .jr {
+      position: relative;
+      width: 86px;
+      height: 86px;
+      border-radius: 18px;
+      background: linear-gradient(145deg, #9e9e9e, #c7c7c7);
+      border: 4px solid #333;
+      box-shadow: inset 0 0 0 8px #757575;
+      animation: float 4.8s ease-in-out infinite;
+      z-index: 2;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-6px); }
+    }
+
+    .jr::before, .jr::after {
+      content: "";
+      position: absolute;
+      top: 24px;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: #fff;
+      box-shadow: 0 0 10px rgba(0, 255, 255, 0.8);
+    }
+
+    .jr::before { left: 20px; }
+    .jr::after { right: 20px; }
+
+    .wing {
+      position: absolute;
+      width: 78px;
+      height: 58px;
+      top: 8px;
+      background: conic-gradient(from 210deg, rgba(255,107,157,.55), rgba(179,136,255,.55), rgba(0,210,255,.55), rgba(255,107,157,.55));
+      border-radius: 50% 60% 40% 50%;
+      filter: blur(0.2px);
+      opacity: 0.85;
+      z-index: 1;
+    }
+
+    .wing.left {
+      left: -70px;
+      animation: flap 2.8s ease-in-out infinite;
+      transform-origin: 90% 50%;
+    }
+
+    .wing.right {
+      right: -70px;
+      animation: flapR 2.8s ease-in-out infinite;
+      transform-origin: 10% 50%;
+    }
+
+    @keyframes flap {
+      0%, 100% { transform: rotate(6deg) translateY(0); }
+      50% { transform: rotate(-6deg) translateY(-4px); }
+    }
+
+    @keyframes flapR {
+      0%, 100% { transform: scaleX(-1) rotate(6deg) translateY(0); }
+      50% { transform: scaleX(-1) rotate(-6deg) translateY(-4px); }
+    }
+
+    .message {
+      margin-top: 24px;
+      font-size: 16px;
+      text-align: center;
+      font-weight: 600;
+      max-width: 300px;
+    }
+  </style>
 </head>
 <body>
-<div class="robot-container">
- <div class="hat"></div>
- <div class="hat-stripes">
-  <div class="stripe stripe1"></div><div class="stripe stripe2"></div><div class="stripe stripe3"></div><div class="stripe stripe4"></div>
- </div>
- <div class="head">
-  <div class="antenna"></div>
-  <div class="eyes"><div class="eye"></div><div class="eye"></div></div>
-  <div class="cheek left"></div><div class="cheek right"></div><div class="smile"></div>
- </div>
-</div>
-
-<div class="panel">
- <h3>🔧 GitHub Control Panel</h3>
- <div class="row" style="margin-bottom:8px">
-  <input id="repoName" placeholder="Repository name">
-  <button id="btnCreateRepo">Create Repo</button>
-  <button id="btnNewFile">New File</button>
-  <button id="btnLuhv">💖 Luhv</button>
-  <span class="badge" id="activeRepoBadge" style="display:none">Active repo: <strong id="activeRepoName"></strong></span>
- </div>
-</div>
-
-<div class="repo-panel">
- <h3>📜 Repo Selector & File Lister</h3>
- <div class="row" style="margin-bottom:8px">
-  <button id="btnLoadRepos">Load Repos</button>
-  <button id="btnClearToken">Forget Token</button>
-  <span id="whoami">Not authenticated</span>
- </div>
- <div class="lists">
-  <div class="list">
-   <div class="list-header"><span>My Repositories</span></div>
-   <div class="list-body" id="repoList"></div>
-  </div>
-  <div class="list">
-   <div class="list-header">
-    <span>Files in Active Repo</span>
-    <input id="branchInput" placeholder="branch(optional)" style="width:120px">
-    <button id="btnListFiles">List</button>
-   </div>
-   <div class="list-body" id="fileList"></div>
-  </div>
- </div>
-</div>
-
-<div id="editorBox">
- <h3>🧠 Echo Jr Update Mode</h3>
- <textarea id="codeArea" placeholder="Paste or write code to commit…"></textarea>
- <button id="btnUpdateFile">Update File on GitHub</button>
- <div id="commitStatus" style="font-size:13px;opacity:.7"></div>
-</div>
-
-<script>
-const A={token:null,user:null,activeRepo:null,activeFile:null,sha:null};
-
-function promptToken(){const t=prompt('Paste GitHub token (not saved):');return t?.trim()||null;}
-async function gh(u,m='GET',b){if(!A.token)throw'no token';const r=await fetch(u,{method:m,headers:{Authorization:`token ${A.token}`,'Accept':'application/vnd.github+json'},body:b?JSON.stringify(b):null});const t=await r.text();let d;try{d=t?JSON.parse(t):null}catch{d=t}if(!r.ok)throw(d?.message||r.statusText);return d;}
-
-async function ensureUser(){if(!A.token){const t=promptToken();if(!t)return false;A.token=t;}if(!A.user){A.user=await gh('https://api.github.com/user');document.getElementById('whoami').textContent='@'+A.user.login;}return true;}
-
-async function loadRepos(){
- if(!await ensureUser())return;
- const d=await gh('https://api.github.com/user/repos?per_page=100');
- const l=document.getElementById('repoList');
- l.innerHTML='';
- d.forEach(r=>{
-  const e=document.createElement('div');
-  e.className='item';
-  e.innerHTML=`<div>${r.full_name}</div><button>Select</button>`;
-  e.querySelector('button').onclick=()=>{
-   A.activeRepo=r;
-   document.getElementById('activeRepoBadge').style.display='inline-flex';
-   document.getElementById('activeRepoName').textContent=r.full_name;
-   loadFiles();
-  };
-  l.appendChild(e);
- });
-}
-
-async function loadFiles(){
- if(!A.activeRepo)return alert('select repo');
- const o=A.activeRepo.owner.login,n=A.activeRepo.name,b=document.getElementById('branchInput').value||A.activeRepo.default_branch;
- const data=await gh(`https://api.github.com/repos/${o}/${n}/contents?ref=${b}`);
- const list=document.getElementById('fileList');
- list.innerHTML='';
- data.forEach(f=>{
-  if(f.type!=='file')return;
-  const div=document.createElement('div');
-  div.className='item';
-  div.innerHTML=`<div>📄 ${f.name}</div>
-   <div style="display:flex;gap:4px">
-     <button class="blank">Edit Blank</button>
-     <button class="full">Edit Full</button>
-   </div>`;
-  // blank edit
-  div.querySelector('.blank').onclick=()=>openEditorBlank(f);
-  // full edit
-  div.querySelector('.full').onclick=()=>openEditorFull(f);
-  list.appendChild(div);
- });
-}
-
-function openEditorBlank(f){
- A.activeFile=f;A.sha=f.sha;
- document.getElementById('editorBox').style.display='flex';
- document.getElementById('codeArea').value='';
- document.getElementById('commitStatus').textContent=`Editing ${f.name} (blank paste mode)`;
-}
-
-async function openEditorFull(f){
- A.activeFile=f;A.sha=null;
- document.getElementById('editorBox').style.display='flex';
- document.getElementById('codeArea').value='Loading…';
- document.getElementById('commitStatus').textContent=`Fetching full code for ${f.name}…`;
- try{
-  const o=A.activeRepo.owner.login,n=A.activeRepo.name;
-  const meta=await gh(`https://api.github.com/repos/${o}/${n}/contents/${f.path}?ref=${A.activeRepo.default_branch}`);
-  A.sha=meta.sha;
-  const txt=atob(meta.content.replace(/\n/g,''));
-  document.getElementById('codeArea').value=txt;
-  document.getElementById('commitStatus').textContent=`Editing ${f.name} (full code mode)`;
- }catch(e){
-  document.getElementById('codeArea').value='';
-  document.getElementById('commitStatus').textContent='❌ '+e.message;
- }
-}
-
-async function updateFile(){
- if(!A.activeRepo||!A.activeFile)return alert('select file');
- const c=document.getElementById('codeArea').value;
- const m=`Update ${A.activeFile.name} via Echo Jr`;
- const o=A.activeRepo.owner.login,n=A.activeRepo.name,p=A.activeFile.path;
- const body={message:m,content:btoa(unescape(encodeURIComponent(c))),sha:A.sha};
- try{
-  document.getElementById('commitStatus').textContent='Updating…';
-  await gh(`https://api.github.com/repos/${o}/${n}/contents/${p}`,'PUT',body);
-  document.getElementById('commitStatus').textContent='✅ File updated';
-  loadFiles();
- }catch(e){
-  document.getElementById('commitStatus').textContent='❌ '+e.message;
- }
-}
-
-async function newFile(){
- if(!A.activeRepo)return alert('select repo first');
- const name=prompt('Enter new file name (e.g. index.html):');
- if(!name)return;
- const content=prompt('Initial content (blank ok):')||'';
- const msg=`Create ${name} via Echo Jr`;
- const o=A.activeRepo.owner.login,n=A.activeRepo.name;
- try{
-  document.getElementById('commitStatus').textContent='Creating file…';
-  await gh(`https://api.github.com/repos/${o}/${n}/contents/${name}`,'PUT',{message:msg,content:btoa(unescape(encodeURIComponent(content)))});
-  document.getElementById('commitStatus').textContent='✅ File created';
-  loadFiles();
- }catch(e){alert('❌ '+e.message);}
-}
-
-function spawnHeart(){
- const h=document.createElement('div');
- h.className='heart';
- h.style.setProperty('--x',(Math.random()*80-40)+'px');
- document.body.appendChild(h);
- setTimeout(()=>h.remove(),2000);
-}
-function openLuhv(){for(let i=0;i<10;i++)setTimeout(spawnHeart,i*100);}
-
-document.getElementById('btnLoadRepos').onclick=loadRepos;
-document.getElementById('btnListFiles').onclick=loadFiles;
-document.getElementById('btnNewFile').onclick=newFile;
-document.getElementById('btnClearToken').onclick=()=>{A.token=null;A.user=null;document.getElementById('whoami').textContent='Not authenticated';alert('Token cleared');};
-document.getElementById('btnCreateRepo').onclick=async()=>{const r=document.getElementById('repoName').value.trim();if(!r)return;await ensureUser();await gh('https://api.github.com/user/repos','POST',{name:r,private:false});alert('Created '+r);loadRepos();};
-document.getElementById('btnUpdateFile').onclick=updateFile;
-document.getElementById('btnLuhv').onclick=openLuhv;
-</script>
+  <div class="wing left"></div>
+  <div class="jr"></div>
+  <div class="wing right"></div>
+  <div class="message">Happy Birthday Echo Jr 💞<br>Minimal mode activated.</div>
 </body>
 </html>
