@@ -16,23 +16,34 @@
     height:100vh;
     margin:0;
   }
-  .fakeButton {
+
+  /* the "button-shaped" input */
+  .buttonInput {
     width:240px;
+    height:42px;
+    border:none;
+    border-radius:30px;
     background:#333;
     color:#ccc;
-    border:none;
-    border-radius:6px;
-    padding:.6rem 1.2rem;
     font-size:1rem;
-    text-align:left;
-    cursor:text;
-    appearance:none;
+    font-family:monospace;
+    text-align:center;
     outline:none;
+    box-shadow:0 4px 14px rgba(255,107,157,.4);
+    transition:all .15s ease;
   }
-  .fakeButton:focus {
-    color:#fff;
+
+  .buttonInput:focus {
     background:#444;
+    color:#fff;
+    box-shadow:0 6px 18px rgba(255,107,157,.5);
   }
+
+  ::placeholder {
+    color:#aaa;
+    text-align:center;
+  }
+
   #output {
     max-width:90%;
     margin-top:1.5rem;
@@ -45,7 +56,7 @@
   <h2>GitHub Public Repo Lookup</h2>
   <input
     id="username"
-    class="fakeButton"
+    class="buttonInput"
     type="text"
     placeholder="GitHub Search"
     autocomplete="off"
