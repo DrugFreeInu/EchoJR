@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>GitHub Search – Echo Jr</title>
+<style>
+  body {background:#111;color:#eee;font-family:monospace;display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;margin:0}
+  input,button {padding:.5rem 1rem;margin:.5rem;border:none;border-radius:4px;font-size:1rem}
+  input {width:240px}
+  button {background:#333;color:#fff;cursor:pointer}
+  button:hover {background:#555}
+  #output {max-width:90%;margin-top:1rem;text-align:left;white-space:pre-wrap}
+</style>
+</head>
+<body>
+  <h2>GitHub Public Repo Lookup</h2>
+  <input id="username" placeholder="Enter GitHub username" />
+  <button id="searchBtn">Search Repos</button>
+  <div id="output"></div>
+
+<script>
+document.getElementById("searchBtn").onclick = async () => {
+  const name = document.getElementById("username").value.trim();
+  const out = document.getElementById("output");
+  out.textContent = "Loading...";
+  if(!name){ out.textContent="Enter a username first."; return; }
+  try{
+    const res = await fetch(`https://api.github.com/users/${encodeURIComponent(name)}/repos?per_page=100`);
+    if(!res.ok) throw new Error("GitHub API error");
+    const data = await res.json();
+    if(!data.length){ out.textContent="No public repos found."; return; }
+    out.textContent = data.map(r => `• ${r.name} (${r.html_url})`).join("\n");
+  }catch(e){ out.textContent = "Error: " + e.message; }
+};
+</script>
+</body>
+</html>
