@@ -16,7 +16,7 @@
     height:100vh;
     margin:0;
   }
-  #searchBox {
+  .fakeButton {
     width:240px;
     background:#333;
     color:#ccc;
@@ -25,9 +25,14 @@
     padding:.6rem 1.2rem;
     font-size:1rem;
     text-align:left;
-    user-select:text;
+    cursor:text;
+    appearance:none;
+    outline:none;
   }
-  #searchBox:focus {outline:none;color:#fff;}
+  .fakeButton:focus {
+    color:#fff;
+    background:#444;
+  }
   #output {
     max-width:90%;
     margin-top:1.5rem;
@@ -38,45 +43,16 @@
 </head>
 <body>
   <h2>GitHub Public Repo Lookup</h2>
-  <div id="searchBox" contenteditable="true" data-placeholder="GitHub Search"></div>
+  <input
+    id="username"
+    class="fakeButton"
+    type="text"
+    placeholder="GitHub Search"
+    autocomplete="off"
+    autocorrect="off"
+    autocapitalize="off"
+    spellcheck="false"
+  />
   <div id="output"></div>
-
-<script>
-const box = document.getElementById("searchBox");
-const out = document.getElementById("output");
-
-// prevent navigation or form behavior
-document.addEventListener("click", e => e.preventDefault());
-document.addEventListener("submit", e => e.preventDefault());
-
-// placeholder text
-box.addEventListener("focus",()=>{
-  if(box.textContent.trim()===box.dataset.placeholder) box.textContent="";
-});
-box.addEventListener("blur",()=>{
-  if(!box.textContent.trim()) box.textContent=box.dataset.placeholder;
-});
-
-// search on Enter
-box.addEventListener("keydown", async e=>{
-  if(e.key==="Enter"){
-    e.preventDefault();
-    const name=box.textContent.trim();
-    if(!name || name===box.dataset.placeholder) return;
-    out.textContent="Loading...";
-    try{
-      const res=await fetch(`https://api.github.com/users/${encodeURIComponent(name)}/repos?per_page=100`);
-      if(!res.ok) throw new Error("GitHub API error");
-      const data=await res.json();
-      out.textContent=data.length
-        ? data.map(r=>`• ${r.name} (${r.html_url})`).join("\n")
-        : "No public repos found.";
-    }catch(err){out.textContent="Error: "+err.message;}
-  }
-});
-
-// init placeholder
-box.textContent=box.dataset.placeholder;
-</script>
 </body>
 </html>
