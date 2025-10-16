@@ -111,9 +111,20 @@ input{
 }
 .repo-modal h3 {
   margin-top:0;
-  margin-bottom:15px;
+  margin-bottom:10px;
   color:#ff6b9d;
   font-size:20px;
+}
+.repo-search {
+  width:90%;
+  padding:6px;
+  border:none;
+  border-radius:6px;
+  margin-bottom:10px;
+  text-align:center;
+  background:#222;
+  color:#fff;
+  font-size:16px;
 }
 .repo-item {
   margin:12px 0;
@@ -147,6 +158,7 @@ input{
 
   <div id="repoModal" class="repo-modal" style="display:none;">
     <h3>Select Repo</h3>
+    <input id="filterInput" class="repo-search" placeholder="Search within results..." />
     <div id="repoList"></div>
     <div class="close-btn" onclick="document.getElementById('repoModal').style.display='none'">Close</div>
   </div>
@@ -155,6 +167,8 @@ input{
 const input = document.getElementById('githubSearch');
 const modal = document.getElementById('repoModal');
 const repoList = document.getElementById('repoList');
+const filterInput = document.getElementById('filterInput');
+let allRepos = [];
 
 input.addEventListener("keydown", async e => {
   if (e.key === "Enter") {
@@ -167,10 +181,11 @@ input.addEventListener("keydown", async e => {
       const res = await fetch(`https://api.github.com/users/${encodeURIComponent(name)}/repos?per_page=100`);
       if (!res.ok) throw new Error("GitHub API error");
       const data = await res.json();
-      repoList.innerHTML = data.length
-        ? data.map(r => `<div class='repo-item'>${r.name}</div>`).join("")
-        : "<div>No public repos found.</div>";
+      allRepos = data.map(r => r.name);
+      renderRepos(allRepos);
       modal.style.display = "block";
+      filterInput.value = "";
+      filterInput.focus();
     } catch (err) {
       alert("Error: " + err.message);
     } finally {
@@ -180,6 +195,18 @@ input.addEventListener("keydown", async e => {
     }
   }
 });
+
+filterInput.addEventListener("input", () => {
+  const search = filterInput.value.toLowerCase();
+  const filtered = allRepos.filter(r => r.toLowerCase().includes(search));
+  renderRepos(filtered);
+});
+
+function renderRepos(list) {
+  repoList.innerHTML = list.length
+    ? list.map(r => `<div class='repo-item'>${r}</div>`).join("")
+    : "<div>No matches found.</div>";
+}
 </script>
 </body>
 </html>
