@@ -16,7 +16,7 @@
     height:100vh;
     margin:0;
   }
-  .search {
+  #searchBox {
     width:240px;
     background:#333;
     color:#ccc;
@@ -25,11 +25,9 @@
     padding:.6rem 1.2rem;
     font-size:1rem;
     text-align:left;
+    user-select:text;
   }
-  .search:focus {
-    outline:none;
-    color:#fff;
-  }
+  #searchBox:focus {outline:none;color:#fff;}
   #output {
     max-width:90%;
     margin-top:1.5rem;
@@ -40,32 +38,31 @@
 </head>
 <body>
   <h2>GitHub Public Repo Lookup</h2>
-  <div
-    id="search"
-    class="search"
-    contenteditable="true"
-    data-placeholder="GitHub Search"
-  ></div>
+  <div id="searchBox" contenteditable="true" data-placeholder="GitHub Search"></div>
   <div id="output"></div>
 
 <script>
-const search = document.getElementById("search");
+const box = document.getElementById("searchBox");
 const out = document.getElementById("output");
 
-// placeholder effect
-search.addEventListener("focus",()=>{
-  if(search.textContent.trim()===search.dataset.placeholder) search.textContent="";
+// prevent navigation or form behavior
+document.addEventListener("click", e => e.preventDefault());
+document.addEventListener("submit", e => e.preventDefault());
+
+// placeholder text
+box.addEventListener("focus",()=>{
+  if(box.textContent.trim()===box.dataset.placeholder) box.textContent="";
 });
-search.addEventListener("blur",()=>{
-  if(!search.textContent.trim()) search.textContent=search.dataset.placeholder;
+box.addEventListener("blur",()=>{
+  if(!box.textContent.trim()) box.textContent=box.dataset.placeholder;
 });
 
 // search on Enter
-search.addEventListener("keydown", async e=>{
+box.addEventListener("keydown", async e=>{
   if(e.key==="Enter"){
     e.preventDefault();
-    const name=search.textContent.trim();
-    if(!name || name===search.dataset.placeholder) return;
+    const name=box.textContent.trim();
+    if(!name || name===box.dataset.placeholder) return;
     out.textContent="Loading...";
     try{
       const res=await fetch(`https://api.github.com/users/${encodeURIComponent(name)}/repos?per_page=100`);
@@ -79,7 +76,7 @@ search.addEventListener("keydown", async e=>{
 });
 
 // init placeholder
-search.textContent=search.dataset.placeholder;
+box.textContent=box.dataset.placeholder;
 </script>
 </body>
 </html>
