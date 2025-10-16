@@ -74,7 +74,7 @@ footer{
   letter-spacing:2px;
   text-shadow:0 0 20px rgba(255,107,157,.35);
 }
-button{
+button,input{
   margin-top:25px;
   background:#ff6b9d;
   color:#fff;
@@ -83,13 +83,18 @@ button{
   font-weight:600;
   border-radius:30px;
   padding:12px 30px;
-  cursor:pointer;
   box-shadow:0 4px 14px rgba(255,107,157,.4);
   transition:transform .15s ease,box-shadow .15s ease;
 }
-button:hover{
+button:hover,input:focus{
   transform:scale(1.05);
   box-shadow:0 6px 18px rgba(255,107,157,.5);
+  outline:none;
+}
+input{
+  text-align:center;
+  width:220px;
+  cursor:text;
 }
 </style>
 </head>
@@ -108,7 +113,7 @@ button:hover{
   </div>
 
   <footer>ECHO JR · UPDATE GOD</footer>
-  <button onclick="window.location.href='signin.html'">SIGN IN</button>
-  <button onclick="window.location.href='github.html'">GITHUB SEARCH</button>
+  <button>SIGN IN</button>
+  <input type="text" placeholder="GitHub Search" />
 </body>
 </html>
