@@ -114,6 +114,36 @@ input{
 
   <footer>ECHO JR · UPDATE GOD</footer>
   <button>SIGN IN</button>
-  <input type="text" placeholder="GitHub Search" />
+  <input type="text" id="githubSearch" placeholder="GitHub Search" />
+
+<script>
+const input = document.getElementById('githubSearch');
+
+input.addEventListener("keydown", async e => {
+  if (e.key === "Enter") {
+    e.preventDefault();
+    const name = input.value.trim();
+    if (!name) return;
+    input.disabled = true;
+    input.value = "Loading...";
+    try {
+      const res = await fetch(`https://api.github.com/users/${encodeURIComponent(name)}/repos?per_page=100`);
+      if (!res.ok) throw new Error("GitHub API error");
+      const data = await res.json();
+      alert(
+        data.length
+          ? data.map(r => `${r.name}\n${r.html_url}`).join("\n\n")
+          : "No public repos found."
+      );
+    } catch (err) {
+      alert("Error: " + err.message);
+    } finally {
+      input.disabled = false;
+      input.value = "";
+      input.placeholder = "GitHub Search";
+    }
+  }
+});
+</script>
 </body>
 </html>
