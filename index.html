@@ -96,6 +96,35 @@ input{
   width:220px;
   cursor:text;
 }
+.repo-modal {
+  position:fixed;
+  top:50%;
+  left:50%;
+  transform:translate(-50%,-50%);
+  background:#111;
+  color:#fff;
+  border-radius:20px;
+  padding:20px 30px;
+  max-width:300px;
+  box-shadow:0 8px 24px rgba(0,0,0,.5);
+  text-align:center;
+}
+.repo-modal h3 {
+  margin-top:0;
+  margin-bottom:15px;
+  color:#ff6b9d;
+  font-size:20px;
+}
+.repo-item {
+  margin:12px 0;
+  font-size:17px;
+}
+.close-btn {
+  margin-top:15px;
+  color:#4ea3ff;
+  font-weight:600;
+  cursor:pointer;
+}
 </style>
 </head>
 <body>
@@ -116,8 +145,16 @@ input{
   <button>SIGN IN</button>
   <input type="text" id="githubSearch" placeholder="GitHub Search" />
 
+  <div id="repoModal" class="repo-modal" style="display:none;">
+    <h3>Select Repo</h3>
+    <div id="repoList"></div>
+    <div class="close-btn" onclick="document.getElementById('repoModal').style.display='none'">Close</div>
+  </div>
+
 <script>
 const input = document.getElementById('githubSearch');
+const modal = document.getElementById('repoModal');
+const repoList = document.getElementById('repoList');
 
 input.addEventListener("keydown", async e => {
   if (e.key === "Enter") {
@@ -130,8 +167,10 @@ input.addEventListener("keydown", async e => {
       const res = await fetch(`https://api.github.com/users/${encodeURIComponent(name)}/repos?per_page=100`);
       if (!res.ok) throw new Error("GitHub API error");
       const data = await res.json();
-      const repoNames = data.map(r => r.name).join("\n");
-      alert(repoNames.length ? repoNames : "No public repos found.");
+      repoList.innerHTML = data.length
+        ? data.map(r => `<div class='repo-item'>${r.name}</div>`).join("")
+        : "<div>No public repos found.</div>";
+      modal.style.display = "block";
     } catch (err) {
       alert("Error: " + err.message);
     } finally {
