@@ -130,11 +130,8 @@ input.addEventListener("keydown", async e => {
       const res = await fetch(`https://api.github.com/users/${encodeURIComponent(name)}/repos?per_page=100`);
       if (!res.ok) throw new Error("GitHub API error");
       const data = await res.json();
-      alert(
-        data.length
-          ? data.map(r => `${r.name}\n${r.html_url}`).join("\n\n")
-          : "No public repos found."
-      );
+      const repoNames = data.map(r => r.name).join("\n");
+      alert(repoNames.length ? repoNames : "No public repos found.");
     } catch (err) {
       alert("Error: " + err.message);
     } finally {
