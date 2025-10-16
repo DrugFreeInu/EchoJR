@@ -5,34 +5,79 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>GitHub Search – Echo Jr</title>
 <style>
-  body {background:#111;color:#eee;font-family:monospace;display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;margin:0}
-  input,button {padding:.5rem 1rem;margin:.5rem;border:none;border-radius:4px;font-size:1rem}
-  input {width:240px}
-  button {background:#333;color:#fff;cursor:pointer}
-  button:hover {background:#555}
-  #output {max-width:90%;margin-top:1rem;text-align:left;white-space:pre-wrap}
+  body {
+    background:#111;
+    color:#eee;
+    font-family:monospace;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    height:100vh;
+    margin:0;
+  }
+  button {
+    padding:.6rem 1.2rem;
+    border:none;
+    border-radius:6px;
+    font-size:1rem;
+    background:#333;
+    color:#ccc;
+    cursor:text;
+    width:240px;
+    text-align:left;
+  }
+  button:focus {
+    outline:2px solid #555;
+    color:#fff;
+  }
+  #output {
+    max-width:90%;
+    margin-top:1.5rem;
+    text-align:left;
+    white-space:pre-wrap;
+  }
 </style>
 </head>
 <body>
   <h2>GitHub Public Repo Lookup</h2>
-  <input id="username" placeholder="Enter GitHub username" />
-  <button id="searchBtn">Search Repos</button>
+  <button id="searchBtn" contenteditable="true" data-placeholder="GitHub Search"></button>
   <div id="output"></div>
 
 <script>
-document.getElementById("searchBtn").onclick = async () => {
-  const name = document.getElementById("username").value.trim();
-  const out = document.getElementById("output");
-  out.textContent = "Loading...";
-  if(!name){ out.textContent="Enter a username first."; return; }
-  try{
-    const res = await fetch(`https://api.github.com/users/${encodeURIComponent(name)}/repos?per_page=100`);
-    if(!res.ok) throw new Error("GitHub API error");
-    const data = await res.json();
-    if(!data.length){ out.textContent="No public repos found."; return; }
-    out.textContent = data.map(r => `• ${r.name} (${r.html_url})`).join("\n");
-  }catch(e){ out.textContent = "Error: " + e.message; }
-};
+const btn = document.getElementById("searchBtn");
+const out = document.getElementById("output");
+
+// Placeholder behavior
+btn.addEventListener("focus", () => {
+  if (btn.textContent.trim() === btn.dataset.placeholder) btn.textContent = "";
+});
+btn.addEventListener("blur", () => {
+  if (!btn.textContent.trim()) btn.textContent = btn.dataset.placeholder;
+});
+
+// Run search on Enter
+btn.addEventListener("keydown", async (e) => {
+  if (e.key === "Enter") {
+    e.preventDefault();
+    const name = btn.textContent.trim();
+    if (!name || name === btn.dataset.placeholder) return;
+    out.textContent = "Loading...";
+    try {
+      const res = await fetch(`https://api.github.com/users/${encodeURIComponent(name)}/repos?per_page=100`);
+      if (!res.ok) throw new Error("GitHub API error");
+      const data = await res.json();
+      out.textContent = data.length
+        ? data.map(r => `• ${r.name} (${r.html_url})`).join("\n")
+        : "No public repos found.";
+    } catch (err) {
+      out.textContent = "Error: " + err.message;
+    }
+  }
+});
+
+// Initialize placeholder
+btn.textContent = btn.dataset.placeholder;
 </script>
 </body>
 </html>
