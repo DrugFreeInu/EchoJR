@@ -16,19 +16,18 @@
     height:100vh;
     margin:0;
   }
-  button {
-    padding:.6rem 1.2rem;
-    border:none;
-    border-radius:6px;
-    font-size:1rem;
+  .search {
+    width:240px;
     background:#333;
     color:#ccc;
-    cursor:text;
-    width:240px;
+    border:none;
+    border-radius:6px;
+    padding:.6rem 1.2rem;
+    font-size:1rem;
     text-align:left;
   }
-  button:focus {
-    outline:2px solid #555;
+  .search:focus {
+    outline:none;
     color:#fff;
   }
   #output {
@@ -41,43 +40,46 @@
 </head>
 <body>
   <h2>GitHub Public Repo Lookup</h2>
-  <button id="searchBtn" contenteditable="true" data-placeholder="GitHub Search"></button>
+  <div
+    id="search"
+    class="search"
+    contenteditable="true"
+    data-placeholder="GitHub Search"
+  ></div>
   <div id="output"></div>
 
 <script>
-const btn = document.getElementById("searchBtn");
+const search = document.getElementById("search");
 const out = document.getElementById("output");
 
-// Placeholder behavior
-btn.addEventListener("focus", () => {
-  if (btn.textContent.trim() === btn.dataset.placeholder) btn.textContent = "";
+// placeholder effect
+search.addEventListener("focus",()=>{
+  if(search.textContent.trim()===search.dataset.placeholder) search.textContent="";
 });
-btn.addEventListener("blur", () => {
-  if (!btn.textContent.trim()) btn.textContent = btn.dataset.placeholder;
+search.addEventListener("blur",()=>{
+  if(!search.textContent.trim()) search.textContent=search.dataset.placeholder;
 });
 
-// Run search on Enter
-btn.addEventListener("keydown", async (e) => {
-  if (e.key === "Enter") {
+// search on Enter
+search.addEventListener("keydown", async e=>{
+  if(e.key==="Enter"){
     e.preventDefault();
-    const name = btn.textContent.trim();
-    if (!name || name === btn.dataset.placeholder) return;
-    out.textContent = "Loading...";
-    try {
-      const res = await fetch(`https://api.github.com/users/${encodeURIComponent(name)}/repos?per_page=100`);
-      if (!res.ok) throw new Error("GitHub API error");
-      const data = await res.json();
-      out.textContent = data.length
-        ? data.map(r => `• ${r.name} (${r.html_url})`).join("\n")
+    const name=search.textContent.trim();
+    if(!name || name===search.dataset.placeholder) return;
+    out.textContent="Loading...";
+    try{
+      const res=await fetch(`https://api.github.com/users/${encodeURIComponent(name)}/repos?per_page=100`);
+      if(!res.ok) throw new Error("GitHub API error");
+      const data=await res.json();
+      out.textContent=data.length
+        ? data.map(r=>`• ${r.name} (${r.html_url})`).join("\n")
         : "No public repos found.";
-    } catch (err) {
-      out.textContent = "Error: " + err.message;
-    }
+    }catch(err){out.textContent="Error: "+err.message;}
   }
 });
 
-// Initialize placeholder
-btn.textContent = btn.dataset.placeholder;
+// init placeholder
+search.textContent=search.dataset.placeholder;
 </script>
 </body>
 </html>
