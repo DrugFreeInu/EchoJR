@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1.0" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <style>
 html, body {
   margin: 0;
@@ -14,11 +14,12 @@ html, body {
   overflow: hidden;
 }
 
-/* Echo Jr container */
+/* Container */
 .echojr {
   position: relative;
-  width: 220px;
-  height: 260px;
+  width: 180px;
+  height: 220px;
+  transform: translateY(20px); /* shifts slightly lower so hat fully visible */
   animation: float 4s ease-in-out infinite;
 }
 
@@ -26,8 +27,8 @@ html, body {
 .head {
   position: absolute;
   bottom: 0;
-  width: 220px;
-  height: 220px;
+  width: 180px;
+  height: 180px;
   background: #9e9e9e;
   border-radius: 25px;
   border: 4px solid #333;
@@ -37,22 +38,22 @@ html, body {
 /* Eyes */
 .eye {
   position: absolute;
-  top: 55px;
-  width: 36px;
-  height: 36px;
-  background: radial-gradient(circle,#fff 10%,#00f6ff 45%,#0088ff 70%);
+  top: 42px;
+  width: 30px;
+  height: 30px;
+  background: radial-gradient(circle, #fff 10%, #00f6ff 45%, #0088ff 70%);
   border-radius: 50%;
-  box-shadow: 0 0 18px rgba(0,255,255,.8);
+  box-shadow: 0 0 16px rgba(0,255,255,.8);
 }
-.eye.left  { left: 48px; }
-.eye.right { right: 48px; }
+.eye.left  { left: 38px; }
+.eye.right { right: 38px; }
 .eye::after {
   content: "";
   position: absolute;
-  top: 9px;
-  left: 9px;
-  width: 14px;
-  height: 14px;
+  top: 7px;
+  left: 7px;
+  width: 12px;
+  height: 12px;
   background: #000;
   border-radius: 50%;
 }
@@ -60,26 +61,26 @@ html, body {
 /* Cheeks */
 .cheek {
   position: absolute;
-  top: 95px;
-  width: 28px;
-  height: 28px;
-  background: radial-gradient(circle,rgba(255,150,170,.6),rgba(255,100,120,.3));
+  top: 78px;
+  width: 24px;
+  height: 24px;
+  background: radial-gradient(circle, rgba(255,150,170,.6), rgba(255,100,120,.3));
   border-radius: 50%;
 }
-.cheek.left  { left: 34px; }
-.cheek.right { right: 34px; }
+.cheek.left  { left: 28px; }
+.cheek.right { right: 28px; }
 
 /* Smile */
 .smile {
   position: absolute;
-  top: 130px;
+  top: 112px;
   left: 50%;
-  width: 60px;
-  height: 30px;
+  width: 50px;
+  height: 26px;
   transform: translateX(-50%);
   border: 3px solid #000;
   border-top: none;
-  border-radius: 0 0 60px 60px;
+  border-radius: 0 0 50px 50px;
 }
 
 /* Hat */
@@ -87,12 +88,12 @@ html, body {
   position: absolute;
   top: 0;
   left: 50%;
-  transform: translateX(-50%);
+  transform: translate(-50%, -12px);
   width: 0;
   height: 0;
-  border-left: 45px solid transparent;
-  border-right: 45px solid transparent;
-  border-bottom: 85px solid #ff6b9d;
+  border-left: 40px solid transparent;
+  border-right: 40px solid transparent;
+  border-bottom: 75px solid #ff6b9d;
 }
 .hat::after {
   content: "";
@@ -100,8 +101,8 @@ html, body {
   top: -16px;
   left: 50%;
   transform: translateX(-50%);
-  width: 20px;
-  height: 20px;
+  width: 18px;
+  height: 18px;
   background: #ffd93d;
   border-radius: 50%;
   border: 2px solid #333;
@@ -109,8 +110,8 @@ html, body {
 
 /* Float animation */
 @keyframes float {
-  0%,100% { transform: translateY(0); }
-  50% { transform: translateY(-6px); }
+  0%, 100% { transform: translateY(20px); }
+  50% { transform: translateY(14px); }
 }
 </style>
 </head>
