@@ -1,157 +1,90 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Echo Jr Face</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <style>
 html, body {
   margin: 0;
+  padding: 0;
+  width: 100%;
   height: 100%;
+  overflow: hidden;
   background: transparent;
   display: flex;
   justify-content: center;
   align-items: center;
-  overflow: hidden;
 }
 
-/* Echo Jr Face */
-.echojr {
-  position: relative;
-  width: 220px;
-  height: 250px;
-  animation: float 5s ease-in-out infinite;
-}
-
-/* Head */
-.head {
-  position: absolute;
-  bottom: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 200px;
-  height: 200px;
-  background: #9e9e9e;
+/* Echo Jr face container */
+#jr {
+  width: 90%;
+  max-width: 320px;
+  aspect-ratio: 1 / 1;
+  background: #777;
   border-radius: 20px;
-  border: 4px solid #333;
-  box-shadow: inset 0 0 0 8px #757575, 0 8px 16px rgba(0,0,0,.2);
+  position: relative;
+  box-shadow: inset 0 0 0 4px #555;
 }
 
 /* Eyes */
 .eye {
   position: absolute;
-  top: 55px;
-  width: 36px;
-  height: 36px;
-  background: radial-gradient(circle, #fff 15%, #00f6ff 45%, #0088ff 70%);
+  top: 35%;
+  width: 24%;
+  aspect-ratio: 1 / 1;
   border-radius: 50%;
-  box-shadow: 0 0 18px rgba(0,255,255,.8);
-  animation: blink 6s infinite;
-}
-.eye.left  { left: 35px; }
-.eye.right { right: 35px; }
-.eye::after {
-  content: "";
-  position: absolute;
-  top: 9px;
-  left: 9px;
-  width: 14px;
-  height: 14px;
-  background: #000;
-  border-radius: 50%;
+  background: #0cf;
+  box-shadow: 0 0 10px #00f8ff;
 }
 
-/* Cheeks */
-.cheek {
-  position: absolute;
-  top: 95px;
-  width: 28px;
-  height: 28px;
-  background: radial-gradient(circle, rgba(255,150,170,.6), rgba(255,100,120,.3));
-  border-radius: 50%;
-}
-.cheek.left  { left: 25px; }
-.cheek.right { right: 25px; }
+.eye.left { left: 22%; }
+.eye.right { right: 22%; }
 
 /* Smile */
-.smile {
+.mouth {
   position: absolute;
-  top: 125px;
+  bottom: 25%;
   left: 50%;
+  width: 40%;
+  height: 20%;
+  border-bottom: 5px solid #000;
+  border-radius: 0 0 40% 40%;
   transform: translateX(-50%);
-  width: 60px;
-  height: 30px;
-  border: 3px solid #000;
-  border-top: none;
-  border-radius: 0 0 60px 60px;
 }
 
-/* Hat */
+/* Party hat */
 .hat {
   position: absolute;
-  top: 0;
+  top: -18%;
   left: 50%;
   transform: translateX(-50%);
-  width: 0;
-  height: 0;
-  border-left: 45px solid transparent;
-  border-right: 45px solid transparent;
-  border-bottom: 85px solid #ff6b9d;
+  width: 45%;
+  height: 25%;
+  background: linear-gradient(135deg, #ff6b9d, #ff2e63);
+  clip-path: polygon(50% 0%, 100% 100%, 0 100%);
+  border-radius: 2px;
 }
-.stripe {
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 90px;
-  height: 8px;
-  background: #fff;
-  opacity: .3;
-}
-.stripe:nth-child(1){top:18px;}
-.stripe:nth-child(2){top:36px;}
-.stripe:nth-child(3){top:54px;}
-.stripe:nth-child(4){top:72px;}
 
-/* Top ball */
-.topball {
+.hat::after {
+  content: "";
   position: absolute;
-  top: -10px;
+  top: -12%;
   left: 50%;
   transform: translateX(-50%);
-  width: 18px;
-  height: 18px;
-  background: #ffd93d;
+  width: 20%;
+  aspect-ratio: 1 / 1;
   border-radius: 50%;
-  border: 2px solid #333;
-}
-
-/* Animations */
-@keyframes float {
-  0%,100% { transform: translate(-50%, 0); }
-  50% { transform: translate(-50%, -6px); }
-}
-@keyframes blink {
-  0%,97%,100% { transform: scaleY(1); }
-  98%,99% { transform: scaleY(0.2); }
+  background: gold;
 }
 </style>
 </head>
 <body>
-  <div class="echojr">
-    <div class="hat">
-      <div class="stripe"></div>
-      <div class="stripe"></div>
-      <div class="stripe"></div>
-      <div class="stripe"></div>
-      <div class="topball"></div>
-    </div>
-    <div class="head">
-      <div class="eye left"></div>
-      <div class="eye right"></div>
-      <div class="cheek left"></div>
-      <div class="cheek right"></div>
-      <div class="smile"></div>
-    </div>
+  <div id="jr">
+    <div class="hat"></div>
+    <div class="eye left"></div>
+    <div class="eye right"></div>
+    <div class="mouth"></div>
   </div>
 </body>
 </html>
