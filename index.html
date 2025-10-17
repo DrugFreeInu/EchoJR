@@ -21,21 +21,24 @@
   .jr-btn:hover,#githubSearch:focus{
     transform:scale(1.05);box-shadow:0 6px 18px rgba(255,107,157,.5);outline:none;
   }
-  .repo-modal{
+
+  /* Textbox modal */
+  .code-modal{
     position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);
-    width:320px;height:400px;background:var(--modal);color:#fff;
-    border-radius:20px;padding:20px;display:none;flex-direction:column;align-items:center;
-    box-shadow:0 8px 24px rgba(0,0,0,.5);
+    width:90%;max-width:480px;height:340px;background:#fff;
+    color:#000;border-radius:20px;box-shadow:0 8px 24px rgba(0,0,0,.3);
+    display:none;flex-direction:column;align-items:center;justify-content:flex-start;padding:20px;
   }
-  .repo-modal h3{margin:0 0 10px;font-size:20px;color:var(--pink);}
-  .repo-search{
-    width:90%;padding:8px 10px;margin-bottom:10px;border:none;border-radius:6px;
-    background:#222;color:#fff;text-align:center;font-size:16px;
+  .code-modal h3{margin:0 0 10px;color:var(--pink);}
+  .code-area{
+    width:100%;flex:1;border:2px solid var(--pink);
+    border-radius:10px;padding:10px;font-family:monospace;
+    resize:none;outline:none;font-size:15px;color:#333;
   }
-  .repo-list{width:100%;flex:1;overflow-y:auto;}
-  .repo-item{margin:14px 0;font-size:17px;text-align:center;cursor:pointer;}
-  .repo-item:hover{color:var(--pink);}
-  .close-btn{margin-top:10px;color:#4ea3ff;font-weight:600;cursor:pointer;}
+  .close-btn{
+    margin-top:12px;background:var(--pink);color:#fff;border:none;
+    border-radius:20px;padding:8px 24px;font-weight:600;cursor:pointer;
+  }
 </style>
 </head>
 <body>
@@ -46,107 +49,49 @@
   <button class="jr-btn" id="removeBtn">Remove</button>
   <button class="jr-btn" id="replaceBtn">Replace</button>
 
-  <div id="repoModal" class="repo-modal">
-    <h3 id="modalTitle">Select Repo</h3>
-    <input id="filterInput" class="repo-search" placeholder="Search within results...">
-    <div id="repoList" class="repo-list"></div>
-    <div class="close-btn" id="closeBtn">Close</div>
+  <!-- Paste code modal -->
+  <div id="codeModal" class="code-modal">
+    <h3 id="codeModalTitle">Paste Code</h3>
+    <textarea id="codeArea" class="code-area" placeholder="Paste your code here..."></textarea>
+    <button id="closeCode" class="close-btn">Close</button>
   </div>
 
 <script>
-const input=document.getElementById("githubSearch");
-const modal=document.getElementById("repoModal");
-const repoList=document.getElementById("repoList");
-const filterInput=document.getElementById("filterInput");
-const closeBtn=document.getElementById("closeBtn");
-const modalTitle=document.getElementById("modalTitle");
+const input = document.getElementById("githubSearch");
+const codeModal = document.getElementById("codeModal");
+const codeArea = document.getElementById("codeArea");
+const codeTitle = document.getElementById("codeModalTitle");
+const closeCode = document.getElementById("closeCode");
 
-let allRepos=[], currentUser="";
-
-// restore last file name
-const storedFile=localStorage.getItem("echojr-selected-file");
-if(storedFile)input.value=storedFile;
-
-// signal system for Add/Remove/Replace
-function dispatch(action){
-  window.dispatchEvent(new CustomEvent("echojrAction",{detail:action}));
-  console.log("Echo Jr action:",action);
+// open modal when a button is pressed
+function openCodeBox(action){
+  codeTitle.textContent = `Paste Code (${action.toUpperCase()})`;
+  codeArea.value = "";
+  codeModal.style.display = "flex";
+  codeArea.focus();
 }
-document.getElementById("addBtn").onclick=()=>dispatch("add");
-document.getElementById("removeBtn").onclick=()=>dispatch("remove");
-document.getElementById("replaceBtn").onclick=()=>dispatch("replace");
 
-// Enter → fetch repos
-input.addEventListener("keydown",async e=>{
+// close modal
+closeCode.onclick = () => {
+  const pasted = codeArea.value.trim();
+  if(pasted){
+    localStorage.setItem("echojr-last-code", pasted);
+    console.log(`Echo Jr stored ${pasted.length} characters from ${codeTitle.textContent}`);
+  }
+  codeModal.style.display = "none";
+};
+
+// link buttons
+document.getElementById("addBtn").onclick = () => openCodeBox("add");
+document.getElementById("removeBtn").onclick = () => openCodeBox("remove");
+document.getElementById("replaceBtn").onclick = () => openCodeBox("replace");
+
+// Enter key triggers GitHub search modal (kept as before)
+input.addEventListener("keydown", e=>{
   if(e.key!=="Enter")return;
   e.preventDefault();
-  const name=input.value.trim();
-  if(!name)return;
-  input.disabled=true;input.value="Loading...";
-  try{
-    currentUser=name;
-    const res=await fetch(`https://api.github.com/users/${encodeURIComponent(name)}/repos?per_page=100`);
-    if(!res.ok)throw new Error("GitHub API error");
-    const data=await res.json();
-    allRepos=data.map(r=>r.name);
-    renderRepos(allRepos);
-    modalTitle.textContent="Select Repo";
-    modal.style.display="flex";
-    filterInput.value="";filterInput.focus();
-  }catch(err){alert("Error: "+err.message);}
-  finally{input.disabled=false;input.value="";input.placeholder="GitHub Search";}
+  console.log("GitHub Search triggered for:", input.value);
 });
-
-// filter search
-filterInput.addEventListener("input",()=>{
-  const q=filterInput.value.toLowerCase();
-  renderRepos(allRepos.filter(r=>r.toLowerCase().includes(q)));
-});
-
-// render repos
-function renderRepos(list){
-  repoList.innerHTML=list.length
-    ? list.map(r=>`<div class="repo-item" data-repo="${r}">${r}</div>`).join("")
-    : "<div>No matches found.</div>";
-}
-
-// render files
-function renderFiles(list){
-  repoList.innerHTML=list.length
-    ? list.map(f=>`<div class="repo-item" data-file="${f}">${f}</div>`).join("")
-    : "<div>No files found.</div>";
-}
-
-// click events for repos + files
-repoList.addEventListener("click",async e=>{
-  const repoEl=e.target.closest("[data-repo]");
-  const fileEl=e.target.closest("[data-file]");
-  if(repoEl){
-    const repoName=repoEl.getAttribute("data-repo");
-    modalTitle.textContent=`${repoName} · Files`;
-    repoList.innerHTML="Loading files...";
-    try{
-      const res=await fetch(`https://api.github.com/repos/${encodeURIComponent(currentUser)}/${encodeURIComponent(repoName)}/contents`);
-      if(!res.ok)throw new Error("GitHub API error");
-      const data=await res.json();
-      const files=data.map(f=>f.name);
-      renderFiles(files);
-    }catch(err){
-      repoList.innerHTML="Error: "+err.message;
-    }
-    return;
-  }
-  if(fileEl){
-    const fileName=fileEl.getAttribute("data-file");
-    input.value=fileName;
-    localStorage.setItem("echojr-selected-file",fileName);
-    modal.style.display="none";
-    window.dispatchEvent(new CustomEvent("echojrFileSelected",{detail:fileName}));
-    console.log("Echo Jr signal → file selected:",fileName);
-  }
-});
-
-closeBtn.onclick=()=>modal.style.display="none";
 </script>
 <script src="js/echojr.brain.js"></script>
 </body>
