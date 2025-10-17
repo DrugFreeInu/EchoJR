@@ -140,8 +140,12 @@ input{
 .repo-item {
   margin:12px 0;
   font-size:17px;
+  cursor:pointer;
 }
-.close-btn {
+.repo-item:hover{
+  color:#ff6b9d;
+}
+.close-btn, .back-btn {
   position:absolute;
   bottom:15px;
   left:50%;
@@ -154,6 +158,11 @@ input{
   width:100%;
   text-align:center;
   border-top:1px solid #333;
+}
+.back-btn{
+  color:#ff6b9d;
+  border:none;
+  bottom:45px;
 }
 </style>
 </head>
@@ -176,9 +185,10 @@ input{
   <input type="text" id="githubSearch" placeholder="GitHub Search" />
 
   <div id="repoModal" class="repo-modal" style="display:none;">
-    <h3>Select Repo</h3>
+    <h3 id="modalTitle">Select Repo</h3>
     <input id="filterInput" class="repo-search" placeholder="Search within results..." />
     <div id="repoList" class="repo-list"></div>
+    <div id="backBtn" class="back-btn" style="display:none;">← Back to Repos</div>
     <div class="close-btn" onclick="document.getElementById('repoModal').style.display='none'">Close</div>
   </div>
 
@@ -187,11 +197,75 @@ const input = document.getElementById('githubSearch');
 const modal = document.getElementById('repoModal');
 const repoList = document.getElementById('repoList');
 const filterInput = document.getElementById('filterInput');
+const modalTitle = document.getElementById('modalTitle');
+const backBtn = document.getElementById('backBtn');
 let allRepos = [];
+let currentUser = "";
 
 input.addEventListener("keydown", async e => {
   if (e.key === "Enter") {
     e.preventDefault();
     const name = input.value.trim();
     if (!name) return;
-    input.disabled =
+    currentUser = name;
+    input.disabled = true;
+    input.value = "Loading...";
+    try {
+      const res = await fetch(`https://api.github.com/users/${encodeURIComponent(name)}/repos?per_page=100`);
+      if (!res.ok) throw new Error("GitHub API error");
+      const data = await res.json();
+      allRepos = data.map(r => r.name);
+      renderRepos(allRepos);
+      modal.style.display = "block";
+      modalTitle.textContent = "Select Repo";
+      filterInput.value = "";
+      filterInput.focus();
+      backBtn.style.display = "none";
+    } catch (err) {
+      alert("Error: " + err.message);
+    } finally {
+      input.disabled = false;
+      input.value = "";
+      input.placeholder = "GitHub Search";
+    }
+  }
+});
+
+filterInput.addEventListener("input", () => {
+  const search = filterInput.value.toLowerCase();
+  const filtered = allRepos.filter(r => r.toLowerCase().includes(search));
+  renderRepos(filtered);
+});
+
+function renderRepos(list) {
+  repoList.innerHTML = list.length
+    ? list.map(r => `<div class='repo-item' onclick="loadFiles('${r}')">${r}</div>`).join("")
+    : "<div>No matches found.</div>";
+}
+
+async function loadFiles(repoName) {
+  modalTitle.textContent = repoName + " · Files";
+  backBtn.style.display = "block";
+  repoList.innerHTML = "Loading...";
+  try {
+    const res = await fetch(`https://api.github.com/repos/${encodeURIComponent(currentUser)}/${encodeURIComponent(repoName)}/contents`);
+    if (!res.ok) throw new Error("Error fetching files");
+    const data = await res.json();
+    const files = data.map(f => f.name);
+    repoList.innerHTML = files.length
+      ? files.map(f => `<div class='repo-item'>${f}</div>`).join("")
+      : "<div>No files found.</div>";
+  } catch (err) {
+    repoList.innerHTML = "Error: " + err.message;
+  }
+}
+
+backBtn.addEventListener("click", () => {
+  modalTitle.textContent = "Select Repo";
+  renderRepos(allRepos);
+  backBtn.style.display = "none";
+  filterInput.value = "";
+});
+</script>
+</body>
+</html>
