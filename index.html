@@ -29,7 +29,7 @@ html, body {
 }
 
 /* Background hearts */
-iframe.bg, iframe.front {
+iframe.bg {
   position: fixed;
   top: 0;
   left: 0;
@@ -38,9 +38,22 @@ iframe.bg, iframe.front {
   border: none;
   background: transparent;
   pointer-events: none;
+  z-index: -2;
 }
-iframe.bg { z-index: -2; }
-iframe.front { z-index: 4; }
+
+/* Front bokeh hearts (now safe and subtle) */
+iframe.front {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
+  background: transparent;
+  pointer-events: none;
+  opacity: 0.65;
+  z-index: 0; /* stays behind all UI elements */
+}
 
 /* Core container */
 .container {
@@ -84,8 +97,6 @@ footer {
   box-shadow: 0 6px 24px rgba(255,47,137,0.8);
   transform: scale(1.03);
 }
-
-/* Hide any old “GitHub Search” ghosts */
 
 /* GitHub Username Input */
 #githubSearch {
@@ -206,8 +217,7 @@ footer {
 
 <!-- Background -->
 <iframe src="luhve.html" class="bg"></iframe>
-
-  
+<iframe src="luhvefront.html" class="front"></iframe>
 
 <!-- UI -->
 <div class="container">
@@ -217,7 +227,7 @@ footer {
   <button class="jr-btn" id="replaceBtn">Replace</button>
 </div>
 
-<!-- Only one input -->
+<!-- Input -->
 <input type="text" id="githubSearch" placeholder="GitHub Username" autocomplete="off" />
 
 <!-- Action Box -->
@@ -231,15 +241,6 @@ footer {
 <div id="repoModal"></div>
 
 <script>
-/* Kill any ghost input or floating text “GitHub Search” */
-(function killGhost() {
-  // remove duplicate inputs
-  // remove orphan text nodes showing “GitHub Search”
-  document.querySelectorAll('body *').forEach(el => {
-    if (el.childElementCount === 0 && el.textContent.trim() === 'GitHub Search') el.remove();
-  });
-})();
-
 const input = document.getElementById("githubSearch");
 const actionBox = document.getElementById("actionBox");
 const actionTitle = document.getElementById("actionTitle");
@@ -298,7 +299,7 @@ function selectRepo(name) {
   alert(`Selected repo: ${name}`);
 }
 
-// Overlay
+// Overlay behavior
 const buttons = {
   Add: document.getElementById("addBtn"),
   Remove: document.getElementById("removeBtn"),
@@ -318,6 +319,7 @@ function closeBox() {
     overlay.style.display = "none";
   }, 300);
 }
+
 for (const [key, btn] of Object.entries(buttons)) {
   btn.addEventListener("click", () => openBox(key));
 }
