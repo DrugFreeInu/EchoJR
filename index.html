@@ -5,112 +5,120 @@
 <meta name="viewport" content="width=device-width,initial-scale=1.0" />
 <title>ECHO JR · UPDATE GOD</title>
 <style>
-  :root {
-    --pink:#ff6b9d;
-    --bg:#fff;
-  }
+  :root {--pink:#ff6b9d;--bg:#fff;--modal:#111;}
   html,body{
-    margin:0;
-    height:100%;
-    background:var(--bg);
-    color:var(--pink);
+    margin:0;height:100%;
+    background:var(--bg);color:var(--pink);
     font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
-    display:flex;
-    flex-direction:column;
-    justify-content:center;
-    align-items:center;
-    text-align:center;
+    display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;
   }
-  footer{
-    margin-top:10px;
-    font-size:18px;
-    font-weight:900;
-    letter-spacing:2px;
-    text-transform:uppercase;
+  footer{margin-top:10px;font-size:18px;font-weight:900;letter-spacing:2px;text-transform:uppercase;}
+  .jr-btn,#githubSearch{
+    margin-top:16px;width:240px;padding:12px 24px;border:none;border-radius:30px;
+    background:var(--pink);color:#fff;font-size:18px;font-weight:600;text-align:center;
+    box-shadow:0 4px 14px rgba(255,107,157,.4);transition:transform .15s ease,box-shadow .15s ease;cursor:pointer;
   }
-  .jr-btn{
-    margin-top:16px;
-    width:240px;
-    padding:12px 24px;
-    background:var(--pink);
-    color:#fff;
-    border:none;
-    border-radius:30px;
-    font-size:18px;
-    font-weight:600;
-    text-align:center;
-    cursor:pointer;
-    box-shadow:0 4px 14px rgba(255,107,157,.4);
-    transition:transform .15s ease,box-shadow .15s ease;
+  .jr-btn:hover,#githubSearch:focus{
+    transform:scale(1.05);box-shadow:0 6px 18px rgba(255,107,157,.5);outline:none;
   }
-  .jr-btn:hover{
-    transform:scale(1.05);
-    box-shadow:0 6px 18px rgba(255,107,157,.5);
+  .repo-modal{
+    position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);
+    width:320px;height:400px;background:var(--modal);color:#fff;
+    border-radius:20px;padding:20px;display:none;flex-direction:column;align-items:center;
+    box-shadow:0 8px 24px rgba(0,0,0,.5);
   }
-  #githubSearch{
-    margin-top:20px;
-    width:240px;
-    padding:12px 24px;
-    background:var(--pink);
-    color:#fff;
-    border:none;
-    border-radius:30px;
-    font-size:18px;
-    font-weight:600;
-    text-align:center;
-    box-shadow:0 4px 14px rgba(255,107,157,.4);
-    transition:transform .15s ease,box-shadow .15s ease;
+  .repo-modal h3{margin:0 0 10px;font-size:20px;color:var(--pink);}
+  .repo-search{
+    width:90%;padding:8px 10px;margin-bottom:10px;border:none;border-radius:6px;
+    background:#222;color:#fff;text-align:center;font-size:16px;
   }
-  #githubSearch:focus{
-    outline:none;
-    transform:scale(1.05);
-    box-shadow:0 6px 18px rgba(255,107,157,.5);
-  }
+  .repo-list{width:100%;flex:1;overflow-y:auto;}
+  .repo-item{margin:14px 0;font-size:17px;text-align:center;cursor:pointer;}
+  .repo-item:hover{color:var(--pink);}
+  .close-btn{margin-top:10px;color:#4ea3ff;font-weight:600;cursor:pointer;}
 </style>
 </head>
 <body>
   <footer>ECHO JR · UPDATE GOD</footer>
 
   <input type="text" id="githubSearch" placeholder="GitHub Search" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" />
-
   <button class="jr-btn" id="addBtn">Add</button>
   <button class="jr-btn" id="removeBtn">Remove</button>
   <button class="jr-btn" id="replaceBtn">Replace</button>
 
+  <div id="repoModal" class="repo-modal">
+    <h3>Select Repo</h3>
+    <input id="filterInput" class="repo-search" placeholder="Search within results...">
+    <div id="repoList" class="repo-list"></div>
+    <div class="close-btn" id="closeBtn">Close</div>
+  </div>
+
 <script>
-const input = document.getElementById("githubSearch");
+const input=document.getElementById("githubSearch");
+const modal=document.getElementById("repoModal");
+const repoList=document.getElementById("repoList");
+const filterInput=document.getElementById("filterInput");
+const closeBtn=document.getElementById("closeBtn");
 
-// restore last selected file if any
-const storedFile = localStorage.getItem("echojr-selected-file");
-if (storedFile) input.value = storedFile;
+let allRepos=[];
 
-// button events
-document.getElementById("addBtn").onclick = () => {
-  console.log("Echo Jr: Add triggered");
-  dispatch("add");
-};
-document.getElementById("removeBtn").onclick = () => {
-  console.log("Echo Jr: Remove triggered");
-  dispatch("remove");
-};
-document.getElementById("replaceBtn").onclick = () => {
-  console.log("Echo Jr: Replace triggered");
-  dispatch("replace");
-};
+// restore last file name
+const storedFile=localStorage.getItem("echojr-selected-file");
+if(storedFile)input.value=storedFile;
 
-// Enter key for GitHub search
-input.addEventListener("keydown", async e=>{
+// Add/Remove/Replace signals
+function dispatch(action){
+  window.dispatchEvent(new CustomEvent("echojrAction",{detail:action}));
+  console.log("Echo Jr action:",action);
+}
+document.getElementById("addBtn").onclick=()=>dispatch("add");
+document.getElementById("removeBtn").onclick=()=>dispatch("remove");
+document.getElementById("replaceBtn").onclick=()=>dispatch("replace");
+
+// Enter → fetch repos
+input.addEventListener("keydown",async e=>{
   if(e.key!=="Enter")return;
   e.preventDefault();
   const name=input.value.trim();
   if(!name)return;
-  console.log("GitHub search triggered for:", name);
+  input.disabled=true;input.value="Loading...";
+  try{
+    const res=await fetch(`https://api.github.com/users/${encodeURIComponent(name)}/repos?per_page=100`);
+    if(!res.ok)throw new Error("GitHub API error");
+    const data=await res.json();
+    allRepos=data.map(r=>r.name);
+    renderRepos(allRepos);
+    modal.style.display="flex";
+    filterInput.value="";filterInput.focus();
+  }catch(err){alert("Error: "+err.message);}
+  finally{input.disabled=false;input.value="";input.placeholder="GitHub Search";}
 });
 
-// universal signal dispatcher
-function dispatch(action){
-  window.dispatchEvent(new CustomEvent("echojrAction",{detail:action}));
+// filter within modal
+filterInput.addEventListener("input",()=>{
+  const q=filterInput.value.toLowerCase();
+  renderRepos(allRepos.filter(r=>r.toLowerCase().includes(q)));
+});
+
+function renderRepos(list){
+  repoList.innerHTML=list.length
+    ? list.map(r=>`<div class="repo-item" data-repo="${r}">${r}</div>`).join("")
+    : "<div>No matches found.</div>";
 }
+
+// choose repo
+repoList.addEventListener("click",e=>{
+  const el=e.target.closest("[data-repo]");
+  if(!el)return;
+  const repoName=el.getAttribute("data-repo");
+  input.value=repoName;
+  localStorage.setItem("echojr-selected-file",repoName);
+  modal.style.display="none";
+  window.dispatchEvent(new CustomEvent("echojrFileSelected",{detail:repoName}));
+  console.log("Echo Jr signal → repo selected:",repoName);
+});
+
+closeBtn.onclick=()=>modal.style.display="none";
 </script>
 </body>
 </html>
