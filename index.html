@@ -1,226 +1,119 @@
-<!DOCTYPE html>
+l<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>ECHO JR · UPDATE GOD</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1.0" />
+<title>ECHO JR · UPDATE GOD (Core)</title>
 <style>
-html,body{
-  margin:0;height:100%;
-  background:#fff;
-  display:flex;flex-direction:column;
-  justify-content:center;align-items:center;
-  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
-  color:#ff6b9d;text-align:center;
-}
-.echojr{
-  position:relative;width:200px;height:240px;
-  animation:float 5s ease-in-out infinite;
-}
-.head{
-  position:absolute;bottom:0;width:200px;height:200px;
-  background:#9e9e9e;border-radius:20px;border:4px solid #333;
-  box-shadow:inset 0 0 0 8px #757575,0 8px 16px rgba(0,0,0,.2);
-}
-.eye{
-  position:absolute;top:55px;width:36px;height:36px;
-  background:radial-gradient(circle,#fff 15%,#00f6ff 45%,#0088ff 70%);
-  border-radius:50%;box-shadow:0 0 18px rgba(0,255,255,.8);
-  animation:blink 6s infinite;
-}
-.eye.left{left:45px;} .eye.right{right:45px;}
-.eye::after{
-  content:"";position:absolute;top:9px;left:9px;
-  width:14px;height:14px;background:#000;border-radius:50%;
-}
-.cheek{
-  position:absolute;top:95px;width:28px;height:28px;
-  background:radial-gradient(circle,rgba(255,150,170,.6),rgba(255,100,120,.3));
-  border-radius:50%;
-}
-.cheek.left{left:30px;} .cheek.right{right:30px;}
-.smile{
-  position:absolute;top:125px;left:50%;
-  width:60px;height:30px;transform:translateX(-50%);
-  border:3px solid #000;border-top:none;border-radius:0 0 60px 60px;
-}
-.hat{
-  position:absolute;top:0;left:50%;transform:translateX(-50%);
-  width:0;height:0;
-  border-left:45px solid transparent;border-right:45px solid transparent;
-  border-bottom:85px solid #ff6b9d;
-}
-.stripe{
-  position:absolute;left:50%;transform:translateX(-50%);
-  width:90px;height:8px;background:#fff;opacity:.3;
-}
-.stripe:nth-child(1){top:18px;}
-.stripe:nth-child(2){top:36px;}
-.stripe:nth-child(3){top:54px;}
-.stripe:nth-child(4){top:72px;}
-.topball{
-  position:absolute;top:-10px;left:50%;transform:translateX(-50%);
-  width:18px;height:18px;background:#ffd93d;border-radius:50%;border:2px solid #333;
-}
-@keyframes float{0%,100%{transform:translateY(0);}50%{transform:translateY(-6px);}}
-@keyframes blink{0%,97%,100%{transform:scaleY(1);}98%,99%{transform:scaleY(0.2);}}
+  :root {
+    --pink:#ff6b9d;
+    --bg:#fff;
+    --modal:#111;
+    --text:#000;
+  }
+  html,body {
+    margin:0; height:100%;
+    background:var(--bg); color:var(--pink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    display:flex; flex-direction:column; justify-content:center; align-items:center;
+    text-align:center;
+  }
+  footer {
+    margin-top:10px; font-size:18px; font-weight:900; letter-spacing:2px; text-transform:uppercase;
+  }
+  /* Pink “button-shaped” input */
+  #githubSearch {
+    margin-top:18px;
+    width:240px; padding:12px 24px;
+    background:var(--pink); color:#fff;
+    border:none; border-radius:30px; font-size:18px; font-weight:600; text-align:center;
+    box-shadow:0 4px 14px rgba(255,107,157,.4);
+    transition:transform .15s ease, box-shadow .15s ease;
+  }
+  #githubSearch:focus {
+    outline:none; transform:scale(1.05);
+    box-shadow:0 6px 18px rgba(255,107,157,.5);
+  }
 
-footer{
-  margin-top:40px;
-  font-size:20px;
-  font-weight:900;
-  color:#ff6b9d;
-  text-transform:uppercase;
-  letter-spacing:2px;
-  text-shadow:0 0 20px rgba(255,107,157,.35);
-}
-button,input{
-  margin-top:25px;
-  background:#ff6b9d;
-  color:#fff;
-  border:none;
-  font-size:18px;
-  font-weight:600;
-  border-radius:30px;
-  padding:12px 30px;
-  box-shadow:0 4px 14px rgba(255,107,157,.4);
-  transition:transform .15s ease,box-shadow .15s ease;
-}
-button:hover,input:focus{
-  transform:scale(1.05);
-  box-shadow:0 6px 18px rgba(255,107,157,.5);
-  outline:none;
-}
-input{
-  text-align:center;
-  width:220px;
-  cursor:text;
-}
-.repo-modal {
-  position:fixed;
-  top:50%;
-  left:50%;
-  transform:translate(-50%,-50%);
-  background:#111;
-  color:#fff;
-  border-radius:20px;
-  padding:20px 30px;
-  width:320px;
-  height:400px;
-  box-shadow:0 8px 24px rgba(0,0,0,.5);
-  text-align:center;
-  display:flex;
-  flex-direction:column;
-  justify-content:flex-start;
-  align-items:center;
-}
-.repo-modal h3 {
-  margin-top:0;
-  margin-bottom:10px;
-  color:#ff6b9d;
-  font-size:20px;
-}
-.repo-search {
-  width:90%;
-  padding:6px;
-  border:none;
-  border-radius:6px;
-  margin-bottom:10px;
-  text-align:center;
-  background:#222;
-  color:#fff;
-  font-size:16px;
-}
-.repo-list {
-  flex:1;
-  overflow-y:auto;
-  width:100%;
-  padding-bottom:10px;
-}
-.repo-item {
-  margin:12px 0;
-  font-size:17px;
-  cursor:pointer;
-}
-.repo-item:hover{
-  color:#ff6b9d;
-}
-.close-btn, .back-btn {
-  position:absolute;
-  bottom:15px;
-  left:50%;
-  transform:translateX(-50%);
-  color:#4ea3ff;
-  font-weight:600;
-  cursor:pointer;
-  background:#0000;
-  padding:8px 0;
-  width:100%;
-  text-align:center;
-  border-top:1px solid #333;
-}
-.back-btn{
-  color:#ff6b9d;
-  border:none;
-  bottom:45px;
-}
+  /* Modal */
+  .repo-modal {
+    position:fixed; top:50%; left:50%; transform:translate(-50%,-50%);
+    width:320px; height:400px; background:var(--modal); color:#fff;
+    border-radius:20px; padding:20px 18px 60px; /* bottom space for buttons */
+    box-shadow:0 8px 24px rgba(0,0,0,.5);
+    display:none; flex-direction:column; align-items:center;
+  }
+  .repo-modal h3 {
+    margin:0 0 10px; font-size:20px; color:var(--pink);
+  }
+  .repo-search {
+    width:92%; padding:8px 10px; margin:0 0 10px;
+    border:none; border-radius:8px; background:#222; color:#fff; text-align:center; font-size:16px;
+  }
+  .repo-list {
+    width:100%; flex:1; overflow-y:auto; padding:0 6px 10px;
+  }
+  .repo-item {
+    margin:14px 0; font-size:17px; cursor:pointer; text-align:center;
+  }
+  .repo-item:hover { color:var(--pink); }
+
+  .bar-btn {
+    position:absolute; left:50%; transform:translateX(-50%);
+    width:100%; text-align:center; padding:10px 0; font-weight:700; cursor:pointer;
+  }
+  #backBtn { bottom:44px; color:var(--pink); }
+  #closeBtn { bottom:10px; color:#4ea3ff; border-top:1px solid #333; padding-top:12px; }
 </style>
 </head>
 <body>
-  <div class="echojr">
-    <div class="hat">
-      <div class="stripe"></div><div class="stripe"></div>
-      <div class="stripe"></div><div class="stripe"></div>
-      <div class="topball"></div>
-    </div>
-    <div class="head">
-      <div class="eye left"></div><div class="eye right"></div>
-      <div class="cheek left"></div><div class="cheek right"></div>
-      <div class="smile"></div>
-    </div>
-  </div>
 
   <footer>ECHO JR · UPDATE GOD</footer>
-  <button>SIGN IN</button>
-  <input type="text" id="githubSearch" placeholder="GitHub Search" />
+  <input type="text" id="githubSearch" placeholder="GitHub Search" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" />
 
-  <div id="repoModal" class="repo-modal" style="display:none;">
+  <div id="repoModal" class="repo-modal">
     <h3 id="modalTitle">Select Repo</h3>
     <input id="filterInput" class="repo-search" placeholder="Search within results..." />
     <div id="repoList" class="repo-list"></div>
-    <div id="backBtn" class="back-btn" style="display:none;">← Back to Repos</div>
-    <div class="close-btn" onclick="document.getElementById('repoModal').style.display='none'">Close</div>
+    <div id="backBtn" class="bar-btn" style="display:none;">← Back to Repos</div>
+    <div id="closeBtn" class="bar-btn">Close</div>
   </div>
 
 <script>
-const input = document.getElementById('githubSearch');
-const modal = document.getElementById('repoModal');
-const repoList = document.getElementById('repoList');
-const filterInput = document.getElementById('filterInput');
-const modalTitle = document.getElementById('modalTitle');
-const backBtn = document.getElementById('backBtn');
-let allRepos = [];
-let currentUser = "";
+  const input = document.getElementById('githubSearch');
+  const modal = document.getElementById('repoModal');
+  const repoList = document.getElementById('repoList');
+  const filterInput = document.getElementById('filterInput');
+  const modalTitle = document.getElementById('modalTitle');
+  const backBtn = document.getElementById('backBtn');
+  const closeBtn = document.getElementById('closeBtn');
 
-input.addEventListener("keydown", async e => {
-  if (e.key === "Enter") {
+  let currentUser = "";
+  let allRepos = [];
+
+  // Enter in pink search: fetch repos
+  input.addEventListener("keydown", async (e) => {
+    if (e.key !== "Enter") return;
     e.preventDefault();
     const name = input.value.trim();
     if (!name) return;
+
     currentUser = name;
     input.disabled = true;
+    const prev = input.value;
     input.value = "Loading...";
+
     try {
       const res = await fetch(`https://api.github.com/users/${encodeURIComponent(name)}/repos?per_page=100`);
       if (!res.ok) throw new Error("GitHub API error");
       const data = await res.json();
       allRepos = data.map(r => r.name);
       renderRepos(allRepos);
-      modal.style.display = "block";
       modalTitle.textContent = "Select Repo";
+      backBtn.style.display = "none";
+      modal.style.display = "flex";
       filterInput.value = "";
       filterInput.focus();
-      backBtn.style.display = "none";
     } catch (err) {
       alert("Error: " + err.message);
     } finally {
@@ -228,44 +121,73 @@ input.addEventListener("keydown", async e => {
       input.value = "";
       input.placeholder = "GitHub Search";
     }
+  });
+
+  // Filter inside modal
+  filterInput.addEventListener("input", () => {
+    const q = filterInput.value.toLowerCase();
+    const filtered = allRepos.filter(r => r.toLowerCase().includes(q));
+    renderRepos(filtered);
+  });
+
+  // Render repo list (tap → load files)
+  function renderRepos(list) {
+    repoList.innerHTML = list.length
+      ? list.map(r => `<div class="repo-item" data-repo="${r}">${r}</div>`).join("")
+      : "<div>No matches found.</div>";
   }
-});
 
-filterInput.addEventListener("input", () => {
-  const search = filterInput.value.toLowerCase();
-  const filtered = allRepos.filter(r => r.toLowerCase().includes(search));
-  renderRepos(filtered);
-});
-
-function renderRepos(list) {
-  repoList.innerHTML = list.length
-    ? list.map(r => `<div class='repo-item' onclick="loadFiles('${r}')">${r}</div>`).join("")
-    : "<div>No matches found.</div>";
-}
-
-async function loadFiles(repoName) {
-  modalTitle.textContent = repoName + " · Files";
-  backBtn.style.display = "block";
-  repoList.innerHTML = "Loading...";
-  try {
-    const res = await fetch(`https://api.github.com/repos/${encodeURIComponent(currentUser)}/${encodeURIComponent(repoName)}/contents`);
-    if (!res.ok) throw new Error("Error fetching files");
-    const data = await res.json();
-    const files = data.map(f => f.name);
+  // Render files (tap → close + fill input)
+  function renderFiles(files) {
     repoList.innerHTML = files.length
-      ? files.map(f => `<div class='repo-item'>${f}</div>`).join("")
+      ? files.map(f => `<div class="repo-item" data-file="${f}">${f}</div>`).join("")
       : "<div>No files found.</div>";
-  } catch (err) {
-    repoList.innerHTML = "Error: " + err.message;
   }
-}
 
-backBtn.addEventListener("click", () => {
-  modalTitle.textContent = "Select Repo";
-  renderRepos(allRepos);
-  backBtn.style.display = "none";
-  filterInput.value = "";
-});
+  // Click handling inside list
+  repoList.addEventListener("click", async (e) => {
+    const repoEl = e.target.closest("[data-repo]");
+    const fileEl = e.target.closest("[data-file]");
+
+    // Tap a repo → load root files
+    if (repoEl) {
+      const repoName = repoEl.getAttribute("data-repo");
+      modalTitle.textContent = `${repoName} · Files`;
+      backBtn.style.display = "block";
+      repoList.innerHTML = "Loading...";
+      try {
+        const res = await fetch(`https://api.github.com/repos/${encodeURIComponent(currentUser)}/${encodeURIComponent(repoName)}/contents`);
+        if (!res.ok) throw new Error("Error fetching files");
+        const data = await res.json();
+        const files = data.map(f => f.name);
+        renderFiles(files);
+      } catch (err) {
+        repoList.innerHTML = "Error: " + err.message;
+      }
+      return;
+    }
+
+    // Tap a file → close modal + set input to file name
+    if (fileEl) {
+      const fileName = fileEl.getAttribute("data-file");
+      input.value = fileName;
+      modal.style.display = "none";
+      input.focus();
+    }
+  });
+
+  // Back / Close
+  backBtn.addEventListener("click", () => {
+    modalTitle.textContent = "Select Repo";
+    renderRepos(allRepos);
+    backBtn.style.display = "none";
+    filterInput.value = "";
+    filterInput.focus();
+  });
+
+  closeBtn.addEventListener("click", () => {
+    modal.style.display = "none";
+  });
 </script>
 </body>
 </html>
