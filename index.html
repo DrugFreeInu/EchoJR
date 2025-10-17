@@ -106,7 +106,7 @@ input{
   border-radius:20px;
   padding:20px 30px;
   width:320px;
-  height:400px; /* fixed height */
+  height:400px;
   box-shadow:0 8px 24px rgba(0,0,0,.5);
   text-align:center;
   display:flex;
@@ -135,16 +135,25 @@ input{
   flex:1;
   overflow-y:auto;
   width:100%;
+  padding-bottom:10px;
 }
 .repo-item {
   margin:12px 0;
   font-size:17px;
 }
 .close-btn {
-  margin-top:10px;
+  position:absolute;
+  bottom:15px;
+  left:50%;
+  transform:translateX(-50%);
   color:#4ea3ff;
   font-weight:600;
   cursor:pointer;
+  background:#0000;
+  padding:8px 0;
+  width:100%;
+  text-align:center;
+  border-top:1px solid #333;
 }
 </style>
 </head>
@@ -185,38 +194,4 @@ input.addEventListener("keydown", async e => {
     e.preventDefault();
     const name = input.value.trim();
     if (!name) return;
-    input.disabled = true;
-    input.value = "Loading...";
-    try {
-      const res = await fetch(`https://api.github.com/users/${encodeURIComponent(name)}/repos?per_page=100`);
-      if (!res.ok) throw new Error("GitHub API error");
-      const data = await res.json();
-      allRepos = data.map(r => r.name);
-      renderRepos(allRepos);
-      modal.style.display = "block";
-      filterInput.value = "";
-      filterInput.focus();
-    } catch (err) {
-      alert("Error: " + err.message);
-    } finally {
-      input.disabled = false;
-      input.value = "";
-      input.placeholder = "GitHub Search";
-    }
-  }
-});
-
-filterInput.addEventListener("input", () => {
-  const search = filterInput.value.toLowerCase();
-  const filtered = allRepos.filter(r => r.toLowerCase().includes(search));
-  renderRepos(filtered);
-});
-
-function renderRepos(list) {
-  repoList.innerHTML = list.length
-    ? list.map(r => `<div class='repo-item'>${r}</div>`).join("")
-    : "<div>No matches found.</div>";
-}
-</script>
-</body>
-</html>
+    input.disabled =
