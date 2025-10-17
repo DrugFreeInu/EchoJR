@@ -11,22 +11,21 @@
   --red: #ff2e63;
   --white: #fff;
   --bg: transparent;
-  --modal: #111;
 }
 
 /* Base layout */
 html, body {
   margin: 0;
   height: 100%;
-  background: var(--bg);
+  width: 100%;
+  background: transparent;
   color: var(--pink);
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
   text-align: center;
-  overflow-x: hidden;
+  overflow: hidden;
 }
 
 /* Floating heart background */
@@ -36,316 +35,77 @@ iframe.bg {
   left: 0;
   width: 100%;
   height: 100%;
-  z-index: -1;
   border: none;
+  z-index: -1;
+  background: transparent;
+  pointer-events: none;
 }
 
-/* Footer + Controls */
-footer {
-  margin-bottom: 30px;
-  font-size: 18px;
-  font-weight: 900;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  color: var(--pink);
-}
-
-.controls {
+/* Center container */
+.container {
+  background: transparent;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
 }
 
-/* Buttons and input shared style */
-.jr-btn, #githubSearch {
-  margin-top: 16px;
+/* Title */
+footer {
+  font-size: 18px;
+  font-weight: 900;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--pink);
+  margin-bottom: 30px;
+}
+
+/* Buttons */
+.jr-btn {
   width: 240px;
+  margin: 12px 0;
   padding: 12px 24px;
   border-radius: 30px;
   font-size: 18px;
   font-weight: 600;
   text-align: center;
-  transition: box-shadow .15s ease;
-  cursor: pointer;
-  box-sizing: border-box;
-}
-
-.jr-btn {
-  border: 3px solid var(--red);
   background: var(--pink);
+  border: 3px solid var(--red);
   color: var(--white);
-  box-shadow: 0 4px 14px rgba(255,107,157,.4);
+  cursor: pointer;
+  transition: box-shadow 0.2s ease;
+  box-shadow: 0 4px 14px rgba(255,107,157,0.45);
+  backdrop-filter: blur(4px);
 }
 
 .jr-btn:hover {
-  box-shadow: 0 6px 18px rgba(255,107,157,.5);
+  box-shadow: 0 6px 18px rgba(255,107,157,0.6);
 }
 
-/* GitHub search now bottom and stable */
-#githubSearch {
-  background: var(--white);
-  color: var(--pink);
-  border: 3px solid var(--pink);
-  box-shadow: 0 4px 14px rgba(255,107,157,.4);
-  transition: none;
+/* Remove box artifact fix */
+body::before {
+  content: '';
   position: fixed;
-  bottom: 40px;
-  left: 50%;
-  transform: translateX(-50%);
-}
-
-#githubSearch:focus {
-  outline: none;
-  transform: translateX(-50%);
-  box-shadow: 0 4px 14px rgba(255,107,157,.4);
-}
-
-/* Modals */
-.repo-modal, .code-modal {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  border-radius: 20px;
-  box-shadow: 0 8px 24px rgba(0,0,0,.5);
-  display: none;
-  flex-direction: column;
-  align-items: center;
-  z-index: 100;
-}
-
-/* Repo modal */
-.repo-modal {
-  width: 320px;
-  height: 400px;
-  background: var(--modal);
-  color: var(--white);
-  padding: 20px;
-  border: 3px solid var(--pink);
-}
-
-.repo-modal h3 {
-  margin: 0 0 10px;
-  font-size: 20px;
-  color: var(--pink);
-}
-
-.repo-search {
-  width: 90%;
-  padding: 8px 10px;
-  margin-bottom: 10px;
-  border-radius: 6px;
-  background: #222;
-  color: var(--white);
-  border: 2px solid var(--pink);
-  text-align: center;
-  font-size: 16px;
-}
-
-.repo-list {
+  top: 0;
+  left: 0;
   width: 100%;
-  flex: 1;
-  overflow-y: auto;
-}
-
-.repo-item {
-  margin: 14px 0;
-  font-size: 17px;
-  cursor: pointer;
-}
-
-.repo-item:hover {
-  color: var(--pink);
-}
-
-.close-btn {
-  margin-top: 10px;
-  color: #4ea3ff;
-  font-weight: 600;
-  cursor: pointer;
-}
-
-/* Code modal */
-.code-modal {
-  width: 90%;
-  max-width: 480px;
-  height: 340px;
-  background: var(--white);
-  color: #000;
-  padding: 20px;
-  border: 3px solid var(--pink);
-}
-
-.code-modal h3 {
-  margin: 0 0 10px;
-  color: var(--pink);
-}
-
-.code-area {
-  width: 100%;
-  flex: 1;
-  border: 3px solid var(--red);
-  border-radius: 10px;
-  padding: 10px;
-  font-family: monospace;
-  resize: none;
-  font-size: 15px;
-  color: #333;
-}
-
-.close-code {
-  margin-top: 12px;
-  background: var(--pink);
-  color: var(--white);
-  border: 3px solid var(--red);
-  border-radius: 20px;
-  padding: 8px 24px;
-  font-weight: 600;
-  cursor: pointer;
+  height: 100%;
+  background: transparent;
+  pointer-events: none;
+  z-index: -2;
 }
 </style>
 </head>
 <body>
 
-<!-- Background hearts -->
 <iframe src="luhve.html" class="bg"></iframe>
 
-<!-- Centered controls -->
-<div class="controls">
+<div class="container">
   <footer>ECHO JR · UPDATE GOD</footer>
-  <button class="jr-btn" id="addBtn">Add</button>
-  <button class="jr-btn" id="removeBtn">Remove</button>
-  <button class="jr-btn" id="replaceBtn">Replace</button>
+  <button class="jr-btn">Add</button>
+  <button class="jr-btn">Remove</button>
+  <button class="jr-btn">Replace</button>
 </div>
 
-<!-- Fixed GitHub search input at bottom -->
-<input type="text" id="githubSearch" placeholder="GitHub Search" autocomplete="off" />
-
-<!-- Repo modal -->
-<div id="repoModal" class="repo-modal">
-  <h3 id="modalTitle">Select Repo</h3>
-  <input id="filterInput" class="repo-search" placeholder="Search within results...">
-  <div id="repoList" class="repo-list"></div>
-  <div class="close-btn" id="closeBtn">Close</div>
-</div>
-
-<!-- Code modal -->
-<div id="codeModal" class="code-modal">
-  <h3 id="codeModalTitle">Paste Code</h3>
-  <textarea id="codeArea" class="code-area" placeholder="Paste your code here..."></textarea>
-  <button id="closeCode" class="close-code">Close</button>
-</div>
-
-<script>
-const input = document.getElementById("githubSearch");
-const modal = document.getElementById("repoModal");
-const repoList = document.getElementById("repoList");
-const filterInput = document.getElementById("filterInput");
-const closeBtn = document.getElementById("closeBtn");
-const modalTitle = document.getElementById("modalTitle");
-const codeModal = document.getElementById("codeModal");
-const codeArea = document.getElementById("codeArea");
-const codeTitle = document.getElementById("codeModalTitle");
-const closeCode = document.getElementById("closeCode");
-
-let allRepos = [];
-let currentUser = "";
-let currentRepo = "";
-
-function openCodeBox(action) {
-  codeTitle.textContent = `Paste Code (${action.toUpperCase()})`;
-  codeArea.value = "";
-  codeModal.style.display = "flex";
-  codeArea.focus();
-}
-
-closeCode.onclick = () => {
-  const pasted = codeArea.value.trim();
-  if (pasted) {
-    localStorage.setItem("echojr-last-code", pasted);
-    console.log(`Echo Jr stored ${pasted.length} chars from ${codeTitle.textContent}`);
-  }
-  codeModal.style.display = "none";
-};
-
-document.getElementById("addBtn").onclick = () => openCodeBox("add");
-document.getElementById("removeBtn").onclick = () => openCodeBox("remove");
-document.getElementById("replaceBtn").onclick = () => openCodeBox("replace");
-
-input.addEventListener("keydown", async (e) => {
-  if (e.key !== "Enter") return;
-  e.preventDefault();
-  const name = input.value.trim();
-  if (!name) return;
-  input.disabled = true;
-  input.value = "Loading...";
-  try {
-    currentUser = name;
-    const res = await fetch(`https://api.github.com/users/${encodeURIComponent(name)}/repos?per_page=100`);
-    if (!res.ok) throw new Error("GitHub API error");
-    const data = await res.json();
-    allRepos = data.map(r => r.name);
-    renderRepos(allRepos);
-    modalTitle.textContent = "Select Repo";
-    modal.style.display = "flex";
-    filterInput.value = "";
-    filterInput.focus();
-  } catch (err) {
-    alert("Error: " + err.message);
-  } finally {
-    input.disabled = false;
-    input.value = "";
-    input.placeholder = "GitHub Search";
-  }
-});
-
-filterInput.addEventListener("input", () => {
-  const q = filterInput.value.toLowerCase();
-  renderRepos(allRepos.filter(r => r.toLowerCase().includes(q)));
-});
-
-function renderRepos(list) {
-  repoList.innerHTML = list.length
-    ? list.map(r => `<div class="repo-item" data-repo="${r}">${r}</div>`).join("")
-    : "<div>No matches found.</div>";
-}
-
-function renderFiles(list) {
-  repoList.innerHTML = list.length
-    ? list.map(f => `<div class="repo-item" data-file=\"${f}\">${f}</div>`).join("")
-    : "<div>No files found.</div>";
-}
-
-repoList.addEventListener("click", async (e) => {
-  const repoEl = e.target.closest("[data-repo]");
-  const fileEl = e.target.closest("[data-file]");
-  if (repoEl) {
-    const repoName = repoEl.getAttribute("data-repo");
-    currentRepo = repoName;
-    modalTitle.textContent = `${repoName} · Files`;
-    repoList.innerHTML = "Loading files...";
-    try {
-      const res = await fetch(`https://api.github.com/repos/${encodeURIComponent(currentUser)}/${encodeURIComponent(repoName)}/contents`);
-      if (!res.ok) throw new Error("GitHub API error");
-      const data = await res.json();
-      const files = data.map(f => f.name);
-      renderFiles(files);
-    } catch (err) {
-      repoList.innerHTML = "Error: " + err.message;
-    }
-    return;
-  }
-  if (fileEl) {
-    const fileName = fileEl.getAttribute("data-file");
-    input.value = fileName;
-    modal.style.display = "none";
-    localStorage.setItem("echojr-selected-file", fileName);
-    console.log("Echo Jr selected file:", fileName);
-  }
-});
-
-closeBtn.onclick = () => (modal.style.display = "none");
-</script>
 </body>
 </html>
