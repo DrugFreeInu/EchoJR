@@ -234,7 +234,6 @@ input[placeholder="GitHub Search"] { display: none !important; }
 /* Kill any ghost input or floating text “GitHub Search” */
 (function killGhost() {
   // remove duplicate inputs
-  document.querySelectorAll('input[placeholder="GitHub Search"]').forEach(el => el.remove());
   // remove orphan text nodes showing “GitHub Search”
   document.querySelectorAll('body *').forEach(el => {
     if (el.childElementCount === 0 && el.textContent.trim() === 'GitHub Search') el.remove();
