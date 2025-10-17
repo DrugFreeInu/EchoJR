@@ -143,9 +143,13 @@ footer {
 .repo-item {
   margin: 10px 0;
   cursor: pointer;
+  padding: 6px;
+  border-radius: 6px;
+  transition: background 0.15s ease;
 }
 
 .repo-item:hover {
+  background: rgba(255,107,157,0.15);
   color: var(--pink);
 }
 
@@ -224,10 +228,20 @@ input.addEventListener("keydown", async (e) => {
 
 function showRepos(list) {
   repoList.innerHTML = list.length
-    ? list.map(r => `<div class="repo-item">${r}</div>`).join("")
+    ? list.map(r => `<div class="repo-item" data-repo="${r}">${r}</div>`).join("")
     : "<div>No repos found.</div>";
   modal.style.display = "flex";
 }
+
+repoList.addEventListener("click", (e) => {
+  const repo = e.target.closest(".repo-item");
+  if (!repo) return;
+  const repoName = repo.getAttribute("data-repo");
+  input.value = repoName;
+  localStorage.setItem("echojr-selected-repo", repoName);
+  modal.style.display = "none";
+  console.log("Repo selected:", repoName);
+});
 
 closeBtn.onclick = () => (modal.style.display = "none");
 </script>
