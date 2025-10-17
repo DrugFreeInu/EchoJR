@@ -104,7 +104,9 @@ footer {
   z-index: 200;
   transition: all 0.3s ease;
 }
-
+#githubSearch::placeholder {
+  color: rgba(255, 255, 255, 0.85);
+}
 #githubSearch:focus {
   outline: none;
   box-shadow: 0 0 26px rgba(255,47,137,0.8);
@@ -216,16 +218,13 @@ footer {
 </div>
 
 <input type="text" id="githubSearch" placeholder="GitHub Search" autocomplete="off" />
-
-<!-- Overlay -->
-<div id="overlay"></div>
-
 <!-- Action Box -->
 <div id="actionBox">
   <h2 id="actionTitle">Action</h2>
   <p>This box appears when a button is pressed.</p>
   <button id="closeAction">Close</button>
 </div>
+
 <!-- Repo Modal -->
 <div id="repoModal"></div>
 
@@ -262,7 +261,7 @@ input.addEventListener("keydown", async (e) => {
   } finally {
     input.disabled = false;
     input.value = "";
-    input.placeholder = "GitHub Username";
+    input.placeholder = "GitHub search";
   }
 });
 
