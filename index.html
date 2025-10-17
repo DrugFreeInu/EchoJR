@@ -202,6 +202,7 @@ const closeBtn = document.getElementById("closeBtn");
 
 let allRepos = [];
 let currentUser = "";
+let currentRepo = "";
 
 input.addEventListener("keydown", async (e) => {
   if (e.key !== "Enter") return;
@@ -212,6 +213,7 @@ input.addEventListener("keydown", async (e) => {
   input.disabled = true;
   input.value = "Loading...";
   try {
+    currentUser = name;
     const res = await fetch(`https://api.github.com/users/${encodeURIComponent(name)}/repos?per_page=100`);
     if (!res.ok) throw new Error("GitHub API error");
     const data = await res.json();
@@ -230,17 +232,43 @@ function showRepos(list) {
   repoList.innerHTML = list.length
     ? list.map(r => `<div class="repo-item" data-repo="${r}">${r}</div>`).join("")
     : "<div>No repos found.</div>";
+  modalTitle.textContent = "Select Repo";
   modal.style.display = "flex";
 }
 
-repoList.addEventListener("click", (e) => {
+repoList.addEventListener("click", async (e) => {
   const repo = e.target.closest(".repo-item");
   if (!repo) return;
   const repoName = repo.getAttribute("data-repo");
-  input.value = repoName;
-  localStorage.setItem("echojr-selected-repo", repoName);
-  modal.style.display = "none";
-  console.log("Repo selected:", repoName);
+  currentRepo = repoName;
+  modalTitle.textContent = `${repoName} · Files`;
+  repoList.innerHTML = "Loading files...";
+  try {
+    const res = await fetch(`https://api.github.com/repos/${encodeURIComponent(currentUser)}/${encodeURIComponent(repoName)}/contents`);
+    if (!res.ok) throw new Error("GitHub API error");
+    const data = await res.json();
+    const files = data.map(f => f.name);
+    showFiles(files);
+  } catch (err) {
+    repoList.innerHTML = "Error: " + err.message;
+  }
+});
+
+function showFiles(files) {
+  repoList.innerHTML = files.length
+    ? files.map(f => `<div class="repo-item" data-file="${f}">${f}</div>`).join("")
+    : "<div>No files found.</div>";
+}
+
+repoList.addEventListener("click", (e) => {
+  const fileEl = e.target.closest("[data-file]");
+  if (fileEl) {
+    const fileName = fileEl.getAttribute("data-file");
+    input.value = fileName;
+    modal.style.display = "none";
+    localStorage.setItem("echojr-selected-file", fileName);
+    console.log("File selected:", fileName);
+  }
 });
 
 closeBtn.onclick = () => (modal.style.display = "none");
