@@ -1,69 +1,38 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>GitHub Search – Echo Jr</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>GitHub Repo Lookup</title>
 <style>
-  body {
-    background:#111;
-    color:#eee;
-    font-family:monospace;
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    justify-content:center;
-    height:100vh;
-    margin:0;
-  }
-
-  /* the "button-shaped" input */
-  .buttonInput {
-    width:240px;
-    height:42px;
-    border:none;
-    border-radius:30px;
-    background:#333;
-    color:#ccc;
-    font-size:1rem;
-    font-family:monospace;
-    text-align:center;
-    outline:none;
-    box-shadow:0 4px 14px rgba(255,107,157,.4);
-    transition:all .15s ease;
-  }
-
-  .buttonInput:focus {
-    background:#444;
-    color:#fff;
-    box-shadow:0 6px 18px rgba(255,107,157,.5);
-  }
-
-  ::placeholder {
-    color:#aaa;
-    text-align:center;
-  }
-
-  #output {
-    max-width:90%;
-    margin-top:1.5rem;
-    text-align:left;
-    white-space:pre-wrap;
-  }
+  body{margin:0;background:#111;color:#fff;
+       font-family:monospace;display:flex;flex-direction:column;
+       align-items:center;justify-content:center;height:100vh;text-align:center}
+  input,button{padding:.6rem 1rem;margin:.5rem;border:none;border-radius:4px;font-size:1rem}
+  input{width:240px}
+  button{background:#ff6b9d;color:#fff;cursor:pointer}
+  #output{max-width:90%;margin-top:1rem;text-align:left;white-space:pre-wrap}
 </style>
 </head>
 <body>
   <h2>GitHub Public Repo Lookup</h2>
-  <input
-    id="username"
-    class="buttonInput"
-    type="text"
-    placeholder="GitHub Search"
-    autocomplete="off"
-    autocorrect="off"
-    autocapitalize="off"
-    spellcheck="false"
-  />
+  <input id="username" placeholder="Enter GitHub username">
+  <button id="searchBtn">Search</button>
   <div id="output"></div>
+
+<script>
+const out=document.getElementById("output");
+document.getElementById("searchBtn").onclick=async()=>{
+  const name=document.getElementById("username").value.trim();
+  if(!name){out.textContent="Enter a username first.";return;}
+  out.textContent="Loading...";
+  try{
+    const res=await fetch(`https://api.github.com/users/${encodeURIComponent(name)}/repos?per_page=100`);
+    if(!res.ok)throw new Error("GitHub API error");
+    const data=await res.json();
+    out.textContent=data.length?data.map(r=>`• ${r.name}`).join("\n"):"No public repos found.";
+  }catch(e){out.textContent="Error: "+e.message;}
+};
+</script>
 </body>
 </html>
