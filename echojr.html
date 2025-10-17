@@ -3,36 +3,37 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Echo Jr · Update God</title>
+<title>Echo Jr Face</title>
 
 <style>
-/* === Echo Jr Style Block === */
-body {
+/* === Echo Jr Pure Face Style === */
+html, body {
   margin: 0;
-  background: #fff;
-  height: 100vh;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+  background: transparent;
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  font-family: 'Arial Rounded MT Bold', Arial, sans-serif;
+  overflow: hidden;
 }
 
-/* Face */
+/* Face container */
 .face {
   position: relative;
-  width: 200px;
-  height: 200px;
+  width: 220px;
+  height: 220px;
   background: #888;
   border: 4px solid #333;
   border-radius: 20px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
 }
 
 /* Hat */
 .hat {
   position: absolute;
-  top: -45px;
+  top: -40px;
   left: 50%;
   transform: translateX(-50%);
   width: 0;
@@ -56,7 +57,7 @@ body {
 /* Eyes */
 .eye {
   position: absolute;
-  top: 60px;
+  top: 65px;
   width: 40px;
   height: 40px;
   background: radial-gradient(circle, #00baff 30%, #007aff 70%);
@@ -102,20 +103,6 @@ body {
   border-bottom: 4px solid #000;
   border-radius: 0 0 80px 80px;
 }
-
-/* Title + Timer */
-h1 {
-  margin-top: 40px;
-  font-size: 22px;
-  color: #ff5fa2;
-  text-shadow: 0 1px 2px rgba(0,0,0,0.1);
-}
-
-#timer {
-  color: #ff5fa2;
-  font-weight: bold;
-  font-size: 18px;
-}
 </style>
 </head>
 
@@ -128,29 +115,5 @@ h1 {
     <div class="cheek right"></div>
     <div class="mouth"></div>
   </div>
-
-  <h1>Echo Jr · Update God</h1>
-  <div id="timer"></div>
-
-<script>
-/* Countdown Timer */
-const endTime = Date.now() + 50 * 60 * 1000; // 50 minutes from load
-const timerEl = document.getElementById("timer");
-
-function updateTimer() {
-  const remaining = endTime - Date.now();
-  if (remaining <= 0) {
-    timerEl.textContent = "Update complete.";
-    return;
-  }
-  const d = Math.floor(remaining / (1000 * 60 * 60 * 24));
-  const h = Math.floor((remaining / (1000 * 60 * 60)) % 24);
-  const m = Math.floor((remaining / (1000 * 60)) % 60);
-  const s = Math.floor((remaining / 1000) % 60);
-  timerEl.textContent = `${d} d ${h} h ${m} m ${s} s`;
-}
-setInterval(updateTimer, 1000);
-updateTimer();
-</script>
 </body>
 </html>
