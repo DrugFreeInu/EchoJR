@@ -1,3 +1,5 @@
+Echo jr checkpoint
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -11,6 +13,7 @@
   --pink2: #ff6b9d;
   --white: #ffffff;
   --red: #ff2e63;
+  --bg: transparent;
 }
 
 /* Base layout */
@@ -29,20 +32,32 @@ html, body {
 }
 
 /* Background hearts */
-iframe.bg, iframe.front {
+iframe.bg {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
   border: none;
+  z-index: -2;
   background: transparent;
   pointer-events: none;
 }
-iframe.bg { z-index: -2; }
-iframe.front { z-index: 4; }
 
-/* Core container */
+/* Foreground hearts */
+iframe.front {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
+  z-index: 4;
+  background: transparent;
+  pointer-events: none;
+}
+
+/* Container */
 .container {
   position: relative;
   z-index: 2;
@@ -50,6 +65,7 @@ iframe.front { z-index: 4; }
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
 }
 
 /* Title */
@@ -64,24 +80,24 @@ footer {
 
 /* Buttons */
 .jr-btn {
-  width: 200px;
-  margin: 8px;
-  padding: 12px 0;
+  width: 240px;
+  margin: 12px 0;
+  padding: 12px 24px;
   border-radius: 30px;
   font-size: 18px;
   font-weight: 600;
   text-align: center;
-  background: rgba(255,255,255,0.08);
-  border: 2px solid rgba(255,255,255,0.25);
+  background: linear-gradient(145deg, var(--pink1), var(--pink2), var(--white));
+  border: 3px solid var(--red);
   color: var(--white);
   cursor: pointer;
-  box-shadow: 0 4px 20px rgba(255,47,137,0.5);
-  backdrop-filter: blur(12px) saturate(140%);
-  transition: box-shadow 0.25s ease, transform 0.1s ease;
+  transition: box-shadow 0.2s ease, transform 0.1s ease;
+  box-shadow: 0 4px 14px rgba(255,47,137,0.6);
+  backdrop-filter: blur(4px);
 }
 
 .jr-btn:hover {
-  box-shadow: 0 6px 24px rgba(255,47,137,0.8);
+  box-shadow: 0 6px 20px rgba(255,47,137,0.75);
   transform: scale(1.03);
 }
 
@@ -97,111 +113,96 @@ footer {
   font-size: 18px;
   font-weight: 600;
   text-align: center;
-  background: rgba(255,255,255,0.08);
-  border: 2px solid rgba(255,255,255,0.25);
-  color: var(--white);
-  box-shadow: 0 4px 20px rgba(255,47,137,0.5);
-  backdrop-filter: blur(12px) saturate(140%);
-  z-index: 200;
+  background: var(--white);
+  color: var(--pink2);
+  border: 3px solid var(--pink2);
+  box-shadow: 0 4px 14px rgba(255,107,157,0.4);
+  transition: none;
+  z-index: 3;
 }
 
-/* Overlay background */
-#overlay {
+#githubSearch:focus {
+  outline: none;
+  transform: translateX(-50%);
+  box-shadow: 0 4px 14px rgba(255,107,157,0.4);
+}
+
+/* Repo modal */
+.repo-modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 320px;
+  height: 400px;
+  background: rgba(17,17,17,0.9);
+  color: var(--white);
+  border: 3px solid var(--pink2);
+  border-radius: 20px;
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  z-index: 100;
+}
+
+.repo-modal h3 {
+  margin: 0 0 10px;
+  font-size: 20px;
+  color: var(--pink2);
+}
+
+.repo-list {
+  width: 100%;
+  flex: 1;
+  overflow-y: auto;
+  margin-top: 10px;
+  font-size: 16px;
+}
+
+.repo-item {
+  margin: 10px 0;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 6px;
+  transition: background 0.15s ease;
+}
+
+.repo-item:hover {
+  background: rgba(255,107,157,0.15);
+  color: var(--pink2);
+}
+
+.close-btn {
+  margin-top: 10px;
+  color: #4ea3ff;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* No artifact */
+body::before {
+  content: '';
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(255,255,255,0.05);
-  backdrop-filter: blur(8px);
-  display: none;
-  z-index: 49;
-}
-
-/* Center Box */
-#actionBox {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  width: 320px;
-  height: 260px;
-  transform: translate(-50%, -50%) scale(0.9);
-  background: rgba(255,255,255,0.1);
-  backdrop-filter: blur(12px);
-  border: 3px solid var(--pink2);
-  border-radius: 20px;
-  color: var(--white);
-  display: none;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  z-index: 50;
-  box-shadow: 0 0 20px rgba(255,47,137,0.4);
-  transition: opacity 0.3s ease, transform 0.3s ease;
-  opacity: 0;
-}
-#actionBox.active {
-  display: flex;
-  opacity: 1;
-  transform: translate(-50%, -50%) scale(1);
-}
-#actionBox h2 {
-  font-size: 20px;
-  margin-bottom: 20px;
-  color: var(--pink2);
-}
-#closeAction {
-  margin-top: 20px;
-  font-weight: 600;
-  color: var(--white);
-  background: var(--pink2);
-  border: none;
-  border-radius: 20px;
-  padding: 8px 20px;
-  cursor: pointer;
-}
-
-/* Repo modal */
-#repoModal {
-  position: fixed;
-  bottom: 110px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 320px;
-  max-height: 300px;
-  overflow-y: auto;
-  background: rgba(255,255,255,0.07);
-  border: 2px solid rgba(255,107,157,0.4);
-  border-radius: 20px;
-  color: var(--white);
-  display: none;
-  flex-direction: column;
-  align-items: center;
-  z-index: 250;
-  padding: 12px 0;
-  box-shadow: 0 0 20px rgba(255,47,137,0.3);
-  backdrop-filter: blur(10px);
-}
-.repo-item {
-  width: 90%;
-  text-align: center;
-  padding: 8px 0;
-  margin: 4px 0;
-  border-radius: 8px;
-  transition: background 0.2s ease;
-}
-.repo-item:hover {
-  background: rgba(255,107,157,0.25);
+  background: transparent;
+  pointer-events: none;
+  z-index: -3;
 }
 </style>
 </head>
 <body>
 
-<!-- Background -->
+<!-- Background bokeh -->
 <iframe src="luhve.html" class="bg"></iframe>
+
+<!-- Foreground bokeh -->
 <iframe src="luhvefront.html" class="front"></iframe>
 
-<!-- UI -->
+<!-- Echo Jr Core UI -->
 <div class="container">
   <footer>ECHO JR · UPDATE GOD</footer>
   <button class="jr-btn" id="addBtn">Add</button>
@@ -209,32 +210,26 @@ footer {
   <button class="jr-btn" id="replaceBtn">Replace</button>
 </div>
 
-<input type="text" id="githubSearch" placeholder="GitHub Username" autocomplete="off" />
-<div id="overlay"></div>
+<input type="text" id="githubSearch" placeholder="GitHub Search" autocomplete="off" />
 
-<!-- Action Box -->
-<div id="actionBox">
-  <h2 id="actionTitle">Action</h2>
-  <p>This box appears when a button is pressed.</p>
-  <button id="closeAction">Close</button>
+<!-- Repo modal -->
+<div id="repoModal" class="repo-modal">
+  <h3 id="modalTitle">Select Repo</h3>
+  <div id="repoList" class="repo-list"></div>
+  <div id="closeBtn" class="close-btn">Close</div>
 </div>
-
-<!-- Repo Modal -->
-<div id="repoModal"></div>
 
 <script>
 const input = document.getElementById("githubSearch");
-const actionBox = document.getElementById("actionBox");
-const actionTitle = document.getElementById("actionTitle");
-const closeAction = document.getElementById("closeAction");
-const overlay = document.getElementById("overlay");
-const repoModal = document.getElementById("repoModal");
+const modal = document.getElementById("repoModal");
+const repoList = document.getElementById("repoList");
+const modalTitle = document.getElementById("modalTitle");
+const closeBtn = document.getElementById("closeBtn");
 
 let allRepos = [];
 let currentUser = "";
 let currentRepo = "";
 
-// GitHub search function
 input.addEventListener("keydown", async (e) => {
   if (e.key !== "Enter") return;
   e.preventDefault();
@@ -255,60 +250,55 @@ input.addEventListener("keydown", async (e) => {
   } finally {
     input.disabled = false;
     input.value = "";
-    input.placeholder = "GitHub Username";
+    input.placeholder = "GitHub Search";
   }
 });
 
 function showRepos(list) {
-  repoModal.innerHTML = "";
-  if (!list.length) {
-    repoModal.innerHTML = "<div>No repos found.</div>";
-  } else {
-    list.forEach(r => {
-      const item = document.createElement("div");
-      item.className = "repo-item";
-      item.textContent = r;
-      item.onclick = () => selectRepo(r);
-      repoModal.appendChild(item);
-    });
+  repoList.innerHTML = list.length
+    ? list.map(r => `<div class="repo-item" data-repo="${r}">${r}</div>`).join("")
+    : "<div>No repos found.</div>";
+  modalTitle.textContent = "Select Repo";
+  modal.style.display = "flex";
+}
+
+repoList.addEventListener("click", async (e) => {
+  const repo = e.target.closest(".repo-item");
+  if (!repo) return;
+  const repoName = repo.getAttribute("data-repo");
+  currentRepo = repoName;
+  modalTitle.textContent = `${repoName} · Files`;
+  repoList.innerHTML = "Loading files...";
+  try {
+    const res = await fetch(`https://api.github.com/repos/${encodeURIComponent(currentUser)}/${encodeURIComponent(repoName)}/contents`);
+    if (!res.ok) throw new Error("GitHub API error");
+    const data = await res.json();
+    const files = data.map(f => f.name);
+    showFiles(files);
+  } catch (err) {
+    repoList.innerHTML = "Error: " + err.message;
   }
-  repoModal.style.display = "flex";
+});
+
+function showFiles(files) {
+  repoList.innerHTML = files.length
+    ? files.map(f => `<div class="repo-item" data-file="${f}">${f}</div>`).join("")
+    : "<div>No files found.</div>";
 }
 
-function selectRepo(name) {
-  currentRepo = name;
-  repoModal.style.display = "none";
-  alert(`Selected repo: ${name}`);
-}
+repoList.addEventListener("click", (e) => {
+  const fileEl = e.target.closest("[data-file]");
+  if (fileEl) {
+    const fileName = fileEl.getAttribute("data-file");
+    input.value = fileName;
+    modal.style.display = "none";
+    localStorage.setItem("echojr-selected-file", fileName);
+    console.log("File selected:", fileName);
+  }
+});
 
-// Overlay popup logic
-const buttons = {
-  Add: document.getElementById("addBtn"),
-  Remove: document.getElementById("removeBtn"),
-  Replace: document.getElementById("replaceBtn"),
-};
-
-function openBox(title) {
-  actionTitle.textContent = title + " Mode";
-  overlay.style.display = "block";
-  actionBox.style.display = "flex";
-  setTimeout(() => actionBox.classList.add("active"), 10);
-}
-
-function closeBox() {
-  actionBox.classList.remove("active");
-  setTimeout(() => {
-    actionBox.style.display = "none";
-    overlay.style.display = "none";
-  }, 300);
-}
-
-for (const [key, btn] of Object.entries(buttons)) {
-  btn.addEventListener("click", () => openBox(key));
-}
-
-closeAction.addEventListener("click", closeBox);
-overlay.addEventListener("click", closeBox);
+closeBtn.onclick = () => (modal.style.display = "none");
 </script>
+
 </body>
 </html>
