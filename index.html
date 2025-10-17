@@ -3,193 +3,103 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1.0" />
-<title>ECHO JR · UPDATE GOD (Signal Core)</title>
+<title>ECHO JR · UPDATE GOD (Control Panel)</title>
 <style>
   :root {
     --pink:#ff6b9d;
     --bg:#fff;
     --modal:#111;
   }
-  html,body {
-    margin:0;height:100%;
-    background:var(--bg);color:var(--pink);
+  html,body{
+    margin:0;
+    height:100%;
+    background:var(--bg);
+    color:var(--pink);
     font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
-    display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+    text-align:center;
   }
-  footer {margin-top:10px;font-size:18px;font-weight:900;letter-spacing:2px;text-transform:uppercase;}
-
-  #githubSearch {
-    margin-top:18px;width:240px;padding:12px 24px;
-    background:var(--pink);color:#fff;border:none;border-radius:30px;
-    font-size:18px;font-weight:600;text-align:center;
+  footer{
+    margin-top:10px;
+    font-size:18px;
+    font-weight:900;
+    letter-spacing:2px;
+    text-transform:uppercase;
+  }
+  .jr-btn{
+    margin-top:16px;
+    width:240px;
+    padding:12px 24px;
+    background:var(--pink);
+    color:#fff;
+    border:none;
+    border-radius:30px;
+    font-size:18px;
+    font-weight:600;
+    text-align:center;
+    cursor:pointer;
     box-shadow:0 4px 14px rgba(255,107,157,.4);
     transition:transform .15s ease,box-shadow .15s ease;
   }
-  #githubSearch:focus {
-    outline:none;transform:scale(1.05);
+  .jr-btn:hover{
+    transform:scale(1.05);
     box-shadow:0 6px 18px rgba(255,107,157,.5);
   }
-
-  .repo-modal {
-    position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);
-    width:320px;height:400px;background:var(--modal);color:#fff;
-    border-radius:20px;padding:20px 18px 60px;
-    box-shadow:0 8px 24px rgba(0,0,0,.5);
-    display:none;flex-direction:column;align-items:center;
+  #githubSearch{
+    margin-top:20px;
+    width:240px;
+    padding:12px 24px;
+    background:var(--pink);
+    color:#fff;
+    border:none;
+    border-radius:30px;
+    font-size:18px;
+    font-weight:600;
+    text-align:center;
+    box-shadow:0 4px 14px rgba(255,107,157,.4);
+    transition:transform .15s ease,box-shadow .15s ease;
   }
-  .repo-modal h3 {margin:0 0 10px;font-size:20px;color:var(--pink);}
-  .repo-search {
-    width:92%;padding:8px 10px;margin:0 0 10px;
-    border:none;border-radius:8px;background:#222;color:#fff;
-    text-align:center;font-size:16px;
+  #githubSearch:focus{
+    outline:none;
+    transform:scale(1.05);
+    box-shadow:0 6px 18px rgba(255,107,157,.5);
   }
-  .repo-list {width:100%;flex:1;overflow-y:auto;padding:0 6px 10px;}
-  .repo-item {margin:14px 0;font-size:17px;cursor:pointer;text-align:center;}
-  .repo-item:hover {color:var(--pink);}
-  .bar-btn {
-    position:absolute;left:50%;transform:translateX(-50%);
-    width:100%;text-align:center;padding:10px 0;font-weight:700;cursor:pointer;
-  }
-  #backBtn {bottom:44px;color:var(--pink);}
-  #closeBtn {bottom:10px;color:#4ea3ff;border-top:1px solid #333;padding-top:12px;}
 </style>
 </head>
 <body>
-
   <footer>ECHO JR · UPDATE GOD</footer>
+
   <input type="text" id="githubSearch" placeholder="GitHub Search" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" />
 
-  <div id="repoModal" class="repo-modal">
-    <h3 id="modalTitle">Select Repo</h3>
-    <input id="filterInput" class="repo-search" placeholder="Search within results..." />
-    <div id="repoList" class="repo-list"></div>
-    <div id="backBtn" class="bar-btn" style="display:none;">← Back to Repos</div>
-    <div id="closeBtn" class="bar-btn">Close</div>
-  </div>
+  <button class="jr-btn" id="addBtn">Add</button>
+  <button class="jr-btn" id="removeBtn">Remove</button>
+  <button class="jr-btn" id="replaceBtn">Replace</button>
+  <button class="jr-btn" id="updateBtn">Update</button>
 
 <script>
-const input       = document.getElementById('githubSearch');
-const modal       = document.getElementById('repoModal');
-const repoList    = document.getElementById('repoList');
-const filterInput = document.getElementById('filterInput');
-const modalTitle  = document.getElementById('modalTitle');
-const backBtn     = document.getElementById('backBtn');
-const closeBtn    = document.getElementById('closeBtn');
+const input = document.getElementById("githubSearch");
 
-let currentUser = "";
-let allRepos = [];
+// placeholder event logic — ready for connection
+document.getElementById("addBtn").onclick = () => console.log("Echo Jr: Add triggered");
+document.getElementById("removeBtn").onclick = () => console.log("Echo Jr: Remove triggered");
+document.getElementById("replaceBtn").onclick = () => console.log("Echo Jr: Replace triggered");
+document.getElementById("updateBtn").onclick = () => console.log("Echo Jr: Update triggered");
 
-// On load, restore last file if it exists
+// restore last selected file if any
 const storedFile = localStorage.getItem("echojr-selected-file");
 if (storedFile) input.value = storedFile;
 
-// Enter in pink search → fetch repos
-input.addEventListener("keydown", async e => {
-  if (e.key !== "Enter") return;
+// capture Enter key for search
+input.addEventListener("keydown", async e=>{
+  if(e.key!=="Enter")return;
   e.preventDefault();
-  const name = input.value.trim();
-  if (!name) return;
-
-  currentUser = name;
-  input.disabled = true;
-  input.value = "Loading...";
-
-  try {
-    const res = await fetch(`https://api.github.com/users/${encodeURIComponent(name)}/repos?per_page=100`);
-    if (!res.ok) throw new Error("GitHub API error");
-    const data = await res.json();
-    allRepos = data.map(r => r.name);
-    renderRepos(allRepos);
-    modalTitle.textContent = "Select Repo";
-    backBtn.style.display = "none";
-    modal.style.display = "flex";
-    filterInput.value = "";
-    filterInput.focus();
-  } catch (err) {
-    alert("Error: " + err.message);
-  } finally {
-    input.disabled = false;
-    input.value = "";
-    input.placeholder = "GitHub Search";
-  }
+  const name=input.value.trim();
+  if(!name)return;
+  console.log("GitHub search triggered for:", name);
 });
-
-// Filter inside modal
-filterInput.addEventListener("input", () => {
-  const q = filterInput.value.toLowerCase();
-  const filtered = allRepos.filter(r => r.toLowerCase().includes(q));
-  renderRepos(filtered);
-});
-
-// Render repos (tap → load files)
-function renderRepos(list) {
-  repoList.innerHTML = list.length
-    ? list.map(r => `<div class="repo-item" data-repo="${r}">${r}</div>`).join("")
-    : "<div>No matches found.</div>";
-}
-
-// Render files (tap → close + fill input)
-function renderFiles(files) {
-  repoList.innerHTML = files.length
-    ? files.map(f => `<div class="repo-item" data-file="${f}">${f}</div>`).join("")
-    : "<div>No files found.</div>";
-}
-
-// Click handling
-repoList.addEventListener("click", async e => {
-  const repoEl = e.target.closest("[data-repo]");
-  const fileEl = e.target.closest("[data-file]");
-
-  if (repoEl) {
-    const repoName = repoEl.getAttribute("data-repo");
-    modalTitle.textContent = `${repoName} · Files`;
-    backBtn.style.display = "block";
-    repoList.innerHTML = "Loading...";
-    try {
-      const res = await fetch(`https://api.github.com/repos/${encodeURIComponent(currentUser)}/${encodeURIComponent(repoName)}/contents`);
-      if (!res.ok) throw new Error("Error fetching files");
-      const data = await res.json();
-      const files = data.map(f => f.name);
-      renderFiles(files);
-    } catch (err) {
-      repoList.innerHTML = "Error: " + err.message;
-    }
-    return;
-  }
-
-  if (fileEl) {
-    const fileName = fileEl.getAttribute("data-file");
-    selectFile(fileName);
-  }
-});
-
-function selectFile(fileName) {
-  // Fill input visually
-  input.value = fileName;
-  modal.style.display = "none";
-  input.focus();
-
-  // Persist selection
-  localStorage.setItem("echojr-selected-file", fileName);
-
-  // Broadcast event for any subsystem
-  window.dispatchEvent(new CustomEvent("echojrFileSelected", { detail: fileName }));
-}
-
-// Listen example (for other modules)
-window.addEventListener("echojrFileSelected", e => {
-  console.log("Echo Jr signal → file selected:", e.detail);
-  // Here’s where background automation could run
-});
-
-backBtn.addEventListener("click", () => {
-  modalTitle.textContent = "Select Repo";
-  renderRepos(allRepos);
-  backBtn.style.display = "none";
-  filterInput.value = "";
-  filterInput.focus();
-});
-closeBtn.addEventListener("click", () => { modal.style.display = "none"; });
 </script>
 </body>
 </html>
