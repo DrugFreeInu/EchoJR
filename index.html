@@ -3,12 +3,11 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1.0" />
-<title>ECHO JR · UPDATE GOD (Control Panel)</title>
+<title>ECHO JR · UPDATE GOD</title>
 <style>
   :root {
     --pink:#ff6b9d;
     --bg:#fff;
-    --modal:#111;
   }
   html,body{
     margin:0;
@@ -77,22 +76,29 @@
   <button class="jr-btn" id="addBtn">Add</button>
   <button class="jr-btn" id="removeBtn">Remove</button>
   <button class="jr-btn" id="replaceBtn">Replace</button>
-  <button class="jr-btn" id="updateBtn">Update</button>
 
 <script>
 const input = document.getElementById("githubSearch");
-
-// placeholder event logic — ready for connection
-document.getElementById("addBtn").onclick = () => console.log("Echo Jr: Add triggered");
-document.getElementById("removeBtn").onclick = () => console.log("Echo Jr: Remove triggered");
-document.getElementById("replaceBtn").onclick = () => console.log("Echo Jr: Replace triggered");
-document.getElementById("updateBtn").onclick = () => console.log("Echo Jr: Update triggered");
 
 // restore last selected file if any
 const storedFile = localStorage.getItem("echojr-selected-file");
 if (storedFile) input.value = storedFile;
 
-// capture Enter key for search
+// button events
+document.getElementById("addBtn").onclick = () => {
+  console.log("Echo Jr: Add triggered");
+  dispatch("add");
+};
+document.getElementById("removeBtn").onclick = () => {
+  console.log("Echo Jr: Remove triggered");
+  dispatch("remove");
+};
+document.getElementById("replaceBtn").onclick = () => {
+  console.log("Echo Jr: Replace triggered");
+  dispatch("replace");
+};
+
+// Enter key for GitHub search
 input.addEventListener("keydown", async e=>{
   if(e.key!=="Enter")return;
   e.preventDefault();
@@ -100,6 +106,11 @@ input.addEventListener("keydown", async e=>{
   if(!name)return;
   console.log("GitHub search triggered for:", name);
 });
+
+// universal signal dispatcher
+function dispatch(action){
+  window.dispatchEvent(new CustomEvent("echojrAction",{detail:action}));
+}
 </script>
 </body>
 </html>
