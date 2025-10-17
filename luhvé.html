@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>LUHVEH Bokeh</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      background: #fff;
+      height: 100%;
+      width: 100%;
+      position: fixed;
+      z-index: -9999;
+    }
+
+    canvas {
+      display: block;
+      position: absolute;
+      top: 0;
+      left: 0;
+      z-index: -9999;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="luhvCanvas"></canvas>
+
+  <script>
+    const canvas = document.getElementById("luhvCanvas");
+    const ctx = canvas.getContext("2d");
+    let hearts = [];
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+
+    window.addEventListener("resize", resizeCanvas);
+    resizeCanvas();
+
+    const colors = ["#ff6b9d", "#ffd1dc", "#ffe3b3", "#fff0f5", "#ff9999"];
+
+    function createHeart() {
+      return {
+        x: Math.random() * canvas.width,
+        y: canvas.height + Math.random() * canvas.height,
+        size: 8 + Math.random() * 14,
+        color: colors[Math.floor(Math.random() * colors.length)],
+        speed: 0.3 + Math.random() * 0.7,
+        drift: (Math.random() - 0.5) * 0.5,
+        opacity: 0.2 + Math.random() * 0.4,
+        shape: Math.random() > 0.5 ? "circle" : "heart"
+      };
+    }
+
+    function drawHeart(x, y, size, color, opacity) {
+      ctx.save();
+      ctx.translate(x, y);
+      ctx.scale(size / 20, size / 20);
+      ctx.beginPath();
+      ctx.moveTo(0, 0);
+      ctx.bezierCurveTo(0, -3, -5, -3, -5, 0);
+      ctx.bezierCurveTo(-5, 3, 0, 6, 0, 10);
+      ctx.bezierCurveTo(0, 6, 5, 3, 5, 0);
+      ctx.bezierCurveTo(5, -3, 0, -3, 0, 0);
+      ctx.closePath();
+      ctx.fillStyle = color;
+      ctx.globalAlpha = opacity;
+      ctx.fill();
+      ctx.restore();
+    }
+
+    function drawCircle(x, y, size, color, opacity) {
+      ctx.beginPath();
+      ctx.arc(x, y, size / 2, 0, Math.PI * 2);
+      ctx.fillStyle = color;
+      ctx.globalAlpha = opacity;
+      ctx.fill();
+    }
+
+    function update() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      hearts.forEach(h => {
+        h.y -= h.speed;
+        h.x += h.drift;
+        if (h.shape === "heart") {
+          drawHeart(h.x, h.y, h.size, h.color, h.opacity);
+        } else {
+          drawCircle(h.x, h.y, h.size, h.color, h.opacity);
+        }
+      });
+
+      hearts = hearts.filter(h => h.y + h.size > 0);
+
+      while (hearts.length < 60) {
+        hearts.push(createHeart());
+      }
+
+      requestAnimationFrame(update);
+    }
+
+    update();
+  </script>
+</body>
+</html>
