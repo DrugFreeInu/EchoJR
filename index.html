@@ -107,7 +107,56 @@ footer {
   box-shadow: 0 4px 14px rgba(255,107,157,0.4);
 }
 
-/* Remove artifact */
+/* Repo modal */
+.repo-modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 320px;
+  height: 400px;
+  background: rgba(17,17,17,0.9);
+  color: var(--white);
+  border: 3px solid var(--pink);
+  border-radius: 20px;
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  z-index: 100;
+}
+
+.repo-modal h3 {
+  margin: 0 0 10px;
+  font-size: 20px;
+  color: var(--pink);
+}
+
+.repo-list {
+  width: 100%;
+  flex: 1;
+  overflow-y: auto;
+  margin-top: 10px;
+  font-size: 16px;
+}
+
+.repo-item {
+  margin: 10px 0;
+  cursor: pointer;
+}
+
+.repo-item:hover {
+  color: var(--pink);
+}
+
+.close-btn {
+  margin-top: 10px;
+  color: #4ea3ff;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* No artifact */
 body::before {
   content: '';
   position: fixed;
@@ -127,12 +176,61 @@ body::before {
 
 <div class="container">
   <footer>ECHO JR · UPDATE GOD</footer>
-  <button class="jr-btn">Add</button>
-  <button class="jr-btn">Remove</button>
-  <button class="jr-btn">Replace</button>
+  <button class="jr-btn" id="addBtn">Add</button>
+  <button class="jr-btn" id="removeBtn">Remove</button>
+  <button class="jr-btn" id="replaceBtn">Replace</button>
 </div>
 
 <input type="text" id="githubSearch" placeholder="GitHub Search" autocomplete="off" />
+
+<div id="repoModal" class="repo-modal">
+  <h3 id="modalTitle">Select Repo</h3>
+  <div id="repoList" class="repo-list"></div>
+  <div id="closeBtn" class="close-btn">Close</div>
+</div>
+
+<script>
+const input = document.getElementById("githubSearch");
+const modal = document.getElementById("repoModal");
+const repoList = document.getElementById("repoList");
+const modalTitle = document.getElementById("modalTitle");
+const closeBtn = document.getElementById("closeBtn");
+
+let allRepos = [];
+let currentUser = "";
+
+input.addEventListener("keydown", async (e) => {
+  if (e.key !== "Enter") return;
+  e.preventDefault();
+  const name = input.value.trim();
+  if (!name) return;
+
+  input.disabled = true;
+  input.value = "Loading...";
+  try {
+    const res = await fetch(`https://api.github.com/users/${encodeURIComponent(name)}/repos?per_page=100`);
+    if (!res.ok) throw new Error("GitHub API error");
+    const data = await res.json();
+    allRepos = data.map(r => r.name);
+    showRepos(allRepos);
+  } catch (err) {
+    alert("Error: " + err.message);
+  } finally {
+    input.disabled = false;
+    input.value = "";
+    input.placeholder = "GitHub Search";
+  }
+});
+
+function showRepos(list) {
+  repoList.innerHTML = list.length
+    ? list.map(r => `<div class="repo-item">${r}</div>`).join("")
+    : "<div>No repos found.</div>";
+  modal.style.display = "flex";
+}
+
+closeBtn.onclick = () => (modal.style.display = "none");
+</script>
 
 </body>
 </html>
