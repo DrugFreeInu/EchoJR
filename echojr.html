@@ -2,11 +2,10 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="viewport" content="width=device-width,initial-scale=1.0" />
 <style>
 html, body {
   margin: 0;
-  width: 100%;
   height: 100%;
   background: transparent;
   display: flex;
@@ -15,64 +14,45 @@ html, body {
   overflow: hidden;
 }
 
-/* Container */
-#jr {
+/* Echo Jr container */
+.echojr {
   position: relative;
-  width: 260px;
+  width: 220px;
   height: 260px;
-  background: #999;
+  animation: float 4s ease-in-out infinite;
+}
+
+/* Head */
+.head {
+  position: absolute;
+  bottom: 0;
+  width: 220px;
+  height: 220px;
+  background: #9e9e9e;
   border-radius: 25px;
-  border: 5px solid #333;
-  box-shadow: inset 0 0 0 8px #777, 0 6px 18px rgba(0,0,0,.25);
-}
-
-/* Hat */
-.hat {
-  position: absolute;
-  top: -55px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 0;
-  height: 0;
-  border-left: 55px solid transparent;
-  border-right: 55px solid transparent;
-  border-bottom: 100px solid #ff6b9d;
-}
-
-.hat::after {
-  content: "";
-  position: absolute;
-  top: -15px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  background: #ffd93d;
-  border: 3px solid #333;
+  border: 4px solid #333;
+  box-shadow: inset 0 0 0 8px #757575, 0 8px 16px rgba(0,0,0,.2);
 }
 
 /* Eyes */
 .eye {
   position: absolute;
-  top: 75px;
-  width: 45px;
-  height: 45px;
-  background: radial-gradient(circle at 40% 40%, #fff 10%, #00f6ff 45%, #0088ff 70%);
+  top: 55px;
+  width: 36px;
+  height: 36px;
+  background: radial-gradient(circle,#fff 10%,#00f6ff 45%,#0088ff 70%);
   border-radius: 50%;
-  box-shadow: 0 0 22px rgba(0,255,255,.8);
+  box-shadow: 0 0 18px rgba(0,255,255,.8);
 }
-
-.eye.left  { left: 60px; }
-.eye.right { right: 60px; }
-
+.eye.left  { left: 48px; }
+.eye.right { right: 48px; }
 .eye::after {
   content: "";
   position: absolute;
-  top: 11px;
-  left: 11px;
-  width: 18px;
-  height: 18px;
+  top: 9px;
+  left: 9px;
+  width: 14px;
+  height: 14px;
   background: #000;
   border-radius: 50%;
 }
@@ -80,38 +60,70 @@ html, body {
 /* Cheeks */
 .cheek {
   position: absolute;
-  top: 130px;
-  width: 32px;
-  height: 32px;
+  top: 95px;
+  width: 28px;
+  height: 28px;
+  background: radial-gradient(circle,rgba(255,150,170,.6),rgba(255,100,120,.3));
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(255,140,160,.6), rgba(255,80,100,.25));
 }
-
-.cheek.left  { left: 40px; }
-.cheek.right { right: 40px; }
+.cheek.left  { left: 34px; }
+.cheek.right { right: 34px; }
 
 /* Smile */
-.mouth {
+.smile {
   position: absolute;
-  top: 165px;
+  top: 130px;
   left: 50%;
-  width: 70px;
-  height: 40px;
+  width: 60px;
+  height: 30px;
   transform: translateX(-50%);
-  border: 4px solid #000;
+  border: 3px solid #000;
   border-top: none;
-  border-radius: 0 0 70px 70px;
+  border-radius: 0 0 60px 60px;
+}
+
+/* Hat */
+.hat {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 45px solid transparent;
+  border-right: 45px solid transparent;
+  border-bottom: 85px solid #ff6b9d;
+}
+.hat::after {
+  content: "";
+  position: absolute;
+  top: -16px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 20px;
+  height: 20px;
+  background: #ffd93d;
+  border-radius: 50%;
+  border: 2px solid #333;
+}
+
+/* Float animation */
+@keyframes float {
+  0%,100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
 }
 </style>
 </head>
 <body>
-  <div id="jr">
+  <div class="echojr">
     <div class="hat"></div>
-    <div class="eye left"></div>
-    <div class="eye right"></div>
-    <div class="cheek left"></div>
-    <div class="cheek right"></div>
-    <div class="mouth"></div>
+    <div class="head">
+      <div class="eye left"></div>
+      <div class="eye right"></div>
+      <div class="cheek left"></div>
+      <div class="cheek right"></div>
+      <div class="smile"></div>
+    </div>
   </div>
 </body>
 </html>
