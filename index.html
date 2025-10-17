@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1.0" />
+<meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover" />
 <title>ECHO JR · UPDATE GOD</title>
 
 <style>
@@ -27,6 +27,7 @@ html, body {
   justify-content: flex-start;
   text-align: center;
   overflow-x: hidden;
+  padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
 }
 
 /* Floating heart background */
@@ -52,8 +53,9 @@ footer {
 
 .jr-btn, #githubSearch {
   margin-top: 16px;
-  width: 240px;
-  padding: 12px 24px;
+  width: 90vw;
+  max-width: 320px;
+  padding: 14px 20px;
   border: 3px solid var(--red);
   border-radius: 30px;
   background: var(--pink);
@@ -64,6 +66,7 @@ footer {
   box-shadow: 0 4px 14px rgba(255,107,157,.4);
   transition: transform .15s ease, box-shadow .15s ease;
   cursor: pointer;
+  box-sizing: border-box;
 }
 
 .jr-btn:hover, #githubSearch:focus {
@@ -76,6 +79,19 @@ footer {
   background: var(--white);
   color: var(--pink);
   border: 3px solid var(--pink);
+}
+
+/* Fix for iOS keyboard clipping */
+input, button, textarea {
+  font-family: inherit;
+  -webkit-appearance: none;
+  outline: none;
+}
+
+@supports (-webkit-touch-callout: none) {
+  body {
+    min-height: -webkit-fill-available;
+  }
 }
 
 /* Modals */
