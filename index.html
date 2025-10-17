@@ -41,7 +41,7 @@ iframe.bg {
   pointer-events: none;
 }
 
-/* Center container */
+/* Container */
 .container {
   background: transparent;
   display: flex;
@@ -82,7 +82,32 @@ footer {
   box-shadow: 0 6px 18px rgba(255,107,157,0.6);
 }
 
-/* Remove box artifact fix */
+/* GitHub Search */
+#githubSearch {
+  position: fixed;
+  bottom: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 240px;
+  padding: 12px 24px;
+  border-radius: 30px;
+  font-size: 18px;
+  font-weight: 600;
+  text-align: center;
+  background: var(--white);
+  color: var(--pink);
+  border: 3px solid var(--pink);
+  box-shadow: 0 4px 14px rgba(255,107,157,0.4);
+  transition: none;
+}
+
+#githubSearch:focus {
+  outline: none;
+  transform: translateX(-50%);
+  box-shadow: 0 4px 14px rgba(255,107,157,0.4);
+}
+
+/* Remove artifact */
 body::before {
   content: '';
   position: fixed;
@@ -106,6 +131,8 @@ body::before {
   <button class="jr-btn">Remove</button>
   <button class="jr-btn">Replace</button>
 </div>
+
+<input type="text" id="githubSearch" placeholder="GitHub Search" autocomplete="off" />
 
 </body>
 </html>
