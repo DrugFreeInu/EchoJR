@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>LUHVÉ</title>
+  <title>LUHVE</title>
   <style>
     html, body {
       margin: 0;
@@ -13,51 +13,51 @@
       width: 100%;
     }
 
-    .heart, .bokeh {
+    .bokeh-circle, .bokeh-heart {
       position: absolute;
-      pointer-events: none;
-      opacity: 0;
-      animation: rise 8s linear infinite;
-    }
-
-    .heart {
-      width: 24px;
-      height: 24px;
-      background: radial-gradient(circle at 30% 30%, #ff6b9d, #ff2e63);
-      clip-path: path('M12 2C8 0 0 4 12 22C24 4 16 0 12 2Z');
-      transform: scale(1) rotate(0deg);
-      animation-name: floatHeart;
-    }
-
-    .bokeh {
-      width: 50px;
-      height: 50px;
-      background: radial-gradient(circle, rgba(255,107,157,0.2), transparent);
       border-radius: 50%;
-      animation-name: floatBokeh;
+      opacity: 0.3;
+      animation: floatUp linear infinite;
     }
 
-    @keyframes floatHeart {
-      0% {
-        transform: translateY(0) scale(1) rotate(0deg);
-        opacity: 0;
-      }
-      10% {
-        opacity: 0.7;
-      }
-      100% {
-        transform: translateY(-100vh) scale(1.5) rotate(360deg);
-        opacity: 0;
-      }
+    .bokeh-circle {
+      background: radial-gradient(circle, #ff99cc, transparent);
     }
 
-    @keyframes floatBokeh {
+    .bokeh-heart {
+      width: 20px;
+      height: 20px;
+      background: #ff4b8b;
+      transform: rotate(-45deg);
+    }
+
+    .bokeh-heart::before,
+    .bokeh-heart::after {
+      content: '';
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      background: #ff4b8b;
+      border-radius: 50%;
+    }
+
+    .bokeh-heart::before {
+      top: -10px;
+      left: 0;
+    }
+
+    .bokeh-heart::after {
+      left: 10px;
+      top: 0;
+    }
+
+    @keyframes floatUp {
       0% {
-        transform: translateY(0) scale(0.8);
-        opacity: 0;
-      }
-      10% {
+        transform: translateY(0) scale(1);
         opacity: 0.4;
+      }
+      50% {
+        opacity: 0.8;
       }
       100% {
         transform: translateY(-120vh) scale(1.4);
@@ -68,28 +68,27 @@
 </head>
 <body>
   <script>
-    function spawnBokeh(count = 30) {
+    function spawnBokeh(count = 40) {
       for (let i = 0; i < count; i++) {
+        const isHeart = Math.random() < 0.3;
         const el = document.createElement('div');
-        el.className = Math.random() < 0.3 ? 'heart' : 'bokeh';
+        el.className = isHeart ? 'bokeh-heart' : 'bokeh-circle';
+        const size = isHeart ? 20 : Math.random() * 120 + 30;
+        el.style.width = el.style.height = size + 'px';
         el.style.left = Math.random() * 100 + 'vw';
         el.style.top = '100vh';
-        el.style.animationDuration = 5 + Math.random() * 6 + 's';
-        el.style.opacity = 0.3 + Math.random() * 0.4;
+        el.style.animationDuration = (6 + Math.random() * 4) + 's';
+        el.style.opacity = 0.2 + Math.random() * 0.5;
         el.style.transform = `scale(${0.8 + Math.random() * 0.6})`;
         document.body.appendChild(el);
-        setTimeout(() => el.remove(), 10000);
+        setTimeout(() => el.remove(), 12000);
       }
     }
 
-    // Initial wave
-    spawnBokeh(80);
+    spawnBokeh(80); // initial launch
 
-    // Listen for messages from index/luhv iframe
-    window.addEventListener("message", (event) => {
-      if (event.data === "add-hearts") {
-        spawnBokeh(20);
-      }
+    window.addEventListener("message", (e) => {
+      if (e.data === "add-hearts") spawnBokeh(25);
     });
   </script>
 </body>
