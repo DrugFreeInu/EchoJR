@@ -11,7 +11,6 @@
   --pink2: #ff6b9d;
   --white: #ffffff;
   --red: #ff2e63;
-  --bg: transparent;
 }
 
 /* Base layout */
@@ -30,32 +29,20 @@ html, body {
 }
 
 /* Background hearts */
-iframe.bg {
+iframe.bg, iframe.front {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
   border: none;
-  z-index: -2;
   background: transparent;
   pointer-events: none;
 }
+iframe.bg { z-index: -2; }
+iframe.front { z-index: 4; }
 
-/* Foreground hearts */
-iframe.front {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  border: none;
-  z-index: 4;
-  background: transparent;
-  pointer-events: none;
-}
-
-/* Container */
+/* Core container */
 .container {
   position: relative;
   z-index: 2;
@@ -63,7 +50,6 @@ iframe.front {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
 }
 
 /* Title */
@@ -78,9 +64,9 @@ footer {
 
 /* Buttons */
 .jr-btn {
-  width: 240px;
-  margin: 12px 0;
-  padding: 12px 24px;
+  width: 200px;
+  margin: 8px;
+  padding: 12px 0;
   border-radius: 30px;
   font-size: 18px;
   font-weight: 600;
@@ -89,9 +75,9 @@ footer {
   border: 3px solid var(--red);
   color: var(--white);
   cursor: pointer;
-  transition: box-shadow 0.2s ease, transform 0.1s ease;
   box-shadow: 0 4px 14px rgba(255,47,137,0.6);
   backdrop-filter: blur(4px);
+  transition: box-shadow 0.2s ease, transform 0.1s ease;
 }
 
 .jr-btn:hover {
@@ -115,92 +101,60 @@ footer {
   color: var(--pink2);
   border: 3px solid var(--pink2);
   box-shadow: 0 4px 14px rgba(255,107,157,0.4);
-  transition: none;
   z-index: 3;
 }
 
-#githubSearch:focus {
-  outline: none;
-  transform: translateX(-50%);
-  box-shadow: 0 4px 14px rgba(255,107,157,0.4);
-}
-
-/* Repo modal */
-.repo-modal {
+/* Center Box */
+#actionBox {
   position: fixed;
   top: 50%;
   left: 50%;
-  transform: translate(-50%, -50%);
   width: 320px;
-  height: 400px;
-  background: rgba(17,17,17,0.9);
-  color: var(--white);
+  height: 260px;
+  transform: translate(-50%, -50%) scale(0.9);
+  background: rgba(255,255,255,0.1);
+  backdrop-filter: blur(12px);
   border: 3px solid var(--pink2);
   border-radius: 20px;
+  color: var(--white);
   display: none;
   flex-direction: column;
   align-items: center;
-  padding: 20px;
-  z-index: 100;
+  justify-content: center;
+  z-index: 50;
+  box-shadow: 0 0 20px rgba(255,47,137,0.4);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  opacity: 0;
 }
-
-.repo-modal h3 {
-  margin: 0 0 10px;
+#actionBox.active {
+  display: flex;
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
+}
+#actionBox h2 {
   font-size: 20px;
+  margin-bottom: 20px;
   color: var(--pink2);
 }
-
-.repo-list {
-  width: 100%;
-  flex: 1;
-  overflow-y: auto;
-  margin-top: 10px;
-  font-size: 16px;
-}
-
-.repo-item {
-  margin: 10px 0;
-  cursor: pointer;
-  padding: 6px;
-  border-radius: 6px;
-  transition: background 0.15s ease;
-}
-
-.repo-item:hover {
-  background: rgba(255,107,157,0.15);
-  color: var(--pink2);
-}
-
-.close-btn {
-  margin-top: 10px;
-  color: #4ea3ff;
+#closeAction {
+  margin-top: 20px;
   font-weight: 600;
+  color: var(--white);
+  background: var(--pink2);
+  border: none;
+  border-radius: 20px;
+  padding: 8px 20px;
   cursor: pointer;
-}
-
-/* No artifact */
-body::before {
-  content: '';
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: transparent;
-  pointer-events: none;
-  z-index: -3;
 }
 </style>
 </head>
 <body>
 
-<!-- Background bokeh -->
+<!-- Background -->
 <iframe src="luhve.html" class="bg"></iframe>
-
-<!-- Foreground bokeh -->
 <iframe src="luhvefront.html" class="front"></iframe>
 
-<!-- Echo Jr Core UI -->
+<!-- UI -->
 <div class="container">
   <footer>ECHO JR · UPDATE GOD</footer>
   <button class="jr-btn" id="addBtn">Add</button>
@@ -210,92 +164,36 @@ body::before {
 
 <input type="text" id="githubSearch" placeholder="GitHub Search" autocomplete="off" />
 
-<!-- Repo modal -->
-<div id="repoModal" class="repo-modal">
-  <h3 id="modalTitle">Select Repo</h3>
-  <div id="repoList" class="repo-list"></div>
-  <div id="closeBtn" class="close-btn">Close</div>
+<!-- Action Box -->
+<div id="actionBox">
+  <h2 id="actionTitle">Action</h2>
+  <p>This box appears when a button is pressed.</p>
+  <button id="closeAction">Close</button>
 </div>
 
 <script>
-const input = document.getElementById("githubSearch");
-const modal = document.getElementById("repoModal");
-const repoList = document.getElementById("repoList");
-const modalTitle = document.getElementById("modalTitle");
-const closeBtn = document.getElementById("closeBtn");
+const actionBox = document.getElementById("actionBox");
+const actionTitle = document.getElementById("actionTitle");
+const closeAction = document.getElementById("closeAction");
 
-let allRepos = [];
-let currentUser = "";
-let currentRepo = "";
+const buttons = {
+  Add: document.getElementById("addBtn"),
+  Remove: document.getElementById("removeBtn"),
+  Replace: document.getElementById("replaceBtn"),
+};
 
-input.addEventListener("keydown", async (e) => {
-  if (e.key !== "Enter") return;
-  e.preventDefault();
-  const name = input.value.trim();
-  if (!name) return;
-
-  input.disabled = true;
-  input.value = "Loading...";
-  try {
-    currentUser = name;
-    const res = await fetch(`https://api.github.com/users/${encodeURIComponent(name)}/repos?per_page=100`);
-    if (!res.ok) throw new Error("GitHub API error");
-    const data = await res.json();
-    allRepos = data.map(r => r.name);
-    showRepos(allRepos);
-  } catch (err) {
-    alert("Error: " + err.message);
-  } finally {
-    input.disabled = false;
-    input.value = "";
-    input.placeholder = "GitHub Search";
-  }
-});
-
-function showRepos(list) {
-  repoList.innerHTML = list.length
-    ? list.map(r => `<div class="repo-item" data-repo="${r}">${r}</div>`).join("")
-    : "<div>No repos found.</div>";
-  modalTitle.textContent = "Select Repo";
-  modal.style.display = "flex";
+for (const [key, btn] of Object.entries(buttons)) {
+  btn.addEventListener("click", () => {
+    actionTitle.textContent = key + " Mode";
+    actionBox.classList.add("active");
+  });
 }
 
-repoList.addEventListener("click", async (e) => {
-  const repo = e.target.closest(".repo-item");
-  if (!repo) return;
-  const repoName = repo.getAttribute("data-repo");
-  currentRepo = repoName;
-  modalTitle.textContent = `${repoName} · Files`;
-  repoList.innerHTML = "Loading files...";
-  try {
-    const res = await fetch(`https://api.github.com/repos/${encodeURIComponent(currentUser)}/${encodeURIComponent(repoName)}/contents`);
-    if (!res.ok) throw new Error("GitHub API error");
-    const data = await res.json();
-    const files = data.map(f => f.name);
-    showFiles(files);
-  } catch (err) {
-    repoList.innerHTML = "Error: " + err.message;
-  }
+closeAction.addEventListener("click", () => {
+  actionBox.classList.remove("active");
+  setTimeout(() => (actionBox.style.display = "none"), 300);
+  actionBox.style.display = "flex";
 });
-
-function showFiles(files) {
-  repoList.innerHTML = files.length
-    ? files.map(f => `<div class="repo-item" data-file="${f}">${f}</div>`).join("")
-    : "<div>No files found.</div>";
-}
-
-repoList.addEventListener("click", (e) => {
-  const fileEl = e.target.closest("[data-file]");
-  if (fileEl) {
-    const fileName = fileEl.getAttribute("data-file");
-    input.value = fileName;
-    modal.style.display = "none";
-    localStorage.setItem("echojr-selected-file", fileName);
-    console.log("File selected:", fileName);
-  }
-});
-
-closeBtn.onclick = () => (modal.style.display = "none");
 </script>
 
 </body>
