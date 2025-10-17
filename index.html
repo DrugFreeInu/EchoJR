@@ -79,8 +79,9 @@ footer {
   backdrop-filter: blur(12px) saturate(140%);
   transition: box-shadow 0.25s ease, transform 0.1s ease;
 }
+
 .jr-btn:hover {
-  box-shadow: 0 6px 20px rgba(255,47,137,0.75);
+  box-shadow: 0 6px 24px rgba(255,47,137,0.8);
   transform: scale(1.03);
 }
 
@@ -96,10 +97,11 @@ footer {
   font-size: 18px;
   font-weight: 600;
   text-align: center;
-  background: var(--white);
-  color: var(--pink2);
-  border: 3px solid var(--pink2);
-  box-shadow: 0 4px 14px rgba(255,107,157,0.4);
+  background: rgba(255,255,255,0.08);
+  border: 2px solid rgba(255,255,255,0.25);
+  color: var(--white);
+  box-shadow: 0 4px 20px rgba(255,47,137,0.5);
+  backdrop-filter: blur(12px) saturate(140%);
   z-index: 200;
 }
 
@@ -162,32 +164,34 @@ footer {
 /* Repo modal */
 #repoModal {
   position: fixed;
-  top: 50%;
+  bottom: 110px;
   left: 50%;
-  transform: translate(-50%, -50%);
+  transform: translateX(-50%);
   width: 320px;
-  max-height: 400px;
+  max-height: 300px;
   overflow-y: auto;
-  background: rgba(17,17,17,0.9);
-  border: 3px solid var(--pink2);
+  background: rgba(255,255,255,0.07);
+  border: 2px solid rgba(255,107,157,0.4);
   border-radius: 20px;
   color: var(--white);
   display: none;
   flex-direction: column;
   align-items: center;
-  z-index: 150;
-  padding: 20px;
-  box-shadow: 0 0 20px rgba(255,47,137,0.4);
+  z-index: 250;
+  padding: 12px 0;
+  box-shadow: 0 0 20px rgba(255,47,137,0.3);
+  backdrop-filter: blur(10px);
 }
 .repo-item {
-  padding: 8px 0;
-  width: 100%;
-  cursor: pointer;
+  width: 90%;
   text-align: center;
-  transition: background 0.2s;
+  padding: 8px 0;
+  margin: 4px 0;
+  border-radius: 8px;
+  transition: background 0.2s ease;
 }
 .repo-item:hover {
-  background: rgba(255,107,157,0.2);
+  background: rgba(255,107,157,0.25);
 }
 </style>
 </head>
@@ -205,7 +209,7 @@ footer {
   <button class="jr-btn" id="replaceBtn">Replace</button>
 </div>
 
-<input type="text" id="githubSearch" placeholder="GitHub Search" autocomplete="off" />
+<input type="text" id="githubSearch" placeholder="GitHub Username" autocomplete="off" />
 <div id="overlay"></div>
 
 <!-- Action Box -->
@@ -251,7 +255,7 @@ input.addEventListener("keydown", async (e) => {
   } finally {
     input.disabled = false;
     input.value = "";
-    input.placeholder = "GitHub Search";
+    input.placeholder = "GitHub Username";
   }
 });
 
