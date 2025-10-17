@@ -105,9 +105,14 @@ input{
   color:#fff;
   border-radius:20px;
   padding:20px 30px;
-  max-width:300px;
+  width:320px;
+  height:400px; /* fixed height */
   box-shadow:0 8px 24px rgba(0,0,0,.5);
   text-align:center;
+  display:flex;
+  flex-direction:column;
+  justify-content:flex-start;
+  align-items:center;
 }
 .repo-modal h3 {
   margin-top:0;
@@ -126,12 +131,17 @@ input{
   color:#fff;
   font-size:16px;
 }
+.repo-list {
+  flex:1;
+  overflow-y:auto;
+  width:100%;
+}
 .repo-item {
   margin:12px 0;
   font-size:17px;
 }
 .close-btn {
-  margin-top:15px;
+  margin-top:10px;
   color:#4ea3ff;
   font-weight:600;
   cursor:pointer;
@@ -159,7 +169,7 @@ input{
   <div id="repoModal" class="repo-modal" style="display:none;">
     <h3>Select Repo</h3>
     <input id="filterInput" class="repo-search" placeholder="Search within results..." />
-    <div id="repoList"></div>
+    <div id="repoList" class="repo-list"></div>
     <div class="close-btn" onclick="document.getElementById('repoModal').style.display='none'">Close</div>
   </div>
 
