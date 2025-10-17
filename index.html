@@ -42,14 +42,13 @@ iframe.bg, iframe.front {
 iframe.bg { z-index: -2; }
 iframe.front { z-index: 4; }
 
-/* Core container */
+/* Container */
 .container {
   position: relative;
   z-index: 2;
   display: flex;
   flex-direction: column;
   align-items: center;
-  background: transparent;
 }
 
 /* Title */
@@ -85,7 +84,7 @@ footer {
   transform: scale(1.03);
 }
 
-/* GitHub Username Input (only one) */
+/* GitHub Username Input */
 #githubSearch {
   position: fixed;
   bottom: 40px;
@@ -105,7 +104,7 @@ footer {
   transition: all 0.3s ease;
 }
 #githubSearch::placeholder {
-  color: red;
+  color: rgba(255,255,255,0.85);
 }
 #githubSearch:focus {
   outline: none;
@@ -123,7 +122,7 @@ footer {
   z-index: 49;
 }
 
-/* Center Box */
+/* Action Box */
 #actionBox {
   position: fixed;
   top: 50%;
@@ -214,7 +213,7 @@ footer {
   <button class="jr-btn" id="replaceBtn">Replace</button>
 </div>
 
-<!-- Only one input -->
+<!-- Single Input -->
 <input type="text" id="githubSearch" placeholder="GitHub Username" autocomplete="off" />
 
 <!-- Action Box -->
@@ -228,6 +227,7 @@ footer {
 <div id="repoModal"></div>
 
 <script>
+/* Kill any ghost duplicate input that might exist from older versions */
 document.querySelectorAll("input[placeholder='GitHub Search']").forEach(el => el.remove());
 
 const input = document.getElementById("githubSearch");
@@ -241,7 +241,7 @@ let allRepos = [];
 let currentUser = "";
 let currentRepo = "";
 
-// GitHub Username Search
+/* GitHub Username Search */
 input.addEventListener("keydown", async (e) => {
   if (e.key !== "Enter") return;
   e.preventDefault();
@@ -288,7 +288,7 @@ function selectRepo(name) {
   alert(`Selected repo: ${name}`);
 }
 
-// Overlay
+/* Overlay */
 const buttons = {
   Add: document.getElementById("addBtn"),
   Remove: document.getElementById("removeBtn"),
