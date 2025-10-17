@@ -101,7 +101,20 @@ footer {
   color: var(--pink2);
   border: 3px solid var(--pink2);
   box-shadow: 0 4px 14px rgba(255,107,157,0.4);
-  z-index: 3;
+  z-index: 200;
+}
+
+/* Overlay background */
+#overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(255,255,255,0.05);
+  backdrop-filter: blur(8px);
+  display: none;
+  z-index: 49;
 }
 
 /* Center Box */
@@ -146,6 +159,37 @@ footer {
   padding: 8px 20px;
   cursor: pointer;
 }
+
+/* Repo modal */
+#repoModal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 320px;
+  max-height: 400px;
+  overflow-y: auto;
+  background: rgba(17,17,17,0.9);
+  border: 3px solid var(--pink2);
+  border-radius: 20px;
+  color: var(--white);
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  z-index: 150;
+  padding: 20px;
+  box-shadow: 0 0 20px rgba(255,47,137,0.4);
+}
+.repo-item {
+  padding: 8px 0;
+  width: 100%;
+  cursor: pointer;
+  text-align: center;
+  transition: background 0.2s;
+}
+.repo-item:hover {
+  background: rgba(255,107,157,0.2);
+}
 </style>
 </head>
 <body>
@@ -163,14 +207,17 @@ footer {
 </div>
 
 <input type="text" id="githubSearch" placeholder="GitHub Search" autocomplete="off" />
+<div id="overlay"></div>
 
 <!-- Action Box -->
-<div id="overlay"></div>
 <div id="actionBox">
   <h2 id="actionTitle">Action</h2>
   <p>This box appears when a button is pressed.</p>
   <button id="closeAction">Close</button>
 </div>
+
+<!-- Repo Modal -->
+<div id="repoModal"></div>
 
 <script>
 const input = document.getElementById("githubSearch");
@@ -178,12 +225,13 @@ const actionBox = document.getElementById("actionBox");
 const actionTitle = document.getElementById("actionTitle");
 const closeAction = document.getElementById("closeAction");
 const overlay = document.getElementById("overlay");
+const repoModal = document.getElementById("repoModal");
 
 let allRepos = [];
 let currentUser = "";
 let currentRepo = "";
 
-// Re-enable GitHub search function
+// GitHub search function
 input.addEventListener("keydown", async (e) => {
   if (e.key !== "Enter") return;
   e.preventDefault();
@@ -198,7 +246,7 @@ input.addEventListener("keydown", async (e) => {
     if (!res.ok) throw new Error("GitHub API error");
     const data = await res.json();
     allRepos = data.map(r => r.name);
-    alert("Repos found: " + allRepos.length);
+    showRepos(allRepos);
   } catch (err) {
     alert("Error: " + err.message);
   } finally {
@@ -208,7 +256,29 @@ input.addEventListener("keydown", async (e) => {
   }
 });
 
-// Keep overlay logic untouched
+function showRepos(list) {
+  repoModal.innerHTML = "";
+  if (!list.length) {
+    repoModal.innerHTML = "<div>No repos found.</div>";
+  } else {
+    list.forEach(r => {
+      const item = document.createElement("div");
+      item.className = "repo-item";
+      item.textContent = r;
+      item.onclick = () => selectRepo(r);
+      repoModal.appendChild(item);
+    });
+  }
+  repoModal.style.display = "flex";
+}
+
+function selectRepo(name) {
+  currentRepo = name;
+  repoModal.style.display = "none";
+  alert(`Selected repo: ${name}`);
+}
+
+// Overlay popup logic
 const buttons = {
   Add: document.getElementById("addBtn"),
   Remove: document.getElementById("removeBtn"),
