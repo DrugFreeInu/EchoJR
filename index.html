@@ -42,13 +42,14 @@ iframe.bg, iframe.front {
 iframe.bg { z-index: -2; }
 iframe.front { z-index: 4; }
 
-/* Container */
+/* Core container */
 .container {
   position: relative;
   z-index: 2;
   display: flex;
   flex-direction: column;
   align-items: center;
+  background: transparent;
 }
 
 /* Title */
@@ -84,6 +85,9 @@ footer {
   transform: scale(1.03);
 }
 
+/* Hide any old “GitHub Search” ghosts */
+input[placeholder="GitHub Search"] { display: none !important; }
+
 /* GitHub Username Input */
 #githubSearch {
   position: fixed;
@@ -104,7 +108,7 @@ footer {
   transition: all 0.3s ease;
 }
 #githubSearch::placeholder {
-  color: rgba(255,255,255,0.85);
+  color: red;
 }
 #githubSearch:focus {
   outline: none;
@@ -122,7 +126,7 @@ footer {
   z-index: 49;
 }
 
-/* Action Box */
+/* Center Box */
 #actionBox {
   position: fixed;
   top: 50%;
@@ -213,7 +217,7 @@ footer {
   <button class="jr-btn" id="replaceBtn">Replace</button>
 </div>
 
-<!-- Single Input -->
+<!-- Only one input -->
 <input type="text" id="githubSearch" placeholder="GitHub Username" autocomplete="off" />
 
 <!-- Action Box -->
@@ -227,8 +231,15 @@ footer {
 <div id="repoModal"></div>
 
 <script>
-/* Kill any ghost duplicate input that might exist from older versions */
-document.querySelectorAll("input[placeholder='GitHub Search']").forEach(el => el.remove());
+/* Kill any ghost input or floating text “GitHub Search” */
+(function killGhost() {
+  // remove duplicate inputs
+  document.querySelectorAll('input[placeholder="GitHub Search"]').forEach(el => el.remove());
+  // remove orphan text nodes showing “GitHub Search”
+  document.querySelectorAll('body *').forEach(el => {
+    if (el.childElementCount === 0 && el.textContent.trim() === 'GitHub Search') el.remove();
+  });
+})();
 
 const input = document.getElementById("githubSearch");
 const actionBox = document.getElementById("actionBox");
@@ -241,7 +252,7 @@ let allRepos = [];
 let currentUser = "";
 let currentRepo = "";
 
-/* GitHub Username Search */
+// GitHub Username Search
 input.addEventListener("keydown", async (e) => {
   if (e.key !== "Enter") return;
   e.preventDefault();
@@ -288,7 +299,7 @@ function selectRepo(name) {
   alert(`Selected repo: ${name}`);
 }
 
-/* Overlay */
+// Overlay
 const buttons = {
   Add: document.getElementById("addBtn"),
   Remove: document.getElementById("removeBtn"),
