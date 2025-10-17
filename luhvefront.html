@@ -2,174 +2,75 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover" />
-<title>ECHO JR · LUHV FRONT BOKEH</title>
-
+<meta name="viewport" content="width=device-width,initial-scale=1.0" />
 <style>
-:root {
-  --pink1: #ff2e88;
-  --pink2: #ff6b9d;
-  --white: #ffffff;
-  --red: #ff2e63;
-}
-
-/* Base layout */
 html, body {
   margin: 0;
-  height: 100%;
+  padding: 0;
   width: 100%;
+  height: 100%;
   background: transparent;
-  color: var(--pink2);
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
   overflow: hidden;
 }
-
-/* Background hearts */
-iframe.bg {
+canvas {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  border: none;
-  background: transparent;
   pointer-events: none;
-  z-index: -2;
-}
-
-/* Foreground bokeh */
-canvas.front-bokeh {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 1;
-  pointer-events: none;
-}
-
-/* Center container */
-.container {
-  position: relative;
-  z-index: 2;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
   background: transparent;
-}
-
-/* Title */
-footer {
-  font-size: 18px;
-  font-weight: 900;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  color: var(--pink2);
-  margin-bottom: 30px;
-  text-shadow: 0 0 8px rgba(255,47,137,0.4);
-}
-
-/* Buttons */
-.jr-btn {
-  width: 240px;
-  margin: 12px 0;
-  padding: 12px 24px;
-  border-radius: 30px;
-  font-size: 18px;
-  font-weight: 600;
-  text-align: center;
-  color: var(--white);
-  background: linear-gradient(145deg, var(--pink1), var(--pink2));
-  border: 2px solid rgba(255,255,255,0.3);
-  cursor: pointer;
-  transition: box-shadow 0.2s ease, transform 0.1s ease;
-  box-shadow: 0 4px 14px rgba(255,47,137,0.6);
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
-}
-
-.jr-btn:hover {
-  box-shadow: 0 6px 20px rgba(255,47,137,0.75);
-  transform: scale(1.03);
-}
-
-/* Remove any leftover elements referencing GitHub search */
-input[placeholder*="GitHub"],
-#githubSearch {
-  display: none !important;
 }
 </style>
 </head>
 <body>
-
-<iframe src="luhve.html" class="bg"></iframe>
-
-<canvas class="front-bokeh"></canvas>
-
-<div class="container">
-  <footer>ECHO JR · UPDATE GOD</footer>
-  <button class="jr-btn" id="addBtn">Add</button>
-  <button class="jr-btn" id="removeBtn">Remove</button>
-  <button class="jr-btn" id="replaceBtn">Replace</button>
-</div>
-
+<canvas id="bokeh"></canvas>
 <script>
-const canvas = document.querySelector(".front-bokeh");
-const ctx = canvas.getContext("2d");
+const c = document.getElementById("bokeh");
+const x = c.getContext("2d");
 let W, H;
-
 function resize() {
-  W = canvas.width = window.innerWidth;
-  H = canvas.height = window.innerHeight;
+  W = c.width = window.innerWidth;
+  H = c.height = window.innerHeight;
 }
 window.addEventListener("resize", resize);
 resize();
 
-let particles = [];
-for (let i = 0; i < 25; i++) {
-  particles.push({
-    x: Math.random() * W,
-    y: Math.random() * H,
-    r: Math.random() * 60 + 20,
-    dx: (Math.random() - 0.5) * 0.3,
-    dy: (Math.random() - 0.5) * 0.3,
-    color: `rgba(${255}, ${100 + Math.random()*100}, ${180 + Math.random()*75}, 0.25)`
-  });
-}
+const hearts = Array.from({length: 25}).map(() => ({
+  x: Math.random() * W,
+  y: Math.random() * H,
+  r: 20 + Math.random() * 50,
+  dx: (Math.random() - 0.5) * 0.3,
+  dy: (Math.random() - 0.5) * 0.3,
+  color: `rgba(255, ${100 + Math.random()*100}, ${180 + Math.random()*75}, 0.25)`
+}));
 
-function drawHeart(x, y, size, color) {
-  ctx.beginPath();
-  ctx.moveTo(x, y);
-  ctx.bezierCurveTo(x - size/2, y - size/2, x - size, y + size/3, x, y + size);
-  ctx.bezierCurveTo(x + size, y + size/3, x + size/2, y - size/2, x, y);
-  ctx.closePath();
-  ctx.fillStyle = color;
-  ctx.shadowBlur = 20;
-  ctx.shadowColor = color;
-  ctx.fill();
+function drawHeart(x0, y0, size, color) {
+  x.beginPath();
+  x.moveTo(x0, y0);
+  x.bezierCurveTo(x0 - size/2, y0 - size/2, x0 - size, y0 + size/3, x0, y0 + size);
+  x.bezierCurveTo(x0 + size, y0 + size/3, x0 + size/2, y0 - size/2, x0, y0);
+  x.closePath();
+  x.fillStyle = color;
+  x.shadowBlur = 25;
+  x.shadowColor = color;
+  x.fill();
 }
 
 function animate() {
-  ctx.clearRect(0, 0, W, H);
-  for (let p of particles) {
-    drawHeart(p.x, p.y, p.r, p.color);
-    p.x += p.dx;
-    p.y += p.dy;
-    if (p.x < -100) p.x = W + 100;
-    if (p.x > W + 100) p.x = -100;
-    if (p.y < -100) p.y = H + 100;
-    if (p.y > H + 100) p.y = -100;
+  x.clearRect(0, 0, W, H);
+  for (let h of hearts) {
+    drawHeart(h.x, h.y, h.r, h.color);
+    h.x += h.dx;
+    h.y += h.dy;
+    if (h.x < -100) h.x = W + 100;
+    if (h.x > W + 100) h.x = -100;
+    if (h.y < -100) h.y = H + 100;
+    if (h.y > H + 100) h.y = -100;
   }
   requestAnimationFrame(animate);
 }
 animate();
 </script>
-
 </body>
 </html>
