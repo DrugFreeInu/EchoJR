@@ -4,331 +4,325 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1.0" />
 <title>ECHO JR · UPDATE GOD</title>
+
 <style>
-  :root {
-    --pink: #ff6b9d;
-    --red: #ff2e63;
-    --white: #fff;
-    --bg: transparent;
-    --modal: #111;
-  }
+:root {
+  --pink: #ff6b9d;
+  --red: #ff2e63;
+  --white: #fff;
+  --bg: transparent;
+  --modal: #111;
+}
 
-  html, body {
-    margin: 0;
-    height: 100%;
-    background: var(--bg);
-    color: var(--pink);
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    align-items: center;
-    text-align: center;
-    overflow-x: hidden;
-  }
+/* Layout */
+html, body {
+  margin: 0;
+  height: 100%;
+  background: var(--bg);
+  color: var(--pink);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  overflow-x: hidden;
+}
 
-  /* Background hearts */
-  iframe.bg {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: -1;
-    border: none;
-  }
+/* Background hearts */
+iframe.bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  border: none;
+}
 
-  footer {
-    margin: 16px 0 30px 0;
-    font-size: 18px;
-    font-weight: 900;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    color: var(--pink);
-  }
+/* Footer + Buttons */
+footer {
+  margin: 16px 0 30px 0;
+  font-size: 18px;
+  font-weight: 900;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--pink);
+}
 
-  .jr-btn, #githubSearch {
-    margin-top: 16px;
-    width: 240px;
-    padding: 12px 24px;
-    border: 3px solid var(--red);
-    border-radius: 30px;
-    background: var(--pink);
-    color: var(--white);
-    font-size: 18px;
-    font-weight: 600;
-    text-align: center;
-    box-shadow: 0 4px 14px rgba(255,107,157,.4);
-    transition: transform .15s ease, box-shadow .15s ease;
-    cursor: pointer;
-  }
+.jr-btn, #githubSearch {
+  margin-top: 16px;
+  width: 240px;
+  padding: 12px 24px;
+  border: 3px solid var(--red);
+  border-radius: 30px;
+  background: var(--pink);
+  color: var(--white);
+  font-size: 18px;
+  font-weight: 600;
+  text-align: center;
+  box-shadow: 0 4px 14px rgba(255,107,157,.4);
+  transition: transform .15s ease, box-shadow .15s ease;
+  cursor: pointer;
+}
 
-  .jr-btn:hover, #githubSearch:focus {
-    transform: scale(1.05);
-    box-shadow: 0 6px 18px rgba(255,107,157,.5);
-    outline: none;
-  }
+.jr-btn:hover, #githubSearch:focus {
+  transform: scale(1.05);
+  box-shadow: 0 6px 18px rgba(255,107,157,.5);
+  outline: none;
+}
 
-  #githubSearch {
-    background: var(--white);
-    color: var(--pink);
-    border: 3px solid var(--pink);
-  }
+#githubSearch {
+  background: var(--white);
+  color: var(--pink);
+  border: 3px solid var(--pink);
+}
 
-  /* Repo modal */
-  .repo-modal {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 320px;
-    height: 400px;
-    background: var(--modal);
-    color: var(--white);
-    border-radius: 20px;
-    padding: 20px;
-    display: none;
-    flex-direction: column;
-    align-items: center;
-    box-shadow: 0 8px 24px rgba(0,0,0,.5);
-    border: 3px solid var(--pink);
-    z-index: 100;
-  }
+/* Modals */
+.repo-modal, .code-modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 20px;
+  box-shadow: 0 8px 24px rgba(0,0,0,.5);
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  z-index: 100;
+}
 
-  .repo-modal h3 {
-    margin: 0 0 10px;
-    font-size: 20px;
-    color: var(--pink);
-  }
+/* Repo modal */
+.repo-modal {
+  width: 320px;
+  height: 400px;
+  background: var(--modal);
+  color: var(--white);
+  padding: 20px;
+  border: 3px solid var(--pink);
+}
 
-  .repo-search {
-    width: 90%;
-    padding: 8px 10px;
-    margin-bottom: 10px;
-    border: none;
-    border-radius: 6px;
-    background: #222;
-    color: var(--white);
-    text-align: center;
-    font-size: 16px;
-    border: 2px solid var(--pink);
-  }
+.repo-modal h3 {
+  margin: 0 0 10px;
+  font-size: 20px;
+  color: var(--pink);
+}
 
-  .repo-list {
-    width: 100%;
-    flex: 1;
-    overflow-y: auto;
-  }
+.repo-search {
+  width: 90%;
+  padding: 8px 10px;
+  margin-bottom: 10px;
+  border-radius: 6px;
+  background: #222;
+  color: var(--white);
+  border: 2px solid var(--pink);
+  text-align: center;
+  font-size: 16px;
+}
 
-  .repo-item {
-    margin: 14px 0;
-    font-size: 17px;
-    text-align: center;
-    cursor: pointer;
-  }
+.repo-list {
+  width: 100%;
+  flex: 1;
+  overflow-y: auto;
+}
 
-  .repo-item:hover {
-    color: var(--pink);
-  }
+.repo-item {
+  margin: 14px 0;
+  font-size: 17px;
+  cursor: pointer;
+}
 
-  .close-btn {
-    margin-top: 10px;
-    color: #4ea3ff;
-    font-weight: 600;
-    cursor: pointer;
-  }
+.repo-item:hover {
+  color: var(--pink);
+}
 
-  /* Code modal */
-  .code-modal {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 90%;
-    max-width: 480px;
-    height: 340px;
-    background: var(--white);
-    color: #000;
-    border-radius: 20px;
-    box-shadow: 0 8px 24px rgba(0,0,0,.3);
-    display: none;
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-start;
-    padding: 20px;
-    border: 3px solid var(--pink);
-    z-index: 100;
-  }
+.close-btn {
+  margin-top: 10px;
+  color: #4ea3ff;
+  font-weight: 600;
+  cursor: pointer;
+}
 
-  .code-modal h3 {
-    margin: 0 0 10px;
-    color: var(--pink);
-  }
+/* Code modal */
+.code-modal {
+  width: 90%;
+  max-width: 480px;
+  height: 340px;
+  background: var(--white);
+  color: #000;
+  padding: 20px;
+  border: 3px solid var(--pink);
+}
 
-  .code-area {
-    width: 100%;
-    flex: 1;
-    border: 3px solid var(--red);
-    border-radius: 10px;
-    padding: 10px;
-    font-family: monospace;
-    resize: none;
-    outline: none;
-    font-size: 15px;
-    color: #333;
-  }
+.code-modal h3 {
+  margin: 0 0 10px;
+  color: var(--pink);
+}
 
-  .close-code {
-    margin-top: 12px;
-    background: var(--pink);
-    color: var(--white);
-    border: 3px solid var(--red);
-    border-radius: 20px;
-    padding: 8px 24px;
-    font-weight: 600;
-    cursor: pointer;
-  }
+.code-area {
+  width: 100%;
+  flex: 1;
+  border: 3px solid var(--red);
+  border-radius: 10px;
+  padding: 10px;
+  font-family: monospace;
+  resize: none;
+  font-size: 15px;
+  color: #333;
+}
+
+.close-code {
+  margin-top: 12px;
+  background: var(--pink);
+  color: var(--white);
+  border: 3px solid var(--red);
+  border-radius: 20px;
+  padding: 8px 24px;
+  font-weight: 600;
+  cursor: pointer;
+}
 </style>
 </head>
 <body>
 
-  <!-- Background hearts -->
-  <iframe src="luhve.html" class="bg"></iframe>
+<!-- Background hearts -->
+<iframe src="luhve.html" class="bg"></iframe>
 
-  <!-- Echo Jr face (transparent, cache-busted) -->
-<iframe src="echojr.html?v=6"
+<!-- Echo Jr face -->
+<iframe src="echojr.html?v=7"
         allowtransparency="true"
         style="background:transparent;border:0;width:300px;height:300px;display:block;margin:40px auto 10px;border-radius:20px;z-index:2;"></iframe>
 
-  <!-- Controls -->
-  <footer>ECHO JR · UPDATE GOD</footer>
-  <input type="text" id="githubSearch" placeholder="GitHub Search" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" />
-  <button class="jr-btn" id="addBtn">Add</button>
-  <button class="jr-btn" id="removeBtn">Remove</button>
-  <button class="jr-btn" id="replaceBtn">Replace</button>
+<!-- Controls -->
+<footer>ECHO JR · UPDATE GOD</footer>
+<input type="text" id="githubSearch" placeholder="GitHub Search" autocomplete="off" />
+<button class="jr-btn" id="addBtn">Add</button>
+<button class="jr-btn" id="removeBtn">Remove</button>
+<button class="jr-btn" id="replaceBtn">Replace</button>
 
-  <!-- GitHub repo modal -->
-  <div id="repoModal" class="repo-modal">
-    <h3 id="modalTitle">Select Repo</h3>
-    <input id="filterInput" class="repo-search" placeholder="Search within results...">
-    <div id="repoList" class="repo-list"></div>
-    <div class="close-btn" id="closeBtn">Close</div>
-  </div>
+<!-- Repo modal -->
+<div id="repoModal" class="repo-modal">
+  <h3 id="modalTitle">Select Repo</h3>
+  <input id="filterInput" class="repo-search" placeholder="Search within results...">
+  <div id="repoList" class="repo-list"></div>
+  <div class="close-btn" id="closeBtn">Close</div>
+</div>
 
-  <!-- Paste code modal -->
-  <div id="codeModal" class="code-modal">
-    <h3 id="codeModalTitle">Paste Code</h3>
-    <textarea id="codeArea" class="code-area" placeholder="Paste your code here..."></textarea>
-    <button id="closeCode" class="close-code">Close</button>
-  </div>
+<!-- Code modal -->
+<div id="codeModal" class="code-modal">
+  <h3 id="codeModalTitle">Paste Code</h3>
+  <textarea id="codeArea" class="code-area" placeholder="Paste your code here..."></textarea>
+  <button id="closeCode" class="close-code">Close</button>
+</div>
 
 <script>
-const input=document.getElementById("githubSearch");
+const input = document.getElementById("githubSearch");
+const modal = document.getElementById("repoModal");
+const repoList = document.getElementById("repoList");
+const filterInput = document.getElementById("filterInput");
+const closeBtn = document.getElementById("closeBtn");
+const modalTitle = document.getElementById("modalTitle");
+const codeModal = document.getElementById("codeModal");
+const codeArea = document.getElementById("codeArea");
+const codeTitle = document.getElementById("codeModalTitle");
+const closeCode = document.getElementById("closeCode");
 
-// repo modal
-const modal=document.getElementById("repoModal");
-const repoList=document.getElementById("repoList");
-const filterInput=document.getElementById("filterInput");
-const closeBtn=document.getElementById("closeBtn");
-const modalTitle=document.getElementById("modalTitle");
+let allRepos = [];
+let currentUser = "";
+let currentRepo = "";
 
-// code modal
-const codeModal=document.getElementById("codeModal");
-const codeArea=document.getElementById("codeArea");
-const codeTitle=document.getElementById("codeModalTitle");
-const closeCode=document.getElementById("closeCode");
-
-let allRepos=[], currentUser="", currentRepo="";
-
-function openCodeBox(action){
-  codeTitle.textContent=`Paste Code (${action.toUpperCase()})`;
-  codeArea.value="";
-  codeModal.style.display="flex";
+function openCodeBox(action) {
+  codeTitle.textContent = `Paste Code (${action.toUpperCase()})`;
+  codeArea.value = "";
+  codeModal.style.display = "flex";
   codeArea.focus();
 }
 
-closeCode.onclick=()=>{
-  const pasted=codeArea.value.trim();
-  if(pasted){
-    localStorage.setItem("echojr-last-code",pasted);
+closeCode.onclick = () => {
+  const pasted = codeArea.value.trim();
+  if (pasted) {
+    localStorage.setItem("echojr-last-code", pasted);
     console.log(`Echo Jr stored ${pasted.length} chars from ${codeTitle.textContent}`);
   }
-  codeModal.style.display="none";
+  codeModal.style.display = "none";
 };
 
-document.getElementById("addBtn").onclick=()=>openCodeBox("add");
-document.getElementById("removeBtn").onclick=()=>openCodeBox("remove");
-document.getElementById("replaceBtn").onclick=()=>openCodeBox("replace");
+document.getElementById("addBtn").onclick = () => openCodeBox("add");
+document.getElementById("removeBtn").onclick = () => openCodeBox("remove");
+document.getElementById("replaceBtn").onclick = () => openCodeBox("replace");
 
-input.addEventListener("keydown",async e=>{
-  if(e.key!=="Enter")return;
+input.addEventListener("keydown", async (e) => {
+  if (e.key !== "Enter") return;
   e.preventDefault();
-  const name=input.value.trim();
-  if(!name)return;
-  input.disabled=true;input.value="Loading...";
-  try{
-    currentUser=name;
-    const res=await fetch(`https://api.github.com/users/${encodeURIComponent(name)}/repos?per_page=100`);
-    if(!res.ok)throw new Error("GitHub API error");
-    const data=await res.json();
-    allRepos=data.map(r=>r.name);
+  const name = input.value.trim();
+  if (!name) return;
+  input.disabled = true;
+  input.value = "Loading...";
+  try {
+    currentUser = name;
+    const res = await fetch(`https://api.github.com/users/${encodeURIComponent(name)}/repos?per_page=100`);
+    if (!res.ok) throw new Error("GitHub API error");
+    const data = await res.json();
+    allRepos = data.map(r => r.name);
     renderRepos(allRepos);
-    modalTitle.textContent="Select Repo";
-    modal.style.display="flex";
-    filterInput.value="";filterInput.focus();
-  }catch(err){alert("Error: "+err.message);}
-  finally{input.disabled=false;input.value="";input.placeholder="GitHub Search";}
+    modalTitle.textContent = "Select Repo";
+    modal.style.display = "flex";
+    filterInput.value = "";
+    filterInput.focus();
+  } catch (err) {
+    alert("Error: " + err.message);
+  } finally {
+    input.disabled = false;
+    input.value = "";
+    input.placeholder = "GitHub Search";
+  }
 });
 
-filterInput.addEventListener("input",()=>{
-  const q=filterInput.value.toLowerCase();
-  renderRepos(allRepos.filter(r=>r.toLowerCase().includes(q)));
+filterInput.addEventListener("input", () => {
+  const q = filterInput.value.toLowerCase();
+  renderRepos(allRepos.filter(r => r.toLowerCase().includes(q)));
 });
 
-function renderRepos(list){
-  repoList.innerHTML=list.length
-    ? list.map(r=>`<div class="repo-item" data-repo="${r}">${r}</div>`).join("")
+function renderRepos(list) {
+  repoList.innerHTML = list.length
+    ? list.map(r => `<div class="repo-item" data-repo="${r}">${r}</div>`).join("")
     : "<div>No matches found.</div>";
 }
 
-function renderFiles(list){
-  repoList.innerHTML=list.length
-    ? list.map(f=>`<div class="repo-item" data-file="${f}">${f}</div>`).join("")
+function renderFiles(list) {
+  repoList.innerHTML = list.length
+    ? list.map(f => `<div class="repo-item" data-file="${f}">${f}</div>`).join("")
     : "<div>No files found.</div>";
 }
 
-repoList.addEventListener("click",async e=>{
-  const repoEl=e.target.closest("[data-repo]");
-  const fileEl=e.target.closest("[data-file]");
-  if(repoEl){
-    const repoName=repoEl.getAttribute("data-repo");
-    currentRepo=repoName;
-    modalTitle.textContent=`${repoName} · Files`;
-    repoList.innerHTML="Loading files...";
-    try{
-      const res=await fetch(`https://api.github.com/repos/${encodeURIComponent(currentUser)}/${encodeURIComponent(repoName)}/contents`);
-      if(!res.ok)throw new Error("GitHub API error");
-      const data=await res.json();
-      const files=data.map(f=>f.name);
+repoList.addEventListener("click", async (e) => {
+  const repoEl = e.target.closest("[data-repo]");
+  const fileEl = e.target.closest("[data-file]");
+  if (repoEl) {
+    const repoName = repoEl.getAttribute("data-repo");
+    currentRepo = repoName;
+    modalTitle.textContent = `${repoName} · Files`;
+    repoList.innerHTML = "Loading files...";
+    try {
+      const res = await fetch(`https://api.github.com/repos/${encodeURIComponent(currentUser)}/${encodeURIComponent(repoName)}/contents`);
+      if (!res.ok) throw new Error("GitHub API error");
+      const data = await res.json();
+      const files = data.map(f => f.name);
       renderFiles(files);
-    }catch(err){
-      repoList.innerHTML="Error: "+err.message;
+    } catch (err) {
+      repoList.innerHTML = "Error: " + err.message;
     }
     return;
   }
-  if(fileEl){
-    const fileName=fileEl.getAttribute("data-file");
-    input.value=fileName;
-    localStorage.setItem("echojr-selected-file",fileName);
-    modal.style.display="none";
-    window.dispatchEvent(new CustomEvent("echojrFileSelected",{detail:fileName}));
-    console.log("Echo Jr signal → file selected:",fileName);
+  if (fileEl) {
+    const fileName = fileEl.getAttribute("data-file");
+    input.value = fileName;
+    modal.style.display = "none";
+    localStorage.setItem("echojr-selected-file", fileName);
+    console.log("Echo Jr selected file:", fileName);
   }
 });
 
-closeBtn.onclick=()=>modal.style.display="none";
+closeBtn.onclick = () => (modal.style.display = "none");
 </script>
-
-<script src="js/echojr.brain.js"></script>
 </body>
 </html>
