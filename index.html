@@ -73,6 +73,7 @@ footer {
 }
 
 /* Buttons */
+/* Buttons */
 .jr-btn {
   width: 200px;
   margin: 8px;
@@ -81,17 +82,19 @@ footer {
   font-size: 18px;
   font-weight: 600;
   text-align: center;
-  background: rgba(255,255,255,0.08);
-  border: 2px solid rgba(255,255,255,0.25);
-  color: var(--white);
+  background: rgba(255,255,255,0.08); /* keep fine-art translucency */
+  border: 2px solid var(--pink1); /* hot pink border */
+  color: var(--pink1); /* pink text */
   cursor: pointer;
-  box-shadow: 0 4px 20px rgba(255,47,137,0.5);
+  box-shadow: 0 4px 20px rgba(255,47,137,0.6); /* pink glow */
   backdrop-filter: blur(12px) saturate(160%);
   -webkit-backdrop-filter: blur(12px) saturate(160%);
-  transition: box-shadow 0.25s ease, transform 0.1s ease;
+  transition: box-shadow 0.25s ease, transform 0.1s ease, color 0.2s ease;
 }
 .jr-btn:hover {
-  box-shadow: 0 6px 24px rgba(255,47,137,0.8);
+  color: var(--pink2);
+  border-color: var(--pink2);
+  box-shadow: 0 6px 26px rgba(255,47,137,0.8);
   transform: scale(1.03);
 }
 
