@@ -8,9 +8,8 @@
 <style>
 :root {
   --pink1: #ff2e88;
-  --pink2: #ff7cad;
+  --pink2: #ff6b9d;
   --white: #ffffff;
-  --red: #ff3377;
 }
 
 /* Base layout */
@@ -28,7 +27,7 @@ html, body {
   overflow: hidden;
 }
 
-/* Background hearts */
+/* Backgrounds */
 iframe.bg {
   position: fixed;
   top: 0;
@@ -40,8 +39,6 @@ iframe.bg {
   pointer-events: none;
   z-index: -2;
 }
-
-/* Front bokeh hearts (soft fine art) */
 iframe.front {
   position: fixed;
   top: 0;
@@ -51,20 +48,18 @@ iframe.front {
   border: none;
   background: transparent;
   pointer-events: none;
-  opacity: 0.8;
-  z-index: 1;
-  filter: blur(2px) saturate(150%);
+  opacity: 0.65;
+  z-index: 0;
 }
 
 /* Core container */
-/* Core container (pure, no background box) */
 .container {
   position: relative;
   z-index: 2;
+  background: transparent;
   display: flex;
   flex-direction: column;
   align-items: center;
-  background: transparent;
 }
 
 /* Title */
@@ -74,8 +69,22 @@ footer {
   letter-spacing: 2px;
   text-transform: uppercase;
   color: var(--pink2);
-  margin-bottom: 30px;
-  filter: drop-shadow(0 0 12px rgba(255,46,136,0.5));
+  margin-bottom: 10px;
+}
+
+/* Standing by with LUHV line */
+.status {
+  font-size: 14px;
+  color: var(--white);
+  opacity: 0.85;
+  letter-spacing: 1px;
+  margin-bottom: 25px;
+  text-shadow: 0 0 8px var(--pink1);
+  animation: pulse 2.5s infinite ease-in-out;
+}
+@keyframes pulse {
+  0%,100% { opacity: 0.7; text-shadow: 0 0 6px var(--pink2); }
+  50% { opacity: 1; text-shadow: 0 0 14px var(--pink1); }
 }
 
 /* Buttons */
@@ -87,7 +96,7 @@ footer {
   font-size: 18px;
   font-weight: 600;
   text-align: center;
-  background: linear-gradient(135deg, rgba(255,46,136,0.12), rgba(255,107,157,0.12), rgba(255,255,255,0.05));
+  background: rgba(255,255,255,0.08);
   border: 2px solid rgba(255,255,255,0.25);
   color: var(--white);
   cursor: pointer;
@@ -99,7 +108,6 @@ footer {
 .jr-btn:hover {
   box-shadow: 0 6px 24px rgba(255,47,137,0.8);
   transform: scale(1.03);
-  filter: drop-shadow(0 0 12px rgba(255,46,136,0.5));
 }
 
 /* GitHub Username Input */
@@ -130,17 +138,7 @@ footer {
   border-color: rgba(255,47,137,0.9);
 }
 
-/* Overlay */
-#overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(255,255,255,0.05);
-  backdrop-filter: blur(8px);
-  display: none;
-  z-index: 49;
-}
-
-/* Center Box */
+/* Modal */
 #actionBox {
   position: fixed;
   top: 50%;
@@ -148,7 +146,7 @@ footer {
   width: 320px;
   height: 260px;
   transform: translate(-50%, -50%) scale(0.9);
-  background: linear-gradient(135deg, rgba(255,46,136,0.1), rgba(255,107,157,0.1), rgba(255,255,255,0.08));
+  background: rgba(255,255,255,0.1);
   backdrop-filter: blur(12px);
   border: 3px solid var(--pink2);
   border-radius: 20px;
@@ -166,11 +164,6 @@ footer {
   display: flex;
   opacity: 1;
   transform: translate(-50%, -50%) scale(1);
-  animation: float 6s ease-in-out infinite alternate;
-}
-@keyframes float {
-  0% { transform: translate(-50%, -50%) scale(1); }
-  100% { transform: translate(-50%, -52%) scale(1.02); }
 }
 #actionBox h2 {
   font-size: 20px;
@@ -187,128 +180,35 @@ footer {
   padding: 8px 20px;
   cursor: pointer;
 }
-
-/* Repo Modal */
-#repoModal {
-  position: fixed;
-  bottom: 110px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 320px;
-  max-height: 300px;
-  overflow-y: auto;
-  background: rgba(255,255,255,0.07);
-  border: 2px solid rgba(255,107,157,0.4);
-  border-radius: 20px;
-  color: var(--white);
-  display: none;
-  flex-direction: column;
-  align-items: center;
-  z-index: 250;
-  padding: 12px 0;
-  box-shadow: 0 0 20px rgba(255,47,137,0.3);
-  backdrop-filter: blur(10px);
-}
-.repo-item {
-  width: 90%;
-  text-align: center;
-  padding: 8px 0;
-  margin: 4px 0;
-  border-radius: 8px;
-  transition: background 0.2s ease;
-}
-.repo-item:hover {
-  background: rgba(255,107,157,0.25);
-}
 </style>
 </head>
 <body>
 
-<!-- Background -->
 <iframe src="luhve.html" class="bg"></iframe>
 <iframe src="luhvefront.html" class="front"></iframe>
 
-<!-- UI -->
 <div class="container">
   <footer>ECHO JR · UPDATE GOD</footer>
+  <div class="status">Standing by with LUHV …</div>
   <button class="jr-btn" id="addBtn">Add</button>
   <button class="jr-btn" id="removeBtn">Remove</button>
   <button class="jr-btn" id="replaceBtn">Replace</button>
 </div>
 
-<!-- Input -->
 <input type="text" id="githubSearch" placeholder="GitHub Username" autocomplete="off" />
 
-<!-- Action Box -->
 <div id="actionBox">
   <h2 id="actionTitle">Action</h2>
   <p>This box appears when a button is pressed.</p>
   <button id="closeAction">Close</button>
 </div>
 
-<!-- Repo Modal -->
-<div id="repoModal"></div>
-
 <script>
 const input = document.getElementById("githubSearch");
 const actionBox = document.getElementById("actionBox");
 const actionTitle = document.getElementById("actionTitle");
 const closeAction = document.getElementById("closeAction");
-const overlay = document.getElementById("overlay");
-const repoModal = document.getElementById("repoModal");
 
-let allRepos = [];
-let currentUser = "";
-let currentRepo = "";
-
-// GitHub Username Search
-input.addEventListener("keydown", async (e) => {
-  if (e.key !== "Enter") return;
-  e.preventDefault();
-  const name = input.value.trim();
-  if (!name) return;
-
-  input.disabled = true;
-  input.value = "Loading...";
-  try {
-    currentUser = name;
-    const res = await fetch(`https://api.github.com/users/${encodeURIComponent(name)}/repos?per_page=100`);
-    if (!res.ok) throw new Error("GitHub API error");
-    const data = await res.json();
-    allRepos = data.map(r => r.name);
-    showRepos(allRepos);
-  } catch (err) {
-    alert("Error: " + err.message);
-  } finally {
-    input.disabled = false;
-    input.value = "";
-    input.placeholder = "GitHub Username";
-  }
-});
-
-function showRepos(list) {
-  repoModal.innerHTML = "";
-  if (!list.length) {
-    repoModal.innerHTML = "<div>No repos found.</div>";
-  } else {
-    list.forEach(r => {
-      const item = document.createElement("div");
-      item.className = "repo-item";
-      item.textContent = r;
-      item.onclick = () => selectRepo(r);
-      repoModal.appendChild(item);
-    });
-  }
-  repoModal.style.display = "flex";
-}
-
-function selectRepo(name) {
-  currentRepo = name;
-  repoModal.style.display = "none";
-  alert(`Selected repo: ${name}`);
-}
-
-// Overlay behavior
 const buttons = {
   Add: document.getElementById("addBtn"),
   Remove: document.getElementById("removeBtn"),
@@ -317,23 +217,17 @@ const buttons = {
 
 function openBox(title) {
   actionTitle.textContent = title + " Mode";
-  overlay.style.display = "block";
   actionBox.style.display = "flex";
   setTimeout(() => actionBox.classList.add("active"), 10);
 }
 function closeBox() {
   actionBox.classList.remove("active");
-  setTimeout(() => {
-    actionBox.style.display = "none";
-    overlay.style.display = "none";
-  }, 300);
+  setTimeout(() => (actionBox.style.display = "none"), 300);
 }
-
 for (const [key, btn] of Object.entries(buttons)) {
   btn.addEventListener("click", () => openBox(key));
 }
 closeAction.addEventListener("click", closeBox);
-overlay.addEventListener("click", closeBox);
 </script>
 </body>
 </html>
