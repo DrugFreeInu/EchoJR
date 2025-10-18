@@ -27,7 +27,7 @@ html, body {
   overflow: hidden;
 }
 
-/* Backgrounds */
+/* Background iframes */
 iframe.bg {
   position: fixed;
   top: 0;
@@ -50,6 +50,30 @@ iframe.front {
   pointer-events: none;
   opacity: 0.65;
   z-index: 0;
+}
+
+/* Hearts layer */
+#heartsLayer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 1;
+}
+.heart {
+  position: absolute;
+  font-size: 18px;
+  color: var(--pink2);
+  opacity: 0.8;
+  animation: floatUp 9s linear forwards;
+  user-select: none;
+}
+@keyframes floatUp {
+  0% { transform: translateY(100vh) scale(1); opacity: 0.9; }
+  100% { transform: translateY(-10vh) scale(1.6); opacity: 0; }
 }
 
 /* Core container */
@@ -83,7 +107,7 @@ footer {
   text-align: center;
   background: rgba(255,255,255,0.08);
   border: 2px solid rgba(255,255,255,0.25);
-  color: var(--pink2); /* matches footer color */
+  color: var(--pink2);
   cursor: pointer;
   box-shadow: 0 4px 20px rgba(255,47,137,0.5);
   backdrop-filter: blur(12px) saturate(160%);
@@ -95,7 +119,7 @@ footer {
   transform: scale(1.03);
 }
 
-/* GitHub Username Input */
+/* GitHub Input */
 #githubSearch {
   position: fixed;
   bottom: 40px;
@@ -114,9 +138,7 @@ footer {
   z-index: 200;
   transition: all 0.3s ease;
 }
-#githubSearch::placeholder {
-  color: rgba(255,255,255,0.85);
-}
+#githubSearch::placeholder { color: rgba(255,255,255,0.85); }
 #githubSearch:focus {
   outline: none;
   box-shadow: 0 0 26px rgba(255,47,137,0.8);
@@ -172,6 +194,8 @@ footer {
 <iframe src="luhve.html" class="bg"></iframe>
 <iframe src="luhvefront.html" class="front"></iframe>
 
+<div id="heartsLayer"></div>
+
 <div class="container">
   <footer>ECHO JR · UPDATE GOD</footer>
   <button class="jr-btn" id="addBtn">Add</button>
@@ -188,17 +212,16 @@ footer {
 </div>
 
 <script>
+/* --- Action Box Logic --- */
 const input = document.getElementById("githubSearch");
 const actionBox = document.getElementById("actionBox");
 const actionTitle = document.getElementById("actionTitle");
 const closeAction = document.getElementById("closeAction");
-
 const buttons = {
   Add: document.getElementById("addBtn"),
   Remove: document.getElementById("removeBtn"),
   Replace: document.getElementById("replaceBtn"),
 };
-
 function openBox(title) {
   actionTitle.textContent = title + " Mode";
   actionBox.style.display = "flex";
@@ -212,6 +235,27 @@ for (const [key, btn] of Object.entries(buttons)) {
   btn.addEventListener("click", () => openBox(key));
 }
 closeAction.addEventListener("click", closeBox);
+
+/* --- Heart Weaving System --- */
+const heartLayer = document.getElementById("heartsLayer");
+
+function spawnHeart() {
+  const heart = document.createElement("div");
+  heart.className = "heart";
+  heart.textContent = "❤️";
+
+  heart.style.left = Math.random() * 100 + "vw";
+  heart.style.fontSize = 16 + Math.random() * 16 + "px";
+  heart.style.animationDuration = 6 + Math.random() * 4 + "s";
+
+  // Random z-depth for weaving
+  const depths = [0, 1, 2, 3];
+  heart.style.zIndex = depths[Math.floor(Math.random() * depths.length)];
+
+  heartLayer.appendChild(heart);
+  setTimeout(() => heart.remove(), 10000);
+}
+setInterval(spawnHeart, 350);
 </script>
 </body>
 </html>
