@@ -8,9 +8,9 @@
 <style>
 :root {
   --pink1: #ff2e88;
-  --pink2: #ff6b9d;
+  --pink2: #ff7cad;
   --white: #ffffff;
-  --red: #ff2e63;
+  --red: #ff3377;
 }
 
 /* Base layout */
@@ -41,7 +41,7 @@ iframe.bg {
   z-index: -2;
 }
 
-/* Front bokeh hearts (now safe and subtle) */
+/* Front bokeh hearts (soft fine art) */
 iframe.front {
   position: fixed;
   top: 0;
@@ -51,8 +51,9 @@ iframe.front {
   border: none;
   background: transparent;
   pointer-events: none;
-  opacity: 0.65;
-  z-index: 0; /* stays behind all UI elements */
+  opacity: 0.8;
+  z-index: 1;
+  filter: blur(2px) saturate(150%);
 }
 
 /* Core container */
@@ -62,7 +63,10 @@ iframe.front {
   display: flex;
   flex-direction: column;
   align-items: center;
-  background: transparent;
+  background: linear-gradient(135deg, rgba(255,46,136,0.08), rgba(255,107,157,0.08), rgba(255,255,255,0.05));
+  border-radius: 20px;
+  padding: 20px 40px;
+  backdrop-filter: blur(6px);
 }
 
 /* Title */
@@ -73,6 +77,7 @@ footer {
   text-transform: uppercase;
   color: var(--pink2);
   margin-bottom: 30px;
+  filter: drop-shadow(0 0 12px rgba(255,46,136,0.5));
 }
 
 /* Buttons */
@@ -84,7 +89,7 @@ footer {
   font-size: 18px;
   font-weight: 600;
   text-align: center;
-  background: rgba(255,255,255,0.08);
+  background: linear-gradient(135deg, rgba(255,46,136,0.12), rgba(255,107,157,0.12), rgba(255,255,255,0.05));
   border: 2px solid rgba(255,255,255,0.25);
   color: var(--white);
   cursor: pointer;
@@ -96,6 +101,7 @@ footer {
 .jr-btn:hover {
   box-shadow: 0 6px 24px rgba(255,47,137,0.8);
   transform: scale(1.03);
+  filter: drop-shadow(0 0 12px rgba(255,46,136,0.5));
 }
 
 /* GitHub Username Input */
@@ -118,7 +124,7 @@ footer {
   transition: all 0.3s ease;
 }
 #githubSearch::placeholder {
-  color: red;
+  color: rgba(255,255,255,0.85);
 }
 #githubSearch:focus {
   outline: none;
@@ -144,7 +150,7 @@ footer {
   width: 320px;
   height: 260px;
   transform: translate(-50%, -50%) scale(0.9);
-  background: rgba(255,255,255,0.1);
+  background: linear-gradient(135deg, rgba(255,46,136,0.1), rgba(255,107,157,0.1), rgba(255,255,255,0.08));
   backdrop-filter: blur(12px);
   border: 3px solid var(--pink2);
   border-radius: 20px;
@@ -162,6 +168,11 @@ footer {
   display: flex;
   opacity: 1;
   transform: translate(-50%, -50%) scale(1);
+  animation: float 6s ease-in-out infinite alternate;
+}
+@keyframes float {
+  0% { transform: translate(-50%, -50%) scale(1); }
+  100% { transform: translate(-50%, -52%) scale(1.02); }
 }
 #actionBox h2 {
   font-size: 20px;
