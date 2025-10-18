@@ -74,6 +74,27 @@ footer {
 
 /* Buttons */
 /* Buttons */
+@keyframes pinkPulse {
+  0% {
+    border-color: var(--pink1);
+    color: var(--pink1);
+    text-shadow: 0 0 8px rgba(255,46,136,0.6);
+    box-shadow: 0 0 18px rgba(255,46,136,0.4);
+  }
+  50% {
+    border-color: var(--pink2);
+    color: var(--pink2);
+    text-shadow: 0 0 16px rgba(255,107,157,0.9);
+    box-shadow: 0 0 26px rgba(255,107,157,0.7);
+  }
+  100% {
+    border-color: var(--pink1);
+    color: var(--pink1);
+    text-shadow: 0 0 8px rgba(255,46,136,0.6);
+    box-shadow: 0 0 18px rgba(255,46,136,0.4);
+  }
+}
+
 .jr-btn {
   width: 200px;
   margin: 8px;
@@ -82,20 +103,18 @@ footer {
   font-size: 18px;
   font-weight: 600;
   text-align: center;
-  background: rgba(255,255,255,0.08); /* keep fine-art translucency */
-  border: 2px solid var(--pink1); /* hot pink border */
-  color: var(--pink1); /* pink text */
+  background: rgba(255,255,255,0.08);
+  border: 2px solid var(--pink1);
+  color: var(--pink1);
   cursor: pointer;
-  box-shadow: 0 4px 20px rgba(255,47,137,0.6); /* pink glow */
   backdrop-filter: blur(12px) saturate(160%);
   -webkit-backdrop-filter: blur(12px) saturate(160%);
-  transition: box-shadow 0.25s ease, transform 0.1s ease, color 0.2s ease;
+  animation: pinkPulse 3.5s ease-in-out infinite;
+  transition: transform 0.15s ease;
 }
+
 .jr-btn:hover {
-  color: var(--pink2);
-  border-color: var(--pink2);
-  box-shadow: 0 6px 26px rgba(255,47,137,0.8);
-  transform: scale(1.03);
+  transform: scale(1.05);
 }
 
 /* GitHub Username Input */
