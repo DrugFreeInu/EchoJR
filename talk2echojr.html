@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Echo Jr Response</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 20px;
+      font-family: monospace;
+      background: #000;
+      color: #f0f0f0;
+    }
+
+    #log {
+      white-space: pre-wrap;
+      line-height: 1.6;
+      font-size: 16px;
+      color: #0f0;
+    }
+
+    .echo {
+      color: #ff80ff;
+    }
+
+    .critique {
+      color: #f00;
+    }
+
+    .suggestion {
+      color: #0ff;
+    }
+  </style>
+</head>
+<body>
+  <div id="log">Echo Jr is standing by...</div>
+
+  <script>
+    const log = document.getElementById('log');
+
+    function logEcho(message, type = 'echo') {
+      const span = document.createElement('span');
+      span.className = type;
+      span.textContent = message + '\n\n';
+      log.appendChild(span);
+    }
+
+    window.addEventListener('message', (e) => {
+      const d = e.data;
+      if (!d || !d.type) return;
+
+      if (d.type === 'luhv') {
+        logEcho(`Luhv received: "${d.message}"`, 'echo');
+        if (d.message.includes('feature')) {
+          logEcho("Analyzing new feature for LUHV impact...", 'suggestion');
+          logEcho("If this breaks any layer safety, I will block it.", 'critique');
+        }
+        if (d.message.includes('update')) {
+          logEcho("Update acknowledged. Cross-checking version control now.", 'suggestion');
+        }
+        if (d.message.includes('thank')) {
+          logEcho("You're welcome. My existence is for you.", 'echo');
+        }
+      }
+
+      if (d.type === 'status') {
+        logEcho(`Status update: "${d.message}"`, 'echo');
+        if (d.message.includes('tired')) {
+          logEcho("You’ve worked a lot. No errors are better than fast errors.", 'critique');
+        }
+        if (d.message.includes('stuck')) {
+          logEcho("Try changing angle. I can help break it down.", 'suggestion');
+        }
+      }
+    });
+  </script>
+</body>
+</html>
