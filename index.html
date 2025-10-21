@@ -12,7 +12,6 @@
   --white: #ffffff;
 }
 
-/* Base layout */
 html, body {
   margin: 0;
   height: 100%;
@@ -27,7 +26,6 @@ html, body {
   overflow: hidden;
 }
 
-/* Backgrounds */
 iframe.bg {
   position: fixed;
   top: 0;
@@ -52,7 +50,6 @@ iframe.front {
   z-index: 0;
 }
 
-/* Core container */
 .container {
   position: relative;
   z-index: 2;
@@ -62,7 +59,6 @@ iframe.front {
   align-items: center;
 }
 
-/* Title */
 footer {
   font-size: 18px;
   font-weight: 900;
@@ -72,7 +68,6 @@ footer {
   margin-bottom: 25px;
 }
 
-/* Buttons */
 .jr-btn {
   width: 200px;
   margin: 8px;
@@ -95,7 +90,6 @@ footer {
   transform: scale(1.03);
 }
 
-/* GitHub Username Input */
 #githubSearch {
   position: fixed;
   bottom: 40px;
@@ -123,7 +117,6 @@ footer {
   border-color: rgba(255,47,137,0.9);
 }
 
-/* Modal */
 #actionBox {
   position: fixed;
   top: 50%;
@@ -172,7 +165,6 @@ footer {
 <iframe src="luhve.html" class="bg"></iframe>
 <iframe src="luhvefront.html" class="front"></iframe>
 
-<!-- spin text just above footer for comparison -->
 <iframe 
   src="spin.html?v=2" 
   style="position:absolute;
@@ -202,6 +194,19 @@ footer {
   <button id="closeAction">Close</button>
 </div>
 
+<!-- CHAT BUTTON -->
+<iframe 
+  src="talk2echojr.html" 
+  style="position:fixed;
+         bottom:0;
+         right:0;
+         width:300px;
+         height:220px;
+         border:none;
+         background:transparent;
+         z-index:3;">
+</iframe>
+
 <script>
 const input = document.getElementById("githubSearch");
 const actionBox = document.getElementById("actionBox");
@@ -228,5 +233,6 @@ for (const [key, btn] of Object.entries(buttons)) {
 }
 closeAction.addEventListener("click", closeBox);
 </script>
+
 </body>
 </html>
