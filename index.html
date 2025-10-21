@@ -96,10 +96,10 @@ footer{font-size:18px;font-weight:900;letter-spacing:2px;text-transform:uppercas
     <button id="closeAction">Close</button>
   </div>
 
-  <!-- Preview now appears first -->
+  <!-- Preview first -->
   <iframe id="inlinePreview" sandbox="allow-same-origin"></iframe>
 
-  <!-- Everything else sits below -->
+  <!-- Repo list and code display below -->
   <div id="repoList"></div>
 </div>
 
@@ -132,6 +132,7 @@ document.getElementById("addBtn").addEventListener("click",()=>{
   preview.classList.add("active");
   preview.srcdoc="<p style='color:white;font-family:monospace;text-align:center;margin-top:70px;'>Add mode preview area</p>";
 });
+
 document.getElementById("removeBtn").addEventListener("click",()=>{
   openBox("Remove Mode");
   preview.classList.add("active");
@@ -139,11 +140,22 @@ document.getElementById("removeBtn").addEventListener("click",()=>{
     repoList.innerHTML="<div class='meta'>Select a file first (GitHub search → pick a file)</div>";
     return;
   }
-  repoList.innerHTML=`<div class="meta">Preview loaded safely above. Click parts to remove — coming soon.</div>`;
+  repoList.innerHTML=`<div class="meta">Loading file...</div>`;
   fetchTextFromLastSelected().then(text=>{
-    preview.srcdoc=text;
-  }).catch(()=>{preview.srcdoc="<p style='color:white;text-align:center;'>Failed to load file.</p>";});
+    // Show rendered version in preview
+    preview.srcdoc = text;
+    // Show text version below
+    const safeText = text.replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+    repoList.innerHTML = `
+      <div class="meta">Preview loaded safely above. Click parts to remove — coming soon.</div>
+      <pre style="white-space:pre-wrap;color:#fff;font-size:12px;margin-top:10px;max-height:180px;overflow:auto;border-top:1px solid rgba(255,255,255,0.15);padding-top:10px;">${safeText}</pre>
+    `;
+  }).catch(()=>{
+    preview.srcdoc="<p style='color:white;text-align:center;'>Failed to load file.</p>";
+    repoList.innerHTML="<div class='meta'>Failed to load file text.</div>";
+  });
 });
+
 document.getElementById("replaceBtn").addEventListener("click",()=>{
   openBox("Replace Mode");
   preview.classList.add("active");
