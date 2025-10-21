@@ -116,7 +116,7 @@
   </div>
 
   <!-- Safe isolated live preview -->
-  <iframe id="safePreview" sandbox referrerpolicy="no-referrer"></iframe>
+  <iframe id="safePreview" sandbox="allow-same-origin" referrerpolicy="no-referrer"></iframe>
 
   <script>
     const input=document.getElementById("githubSearch");
@@ -128,8 +128,17 @@
 
     let lastSelectedFile=null;
 
-    function openBox(title,content=""){actionTitle.textContent=title;if(content)repoList.innerHTML=content;actionBox.style.display="flex";requestAnimationFrame(()=>actionBox.classList.add("active"));}
-    function closeBox(){actionBox.classList.remove("active");setTimeout(()=>actionBox.style.display="none",300);}
+    function openBox(title,content=""){
+      actionTitle.textContent=title;
+      if(content)repoList.innerHTML=content;
+      actionBox.style.display="flex";
+      requestAnimationFrame(()=>actionBox.classList.add("active"));
+    }
+    function closeBox(){
+      actionBox.classList.remove("active");
+      setTimeout(()=>actionBox.style.display="none",300);
+      preview.style.display="none";
+    }
     if(closeAction)closeAction.addEventListener("click",closeBox);
 
     const addBtn=document.getElementById("addBtn");
@@ -140,19 +149,18 @@
     replaceBtn.addEventListener("click",()=>{openBox("Replace Mode",'<textarea id="actionInput" style="width:100%;height:80%;background:rgba(0,0,0,0.3);color:var(--pink2);border:none;outline:none;font-family:monospace;font-size:14px;border-radius:10px;padding:10px;resize:none;" placeholder="Paste new replacement code..."></textarea>');});
 
     removeBtn.addEventListener("click",async()=>{
-      openBox("Remove Mode");
+      openBox("Remove Mode","<div class='meta'>Preparing safe preview...</div>");
       if(!lastSelectedFile){
         repoList.innerHTML="<div class='meta'>Select a file first (GitHub search → pick a file), then hit Remove.</div>";
         return;
       }
-      repoList.innerHTML=`<div class="meta">Loading safe preview for <strong>${lastSelectedFile.name}</strong>…</div>`;
       try{
         const text=await fetchTextFromLastSelected();
         preview.style.display="block";
-        preview.srcdoc=text; // sandboxed preview
+        preview.srcdoc=text;
         repoList.innerHTML="<div class='meta'>Preview loaded safely below. (Click parts to remove — coming soon)</div>";
       }catch(err){
-        repoList.innerHTML=`<div class="meta">Failed to load preview. ${String(err).slice(0,200)}</div>`;
+        repoList.innerHTML=`<div class='meta'>Failed to load preview. ${String(err).slice(0,200)}</div>`;
       }
     });
 
@@ -163,29 +171,53 @@
       }
       const r=await fetch(`https://api.github.com/repos/${encodeURIComponent(lastSelectedFile.user)}/${encodeURIComponent(lastSelectedFile.repo)}/contents/${encodeURIComponent(lastSelectedFile.path)}`);
       const d=await r.json();
-      if(d&&d.download_url){const r2=await fetch(d.download_url);return await r2.text();}
+      if(d&&d.download_url){
+        const r2=await fetch(d.download_url);
+        return await r2.text();
+      }
       throw new Error("No download URL available.");
     }
 
     input.addEventListener("keydown",async(e)=>{
-      if(e.key!=="Enter")return;e.preventDefault();
-      const user=input.value.trim();if(!user)return;
-      actionTitle.textContent=`Repos · ${user}`;repoList.innerHTML=`<div class="meta">Loading repositories…</div>`;openBox(actionTitle.textContent);
+      if(e.key!=="Enter")return;
+      e.preventDefault();
+      const user=input.value.trim();
+      if(!user)return;
+      actionTitle.textContent=`Repos · ${user}`;
+      repoList.innerHTML=`<div class="meta">Loading repositories…</div>`;
+      openBox(actionTitle.textContent);
       try{
         const res=await fetch(`https://api.github.com/users/${encodeURIComponent(user)}/repos?per_page=100&sort=updated`);
         const data=await res.json();
-        if(!Array.isArray(data)||data.length===0){repoList.innerHTML=`<div class="meta">No repositories found for <strong>${user}</strong>.</div>`;return;}
+        if(!Array.isArray(data)||data.length===0){
+          repoList.innerHTML=`<div class="meta">No repositories found for <strong>${user}</strong>.</div>`;
+          return;
+        }
         repoList.innerHTML=data.map(repo=>`<div class="repo" data-user="${user}" data-repo="${repo.name}"><a href="#" class="repo-link">${repo.name}</a>${repo.description?`<div class="meta">${repo.description}</div>`:""}</div>`).join("");
-        document.querySelectorAll(".repo-link").forEach(link=>{link.addEventListener("click",async(ev)=>{ev.preventDefault();const repoDiv=ev.target.closest(".repo");const repoName=repoDiv.getAttribute("data-repo");const username=repoDiv.getAttribute("data-user");await showFiles(username,repoName);});});
-      }catch(err){repoList.innerHTML=`<div class="meta">Failed to load repos. ${err}</div>`;}
+        document.querySelectorAll(".repo-link").forEach(link=>{
+          link.addEventListener("click",async(ev)=>{
+            ev.preventDefault();
+            const repoDiv=ev.target.closest(".repo");
+            const repoName=repoDiv.getAttribute("data-repo");
+            const username=repoDiv.getAttribute("data-user");
+            await showFiles(username,repoName);
+          });
+        });
+      }catch(err){
+        repoList.innerHTML=`<div class="meta">Failed to load repos. ${err}</div>`;
+      }
     });
 
     async function showFiles(user,repo){
-      actionTitle.textContent=`Files · ${repo}`;repoList.innerHTML=`<div class="meta">Loading files…</div>`;
+      actionTitle.textContent=`Files · ${repo}`;
+      repoList.innerHTML=`<div class="meta">Loading files…</div>`;
       try{
         const res=await fetch(`https://api.github.com/repos/${encodeURIComponent(user)}/${encodeURIComponent(repo)}/contents`);
         const data=await res.json();
-        if(!Array.isArray(data)){repoList.innerHTML=`<div class="meta">No files found.</div>`;return;}
+        if(!Array.isArray(data)){
+          repoList.innerHTML=`<div class="meta">No files found.</div>`;
+          return;
+        }
         repoList.innerHTML=data.map(file=>{
           const icon=file.type==="dir"?"📁":"📄";
           return `<div class="repo"><a href="#" class="file-link" data-path="${file.path}" data-name="${file.name}" data-download="${file.download_url||''}" data-user="${user}" data-repo="${repo}">${icon} ${file.name}</a></div>`;
@@ -200,7 +232,9 @@
             console.log("Selected file cached for Remove:",lastSelectedFile);
           });
         });
-      }catch(err){repoList.innerHTML=`<div class="meta">Failed to load files. ${err}</div>`;}
+      }catch(err){
+        repoList.innerHTML=`<div class="meta">Failed to load files. ${err}</div>`;
+      }
     }
 
     window.addEventListener("keydown",(e)=>{if(e.key==="Escape"&&actionBox.classList.contains("active"))closeBox();});
