@@ -155,6 +155,7 @@
       text-decoration: none;
       font-weight: 700;
       word-break: break-word;
+      cursor: pointer;
     }
     .meta {
       font-size: 12px;
@@ -254,12 +255,6 @@
     const repoList = document.getElementById("repoList");
     const closeAction = document.getElementById("closeAction");
 
-    const buttons = {
-      Add: document.getElementById("addBtn"),
-      Remove: document.getElementById("removeBtn"),
-      Replace: document.getElementById("replaceBtn"),
-    };
-
     function openBox(title) {
       actionTitle.textContent = title;
       actionBox.style.display = "flex";
@@ -271,12 +266,9 @@
       setTimeout(() => (actionBox.style.display = "none"), 300);
     }
 
-    for (const [key, btn] of Object.entries(buttons)) {
-      btn.addEventListener("click", () => openBox(key + " Mode"));
-    }
     if (closeAction) closeAction.addEventListener("click", closeBox);
 
-    // ENTER -> fetch repos silently and show in the actionBox
+    // Fetch repos
     input.addEventListener("keydown", async (e) => {
       if (e.key !== "Enter") return;
       e.preventDefault();
@@ -290,10 +282,6 @@
 
       try {
         const res = await fetch(`https://api.github.com/users/${encodeURIComponent(user)}/repos?per_page=100&sort=updated`);
-        if (!res.ok) {
-          const txt = await res.text();
-          throw new Error(txt || ("GitHub error: " + res.status));
-        }
         const data = await res.json();
 
         if (!Array.isArray(data) || data.length === 0) {
@@ -301,24 +289,50 @@
           return;
         }
 
-        repoList.innerHTML = data.map(repo => {
-          const name = repo.name || "repo";
-          const url = repo.html_url || `https://github.com/${user}/${name}`;
-          const desc = repo.description ? repo.description.replace(/</g,'&lt;').replace(/>/g,'&gt;') : '';
-          const pushed = repo.pushed_at ? new Date(repo.pushed_at).toLocaleString() : '—';
-          return `
-            <div class="repo">
-              <a href="${url}" target="_blank" rel="noopener noreferrer">${name}</a>
-              ${desc ? `<div class="meta">${desc}</div>` : ``}
-              <div class="meta">Updated: ${pushed} · ⭐ ${repo.stargazers_count ?? 0}</div>
-            </div>
-          `;
-        }).join("");
+        repoList.innerHTML = data.map(repo => `
+          <div class="repo" data-user="${user}" data-repo="${repo.name}">
+            <a href="#" class="repo-link">${repo.name}</a>
+            ${repo.description ? `<div class="meta">${repo.description}</div>` : ``}
+            <div class="meta">Updated: ${new Date(repo.pushed_at).toLocaleString()} · ⭐ ${repo.stargazers_count ?? 0}</div>
+          </div>
+        `).join("");
+
+        document.querySelectorAll(".repo-link").forEach(link => {
+          link.addEventListener("click", async (ev) => {
+            ev.preventDefault();
+            const repoDiv = ev.target.closest(".repo");
+            const repoName = repoDiv.getAttribute("data-repo");
+            const username = repoDiv.getAttribute("data-user");
+            await showFiles(username, repoName);
+          });
+        });
       } catch (err) {
-        repoList.innerHTML = `<div class="meta">Failed to load repos. ${String(err).slice(0,200)}</div>`;
-        console.error(err);
+        repoList.innerHTML = `<div class="meta">Failed to load repos. ${err}</div>`;
       }
     });
+
+    // Fetch files in repo
+    async function showFiles(user, repo) {
+      actionTitle.textContent = `Files · ${repo}`;
+      repoList.innerHTML = `<div class="meta">Loading files…</div>`;
+
+      try {
+        const res = await fetch(`https://api.github.com/repos/${encodeURIComponent(user)}/${encodeURIComponent(repo)}/contents`);
+        const data = await res.json();
+
+        if (!Array.isArray(data)) {
+          repoList.innerHTML = `<div class="meta">No files found.</div>`;
+          return;
+        }
+
+        repoList.innerHTML = data.map(file => {
+          const icon = file.type === "dir" ? "📁" : "📄";
+          return `<div class="repo"><a href="${file.html_url}" target="_blank">${icon} ${file.name}</a></div>`;
+        }).join("");
+      } catch (err) {
+        repoList.innerHTML = `<div class="meta">Failed to load files. ${err}</div>`;
+      }
+    }
 
     // ESC closes the box
     window.addEventListener("keydown", (e) => {
