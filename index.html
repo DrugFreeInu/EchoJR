@@ -37,7 +37,7 @@
     #githubSearch:focus{outline:none;box-shadow:0 0 26px rgba(255,47,137,0.8);border-color:rgba(255,47,137,0.9);}
 
     #actionBox{
-      position:fixed;top:50%;left:50%;width:360px;height:420px;transform:translate(-50%,-50%) scale(.9);
+      position:fixed;top:50%;left:50%;width:360px;height:480px;transform:translate(-50%,-50%) scale(.9);
       background:rgba(255,255,255,0.08);backdrop-filter:blur(12px);border:3px solid var(--pink2);border-radius:20px;color:var(--white);
       display:none;flex-direction:column;z-index:500;box-shadow:0 0 20px rgba(255,47,137,0.4);transition:opacity .3s ease,transform .3s ease;
       opacity:0;overflow:hidden;
@@ -48,21 +48,23 @@
     }
     #actionTitle{font-size:18px;color:var(--pink2);margin:0;}
     #closeAction{font-weight:700;color:var(--white);background:var(--pink2);border:none;border-radius:16px;padding:6px 12px;cursor:pointer;}
-    #repoList{flex:1;padding:12px 16px;overflow:auto;text-align:left;color:var(--white);}
+
+    #repoList{
+      flex:1;padding:12px 16px;overflow:auto;text-align:left;color:var(--white);
+    }
     .repo{padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.12);}
     .repo a{color:var(--pink2);text-decoration:none;font-weight:700;word-break:break-word;cursor:pointer;}
     .meta{font-size:12px;opacity:.85;margin-top:4px;}
 
-    #safePreview{
-      position:fixed;
-      bottom:0;
-      left:0;
+    /* inline safe preview inside modal */
+    #inlinePreview{
       width:100%;
-      height:35%;
+      height:200px;
       border:none;
-      background:#111;
-      z-index:100;
-      display:none;
+      border-radius:12px;
+      background:#000;
+      margin-bottom:10px;
+      box-shadow:inset 0 0 10px rgba(255,47,137,0.4);
     }
 
     #chatModal{
@@ -112,11 +114,9 @@
       <h2 id="actionTitle">Action Mode</h2>
       <button id="closeAction">Close</button>
     </div>
+    <iframe id="inlinePreview" sandbox="allow-same-origin" referrerpolicy="no-referrer"></iframe>
     <div id="repoList"></div>
   </div>
-
-  <!-- Safe isolated live preview -->
-  <iframe id="safePreview" sandbox="allow-same-origin" referrerpolicy="no-referrer"></iframe>
 
   <script>
     const input=document.getElementById("githubSearch");
@@ -124,7 +124,7 @@
     const actionTitle=document.getElementById("actionTitle");
     const repoList=document.getElementById("repoList");
     const closeAction=document.getElementById("closeAction");
-    const preview=document.getElementById("safePreview");
+    const preview=document.getElementById("inlinePreview");
 
     let lastSelectedFile=null;
 
@@ -137,7 +137,7 @@
     function closeBox(){
       actionBox.classList.remove("active");
       setTimeout(()=>actionBox.style.display="none",300);
-      preview.style.display="none";
+      preview.srcdoc="";
     }
     if(closeAction)closeAction.addEventListener("click",closeBox);
 
@@ -149,16 +149,15 @@
     replaceBtn.addEventListener("click",()=>{openBox("Replace Mode",'<textarea id="actionInput" style="width:100%;height:80%;background:rgba(0,0,0,0.3);color:var(--pink2);border:none;outline:none;font-family:monospace;font-size:14px;border-radius:10px;padding:10px;resize:none;" placeholder="Paste new replacement code..."></textarea>');});
 
     removeBtn.addEventListener("click",async()=>{
-      openBox("Remove Mode","<div class='meta'>Preparing safe preview...</div>");
+      openBox("Remove Mode","<div class='meta'>Loading preview…</div>");
       if(!lastSelectedFile){
         repoList.innerHTML="<div class='meta'>Select a file first (GitHub search → pick a file), then hit Remove.</div>";
         return;
       }
       try{
         const text=await fetchTextFromLastSelected();
-        preview.style.display="block";
         preview.srcdoc=text;
-        repoList.innerHTML="<div class='meta'>Preview loaded safely below. (Click parts to remove — coming soon)</div>";
+        repoList.innerHTML="<div class='meta'>Preview loaded safely above. (Tap parts to remove — coming soon)</div>";
       }catch(err){
         repoList.innerHTML=`<div class='meta'>Failed to load preview. ${String(err).slice(0,200)}</div>`;
       }
