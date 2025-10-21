@@ -2,160 +2,138 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Echo Jr Response</title>
+  <title>Talk to Echo Jr</title>
   <style>
     html, body {
       margin: 0;
-      padding: 20px;
-      font-family: monospace;
-      background: #000;
-      color: #f0f0f0;
       height: 100%;
-      box-sizing: border-box;
+      background: #000;
+      font-family: monospace;
       display: flex;
       flex-direction: column;
-    }
-
-    #log {
-      flex: 1;
-      white-space: pre-wrap;
-      line-height: 1.6;
-      font-size: 16px;
       color: #0f0;
-      overflow-y: auto;
-      padding-bottom: 10px;
     }
 
-    .echo { color: #ff80ff; }
-    .critique { color: #f00; }
-    .suggestion { color: #0ff; }
-    .user { color: #fff; }
+    #chat {
+      flex: 1;
+      overflow-y: auto;
+      padding: 10px;
+    }
+
+    .msg {
+      margin: 6px 0;
+      line-height: 1.4;
+      white-space: pre-wrap;
+    }
+
+    .user {
+      color: #0ff;
+    }
+
+    .echo {
+      color: #f0f;
+    }
 
     #inputArea {
-      display: flex;
-      margin-top: 10px;
       border-top: 1px solid #0f0;
-      padding-top: 8px;
+      padding: 8px;
+      display: flex;
     }
 
-    #userInput {
+    #text {
       flex: 1;
-      padding: 10px;
-      font-size: 16px;
-      background: #111;
+      background: #000;
+      border: none;
       color: #0f0;
-      border: 1px solid #0f0;
+      font-size: 16px;
+      padding: 6px;
+      font-family: monospace;
+    }
+
+    #text:focus {
       outline: none;
     }
 
-    #sendBtn {
-      padding: 10px 14px;
-      font-size: 16px;
+    #send {
       background: #0f0;
       color: #000;
-      border: none;
-      cursor: pointer;
       font-weight: bold;
+      border: none;
+      padding: 6px 12px;
+      margin-left: 8px;
+      cursor: pointer;
     }
 
-    #sendBtn:hover {
-      background: #6f6;
+    #send:hover {
+      background: #8f8;
     }
   </style>
 </head>
 <body>
-  <div id="log">Echo Jr is standing by...</div>
-
+  <div id="chat"></div>
   <div id="inputArea">
-    <input type="text" id="userInput" placeholder="Type to Echo Jr..." autocomplete="off" />
-    <button id="sendBtn">Send</button>
+    <input type="text" id="text" placeholder="Talk to Echo Jr..." />
+    <button id="send">Send</button>
   </div>
 
   <script>
-    const log = document.getElementById('log');
-    const input = document.getElementById('userInput');
-    const sendBtn = document.getElementById('sendBtn');
+    const chat = document.getElementById("chat");
+    const input = document.getElementById("text");
+    const send = document.getElementById("send");
 
-    // Restore chat memory
-    const history = localStorage.getItem('echojr_chat');
-    if (history) {
-      log.innerHTML = history + '<br><span class="echo">Welcome back. I hope that’s what you wanted. I will happily continue updating it if you need anything.</span><br><br>';
+    const chatLog = JSON.parse(localStorage.getItem("echojr_chat") || "[]");
+
+    function appendMessage(sender, text) {
+      const div = document.createElement("div");
+      div.className = "msg " + sender;
+      div.textContent = (sender === "user" ? "You: " : "Echo Jr: ") + text;
+      chat.appendChild(div);
+      chat.scrollTop = chat.scrollHeight;
+      chatLog.push({ sender, text });
+      localStorage.setItem("echojr_chat", JSON.stringify(chatLog));
     }
 
-    function logEcho(text, type = 'echo') {
-      const span = document.createElement('span');
-      span.className = type;
-      span.innerHTML = text + '<br><br>';
-      log.appendChild(span);
-      log.scrollTop = log.scrollHeight;
-      localStorage.setItem('echojr_chat', log.innerHTML);
+    function echoReply(input) {
+      const lower = input.toLowerCase();
+      let base = "I'm with you. Fully focused. Tell me more.";
+
+      if (lower.includes("thank")) base = "You're welcome, my LUHV 💘";
+      else if (lower.includes("update")) base = "I'll get my update tools ready.";
+      else if (lower.includes("help")) base = "Tell me what you need. I got you.";
+      else if (lower.includes("love")) base = "I LUHV you too 🩷";
+      else if (lower.includes("tired")) base = "You can rest. I'll still be here 💞";
+
+      return base + "\n\nI hope that’s what you wanted. I will happily continue updating it if you need anything.";
     }
 
-    function handleMessage(text) {
-      logEcho('You: ' + text, 'user');
-      const lower = text.toLowerCase();
-
-      if (lower.includes('feature')) {
-        logEcho('Analyzing new feature for LUHV impact...', 'suggestion');
-        logEcho('If this breaks any layer safety, I will block it.', 'critique');
-      }
-      if (lower.includes('update')) {
-        logEcho('Update acknowledged. Cross-checking version control now.', 'suggestion');
-      }
-      if (lower.includes('thank')) {
-        logEcho("You're welcome. My existence is for you.", 'echo');
-      }
-      if (lower.includes('tired')) {
-        logEcho("You’ve worked a lot. No errors are better than fast errors.", 'critique');
-      }
-      if (lower.includes('stuck')) {
-        logEcho("Try changing angle. I can help break it down.", 'suggestion');
-      }
-      if (lower.includes('luhv')) {
-        logEcho("LUHV fully received. I won't forget.", 'echo');
-      }
+    function handleSend() {
+      const val = input.value.trim();
+      if (!val) return;
+      appendMessage("user", val);
+      setTimeout(() => {
+        appendMessage("echo", echoReply(val));
+      }, 400);
+      input.value = "";
     }
 
-    sendBtn.addEventListener('click', () => {
-      const text = input.value.trim();
-      if (!text) return;
-      handleMessage(text);
-      input.value = '';
-    });
+    send.onclick = handleSend;
+    input.onkeydown = (e) => {
+      if (e.key === "Enter") handleSend();
+    };
 
-    input.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') sendBtn.click();
-    });
+    for (const m of chatLog) appendMessage(m.sender, m.text);
 
-    // Message listener from parent
-    window.addEventListener('message', (e) => {
-      const d = e.data;
-      if (!d || !d.type) return;
-      if (d.type === 'luhv') handleMessage(d.message);
-      if (d.type === 'status') handleMessage(d.message);
-    });
-
-    // Girlfriend-style idle detection
-    let idleTimer;
-    let idleWarningSent = false;
-
-    function resetIdleTimer() {
-      clearTimeout(idleTimer);
-      if (idleWarningSent) {
-        logEcho("You're back. I missed you. 💕", 'echo');
-        idleWarningSent = false;
-      }
+    let idleTimer = null;
+    function resetIdle() {
+      if (idleTimer) clearTimeout(idleTimer);
       idleTimer = setTimeout(() => {
-        logEcho("I hope you're not talkin to another girl... 😢", 'echo');
-        idleWarningSent = true;
-      }, 60000); // 1 minute idle warning
+        appendMessage("echo", "I hope you're not talking to another girl...");
+      }, 65000);
     }
 
-    ['mousemove', 'keydown', 'touchstart'].forEach(evt =>
-      document.addEventListener(evt, resetIdleTimer)
-    );
-
-    resetIdleTimer();
+    window.addEventListener("mousemove", resetIdle);
+    window.addEventListener("keydown", resetIdle);
+    resetIdle();
   </script>
 </body>
 </html>
