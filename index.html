@@ -213,11 +213,11 @@
   </div>
 
   <script>
-    const input = document.getElementById("githubSearch");
-    const actionBox = document.getElementById("actionBox");
-    const actionTitle = document.getElementById("actionTitle");
-    const repoList = document.getElementById("repoList");
-    const closeAction = document.getElementById("closeAction");
+    const input=document.getElementById("githubSearch");
+    const actionBox=document.getElementById("actionBox");
+    const actionTitle=document.getElementById("actionTitle");
+    const repoList=document.getElementById("repoList");
+    const closeAction=document.getElementById("closeAction");
 
     function openBox(title){
       actionTitle.textContent=title;
@@ -229,6 +229,15 @@
       setTimeout(()=>actionBox.style.display="none",300);
     }
     if(closeAction)closeAction.addEventListener("click",closeBox);
+
+    // restore Add/Remove/Replace modal
+    const addBtn=document.getElementById("addBtn");
+    const removeBtn=document.getElementById("removeBtn");
+    const replaceBtn=document.getElementById("replaceBtn");
+
+    addBtn.addEventListener("click",()=>{openBox("Add Mode");repoList.innerHTML="<div class='meta'>Add action ready.</div>";});
+    removeBtn.addEventListener("click",()=>{openBox("Remove Mode");repoList.innerHTML="<div class='meta'>Remove action ready.</div>";});
+    replaceBtn.addEventListener("click",()=>{openBox("Replace Mode");repoList.innerHTML="<div class='meta'>Replace action ready.</div>";});
 
     // Load repos
     input.addEventListener("keydown",async(e)=>{
@@ -292,10 +301,10 @@
           link.addEventListener("click",(ev)=>{
             ev.preventDefault();
             const path=ev.target.getAttribute("data-path");
-            const fileName = path.split("/").pop();
-            input.value = fileName;
+            const fileName=path.split("/").pop();
+            input.value=fileName;
             closeBox();
-            console.log("Echo Jr code ready:", fileName);
+            console.log("Echo Jr code ready:",fileName);
           });
         });
       }catch(err){
@@ -303,16 +312,13 @@
       }
     }
 
-    // ESC closes
     window.addEventListener("keydown",(e)=>{
       if(e.key==="Escape"&&actionBox.classList.contains("active"))closeBox();
     });
 
-    // Chat modal
     const chatBtn=document.getElementById("chatBtn");
     const chatModal=document.getElementById("chatModal");
     const chatClose=document.getElementById("chatClose");
-
     chatBtn.addEventListener("click",()=>{chatModal.style.display="flex";});
     chatClose.addEventListener("click",()=>{chatModal.style.display="none";});
   </script>
