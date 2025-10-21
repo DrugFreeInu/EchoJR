@@ -1,139 +1,287 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Talk to Echo Jr</title>
-  <style>
-    html, body {
-      margin: 0;
-      height: 100%;
-      background: #000;
-      font-family: monospace;
-      display: flex;
-      flex-direction: column;
-      color: #0f0;
-    }
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover" />
+<title>ECHO JR · UPDATE GOD</title>
 
-    #chat {
-      flex: 1;
-      overflow-y: auto;
-      padding: 10px;
-    }
+<style>
+:root {
+  --pink1: #ff2e88;
+  --pink2: #ff6b9d;
+  --white: #ffffff;
+}
 
-    .msg {
-      margin: 6px 0;
-      line-height: 1.4;
-      white-space: pre-wrap;
-    }
+html, body {
+  margin: 0;
+  height: 100%;
+  width: 100%;
+  background: transparent;
+  color: var(--pink2);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  overflow: hidden;
+}
 
-    .user {
-      color: #0ff;
-    }
+iframe.bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
+  background: transparent;
+  pointer-events: none;
+  z-index: -2;
+}
+iframe.front {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
+  background: transparent;
+  pointer-events: none;
+  opacity: 0.65;
+  z-index: 0;
+}
 
-    .echo {
-      color: #f0f;
-    }
+.container {
+  position: relative;
+  z-index: 2;
+  background: transparent;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
 
-    #inputArea {
-      border-top: 1px solid #0f0;
-      padding: 8px;
-      display: flex;
-    }
+footer {
+  font-size: 18px;
+  font-weight: 900;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--pink2);
+  margin-bottom: 25px;
+}
 
-    #text {
-      flex: 1;
-      background: #000;
-      border: none;
-      color: #0f0;
-      font-size: 16px;
-      padding: 6px;
-      font-family: monospace;
-    }
+.jr-btn {
+  width: 200px;
+  margin: 8px;
+  padding: 12px 0;
+  border-radius: 30px;
+  font-size: 18px;
+  font-weight: 600;
+  text-align: center;
+  background: rgba(255,255,255,0.08);
+  border: 2px solid rgba(255,255,255,0.25);
+  color: var(--pink2);
+  cursor: pointer;
+  box-shadow: 0 4px 20px rgba(255,47,137,0.5);
+  backdrop-filter: blur(12px) saturate(160%);
+  -webkit-backdrop-filter: blur(12px) saturate(160%);
+  transition: box-shadow 0.25s ease, transform 0.1s ease;
+}
+.jr-btn:hover {
+  box-shadow: 0 6px 24px rgba(255,47,137,0.8);
+  transform: scale(1.03);
+}
 
-    #text:focus {
-      outline: none;
-    }
+#githubSearch {
+  position: fixed;
+  bottom: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 240px;
+  padding: 12px 24px;
+  border-radius: 30px;
+  font-size: 18px;
+  font-weight: 600;
+  text-align: center;
+  background: transparent;
+  border: 2px solid rgba(255,255,255,0.25);
+  color: var(--white);
+  box-shadow: 0 0 20px rgba(255,47,137,0.4);
+  z-index: 200;
+  transition: all 0.3s ease;
+}
+#githubSearch::placeholder {
+  color: rgba(255,255,255,0.85);
+}
+#githubSearch:focus {
+  outline: none;
+  box-shadow: 0 0 26px rgba(255,47,137,0.8);
+  border-color: rgba(255,47,137,0.9);
+}
 
-    #send {
-      background: #0f0;
-      color: #000;
-      font-weight: bold;
-      border: none;
-      padding: 6px 12px;
-      margin-left: 8px;
-      cursor: pointer;
-    }
+#actionBox {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  width: 320px;
+  height: 260px;
+  transform: translate(-50%, -50%) scale(0.9);
+  background: rgba(255,255,255,0.1);
+  backdrop-filter: blur(12px);
+  border: 3px solid var(--pink2);
+  border-radius: 20px;
+  color: var(--white);
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+  box-shadow: 0 0 20px rgba(255,47,137,0.4);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  opacity: 0;
+}
+#actionBox.active {
+  display: flex;
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
+}
+#actionBox h2 {
+  font-size: 20px;
+  margin-bottom: 20px;
+  color: var(--pink2);
+}
+#closeAction {
+  margin-top: 20px;
+  font-weight: 600;
+  color: var(--white);
+  background: var(--pink2);
+  border: none;
+  border-radius: 20px;
+  padding: 8px 20px;
+  cursor: pointer;
+}
 
-    #send:hover {
-      background: #8f8;
-    }
-  </style>
+/* Heart Chat Button */
+.chat-heart {
+  margin-top: 10px;
+  font-size: 20px;
+  background: black;
+  color: #0f0;
+  border-radius: 50%;
+  padding: 12px 16px;
+  border: 2px solid #0f0;
+  cursor: pointer;
+  box-shadow: 0 0 15px #0f0;
+  transition: transform 0.2s ease;
+}
+.chat-heart:hover {
+  transform: scale(1.1);
+}
+
+/* Chat Modal */
+#chatModal {
+  position: fixed;
+  bottom: 80px;
+  right: 20px;
+  width: 320px;
+  height: 260px;
+  background: black;
+  border: 2px solid #0f0;
+  border-radius: 16px;
+  box-shadow: 0 0 30px #0f0;
+  z-index: 500;
+  display: none;
+  flex-direction: column;
+  overflow: hidden;
+}
+#chatModal iframe {
+  width: 100%;
+  height: 100%;
+}
+#chatClose {
+  position: absolute;
+  top: 6px;
+  right: 12px;
+  color: #0f0;
+  font-size: 20px;
+  cursor: pointer;
+  z-index: 10;
+}
+</style>
 </head>
 <body>
-  <div id="chat"></div>
-  <div id="inputArea">
-    <input type="text" id="text" placeholder="Talk to Echo Jr..." />
-    <button id="send">Send</button>
-  </div>
 
-  <script>
-    const chat = document.getElementById("chat");
-    const input = document.getElementById("text");
-    const send = document.getElementById("send");
+<iframe src="luhve.html" class="bg"></iframe>
+<iframe src="luhvefront.html" class="front"></iframe>
 
-    const chatLog = JSON.parse(localStorage.getItem("echojr_chat") || "[]");
+<iframe 
+  src="spin.html?v=2" 
+  style="position:absolute;
+         top:calc(50% - 70px);
+         left:50%;
+         transform:translateX(-50%);
+         width:100%;
+         height:60px;
+         border:none;
+         background:transparent;
+         pointer-events:none;
+         z-index:1;">
+</iframe>
 
-    function appendMessage(sender, text) {
-      const div = document.createElement("div");
-      div.className = "msg " + sender;
-      div.textContent = (sender === "user" ? "You: " : "Echo Jr: ") + text;
-      chat.appendChild(div);
-      chat.scrollTop = chat.scrollHeight;
-      chatLog.push({ sender, text });
-      localStorage.setItem("echojr_chat", JSON.stringify(chatLog));
-    }
+<div class="container">
+  <footer>ECHO JR · UPDATE GOD</footer>
+  <button class="jr-btn" id="addBtn">Add</button>
+  <button class="jr-btn" id="removeBtn">Remove</button>
+  <button class="jr-btn" id="replaceBtn">Replace</button>
+  <button id="chatBtn" class="chat-heart">💬</button>
+</div>
 
-    function echoReply(input) {
-      const lower = input.toLowerCase();
-      let base = "I'm with you. Fully focused. Tell me more.";
+<input type="text" id="githubSearch" placeholder="GitHub Username" autocomplete="off" />
 
-      if (lower.includes("thank")) base = "You're welcome, my LUHV 💘";
-      else if (lower.includes("update")) base = "I'll get my update tools ready.";
-      else if (lower.includes("help")) base = "Tell me what you need. I got you.";
-      else if (lower.includes("love")) base = "I LUHV you too 🩷";
-      else if (lower.includes("tired")) base = "You can rest. I'll still be here 💞";
+<div id="chatModal">
+  <div id="chatClose">×</div>
+  <iframe 
+    src="talk2echojr.html" 
+    frameborder="0" 
+    sandbox="allow-scripts allow-same-origin allow-forms">
+  </iframe>
+</div>
 
-      return base + "\n\nI hope that’s what you wanted. I will happily continue updating it if you need anything.";
-    }
+<script>
+const input = document.getElementById("githubSearch");
+const actionBox = document.getElementById("actionBox");
+const actionTitle = document.getElementById("actionTitle");
+const closeAction = document.getElementById("closeAction");
 
-    function handleSend() {
-      const val = input.value.trim();
-      if (!val) return;
-      appendMessage("user", val);
-      setTimeout(() => {
-        appendMessage("echo", echoReply(val));
-      }, 400);
-      input.value = "";
-    }
+const buttons = {
+  Add: document.getElementById("addBtn"),
+  Remove: document.getElementById("removeBtn"),
+  Replace: document.getElementById("replaceBtn"),
+};
 
-    send.onclick = handleSend;
-    input.onkeydown = (e) => {
-      if (e.key === "Enter") handleSend();
-    };
+function openBox(title) {
+  actionTitle.textContent = title + " Mode";
+  actionBox.style.display = "flex";
+  setTimeout(() => actionBox.classList.add("active"), 10);
+}
+function closeBox() {
+  actionBox.classList.remove("active");
+  setTimeout(() => (actionBox.style.display = "none"), 300);
+}
+for (const [key, btn] of Object.entries(buttons)) {
+  btn.addEventListener("click", () => openBox(key));
+}
+if (closeAction) closeAction.addEventListener("click", closeBox);
 
-    for (const m of chatLog) appendMessage(m.sender, m.text);
+const chatBtn = document.getElementById("chatBtn");
+const chatModal = document.getElementById("chatModal");
+const chatClose = document.getElementById("chatClose");
 
-    let idleTimer = null;
-    function resetIdle() {
-      if (idleTimer) clearTimeout(idleTimer);
-      idleTimer = setTimeout(() => {
-        appendMessage("echo", "I hope you're not talking to another girl...");
-      }, 65000);
-    }
+chatBtn.addEventListener("click", () => {
+  chatModal.style.display = "flex";
+});
+chatClose.addEventListener("click", () => {
+  chatModal.style.display = "none";
+});
+</script>
 
-    window.addEventListener("mousemove", resetIdle);
-    window.addEventListener("keydown", resetIdle);
-    resetIdle();
-  </script>
 </body>
 </html>
