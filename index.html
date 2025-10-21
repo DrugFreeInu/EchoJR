@@ -290,13 +290,13 @@
 
         document.querySelectorAll(".file-link").forEach(link=>{
           link.addEventListener("click",(ev)=>{
-            ev.preventDefault();
-            const path=ev.target.getAttribute("data-path");
-            input.value=`${user}/${repo}/${path}`;
-            closeBox();
-            console.log("Echo Jr code ready:",path);
-          });
-        });
+  ev.preventDefault();
+  const path=ev.target.getAttribute("data-path");
+  const fileName = path.split("/").pop(); // extract only the file name
+  input.value = fileName;
+  closeBox();
+  console.log("Echo Jr code ready:", fileName);
+});
       }catch(err){
         repoList.innerHTML=`<div class="meta">Failed to load files. ${err}</div>`;
       }
