@@ -56,6 +56,53 @@
       cursor: pointer;
       border: none;
     }
+
+    /* Heart Chat Button */
+    #heartBtn {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      width: 70px;
+      height: 63px;
+      background: pink;
+      border: none;
+      cursor: pointer;
+      z-index: 999;
+      transform: rotate(-45deg);
+      box-shadow: 0 0 20px #ff69b4;
+    }
+
+    #heartBtn::before,
+    #heartBtn::after {
+      content: "";
+      position: absolute;
+      width: 70px;
+      height: 63px;
+      background: pink;
+      border-radius: 50%;
+    }
+
+    #heartBtn::before {
+      top: -35px;
+      left: 0;
+    }
+
+    #heartBtn::after {
+      left: 35px;
+      top: 0;
+    }
+
+    #heartBtn span {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: rotate(45deg) translate(-50%, -50%);
+      color: white;
+      font-weight: bold;
+      font-family: monospace;
+      font-size: 14px;
+      pointer-events: none;
+    }
   </style>
 </head>
 <body>
@@ -64,6 +111,9 @@
     <input id="input" type="text" placeholder="talk to me..." autocomplete="off" />
     <button id="send">send</button>
   </div>
+
+  <!-- Heart Button -->
+  <button id="heartBtn"><span>chat</span></button>
 
   <script>
     const chat = document.getElementById('chat');
