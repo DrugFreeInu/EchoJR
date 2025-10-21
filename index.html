@@ -184,28 +184,67 @@ footer {
   <button class="jr-btn" id="addBtn">Add</button>
   <button class="jr-btn" id="removeBtn">Remove</button>
   <button class="jr-btn" id="replaceBtn">Replace</button>
+
+  <!-- Heart button for chat -->
+  <button id="chatBtn" class="chat-heart">💬 Chat</button>
 </div>
 
 <input type="text" id="githubSearch" placeholder="GitHub Username" autocomplete="off" />
 
-<div id="actionBox">
-  <h2 id="actionTitle">Action</h2>
-  <p>This box appears when a button is pressed.</p>
-  <button id="closeAction">Close</button>
+<!-- Modal Chat Box -->
+<div id="chatModal">
+  <div id="chatClose">×</div>
+  <iframe src="talk2echojr.html" frameborder="0"></iframe>
 </div>
 
-<!-- CHAT BUTTON -->
-<iframe 
-  src="talk2echojr.html" 
-  style="position:fixed;
-         bottom:0;
-         right:0;
-         width:300px;
-         height:220px;
-         border:none;
-         background:transparent;
-         z-index:3;">
-</iframe>
+<style>
+/* Heart Chat Button */
+.chat-heart {
+  margin-top: 10px;
+  font-size: 20px;
+  background: black;
+  color: #0f0;
+  border-radius: 50%;
+  padding: 12px 16px;
+  border: 2px solid #0f0;
+  cursor: pointer;
+  box-shadow: 0 0 15px #0f0;
+  transition: transform 0.2s ease;
+}
+.chat-heart:hover {
+  transform: scale(1.1);
+}
+
+/* Chat Modal */
+#chatModal {
+  position: fixed;
+  bottom: 80px;
+  right: 20px;
+  width: 320px;
+  height: 260px;
+  background: black;
+  border: 2px solid #0f0;
+  border-radius: 16px;
+  box-shadow: 0 0 30px #0f0;
+  z-index: 500;
+  display: none;
+  flex-direction: column;
+  overflow: hidden;
+}
+#chatModal iframe {
+  width: 100%;
+  height: 100%;
+}
+#chatClose {
+  position: absolute;
+  top: 6px;
+  right: 12px;
+  color: #0f0;
+  font-size: 20px;
+  cursor: pointer;
+  z-index: 10;
+}
+</style>
 
 <script>
 const input = document.getElementById("githubSearch");
@@ -232,6 +271,18 @@ for (const [key, btn] of Object.entries(buttons)) {
   btn.addEventListener("click", () => openBox(key));
 }
 closeAction.addEventListener("click", closeBox);
+
+// Chat modal logic
+const chatBtn = document.getElementById("chatBtn");
+const chatModal = document.getElementById("chatModal");
+const chatClose = document.getElementById("chatClose");
+
+chatBtn.addEventListener("click", () => {
+  chatModal.style.display = "flex";
+});
+chatClose.addEventListener("click", () => {
+  chatModal.style.display = "none";
+});
 </script>
 
 </body>
