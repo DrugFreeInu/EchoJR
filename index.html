@@ -1,219 +1,227 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover" />
-<title>ECHO JR · UPDATE GOD</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover" />
+  <title>ECHO JR · UPDATE GOD</title>
 
-<style>
-:root {
-  --pink1: #ff2e88;
-  --pink2: #ff6b9d;
-  --white: #ffffff;
-}
+  <style>
+    :root {
+      --pink1: #ff2e88;
+      --pink2: #ff6b9d;
+      --white: #ffffff;
+    }
 
-html, body {
-  margin: 0;
-  height: 100%;
-  width: 100%;
-  background: transparent;
-  color: var(--pink2);
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  overflow: hidden;
-}
+    html, body {
+      margin: 0;
+      height: 100%;
+      width: 100%;
+      background: transparent;
+      color: var(--pink2);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      overflow: hidden;
+    }
 
-iframe.bg {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  border: none;
-  background: transparent;
-  pointer-events: none;
-  z-index: -2;
-}
-iframe.front {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  border: none;
-  background: transparent;
-  pointer-events: none;
-  opacity: 0.65;
-  z-index: 0;
-}
+    iframe.bg {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border: none;
+      background: transparent;
+      pointer-events: none;
+      z-index: -2;
+    }
 
-.container {
-  position: relative;
-  z-index: 2;
-  background: transparent;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
+    iframe.front {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border: none;
+      background: transparent;
+      pointer-events: none;
+      opacity: 0.65;
+      z-index: 0;
+    }
 
-footer {
-  font-size: 18px;
-  font-weight: 900;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  color: var(--pink2);
-  margin-bottom: 25px;
-}
+    .container {
+      position: relative;
+      z-index: 2;
+      background: transparent;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
 
-.jr-btn {
-  width: 200px;
-  margin: 8px;
-  padding: 12px 0;
-  border-radius: 30px;
-  font-size: 18px;
-  font-weight: 600;
-  text-align: center;
-  background: rgba(255,255,255,0.08);
-  border: 2px solid rgba(255,255,255,0.25);
-  color: var(--pink2);
-  cursor: pointer;
-  box-shadow: 0 4px 20px rgba(255,47,137,0.5);
-  backdrop-filter: blur(12px) saturate(160%);
-  -webkit-backdrop-filter: blur(12px) saturate(160%);
-  transition: box-shadow 0.25s ease, transform 0.1s ease;
-}
-.jr-btn:hover {
-  box-shadow: 0 6px 24px rgba(255,47,137,0.8);
-  transform: scale(1.03);
-}
+    footer {
+      font-size: 18px;
+      font-weight: 900;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--pink2);
+      margin-bottom: 25px;
+    }
 
-#githubSearch {
-  position: fixed;
-  bottom: 40px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 240px;
-  padding: 12px 24px;
-  border-radius: 30px;
-  font-size: 18px;
-  font-weight: 600;
-  text-align: center;
-  background: transparent;
-  border: 2px solid rgba(255,255,255,0.25);
-  color: var(--white);
-  box-shadow: 0 0 20px rgba(255,47,137,0.4);
-  z-index: 200;
-  transition: all 0.3s ease;
-}
-#githubSearch::placeholder {
-  color: rgba(255,255,255,0.85);
-}
-#githubSearch:focus {
-  outline: none;
-  box-shadow: 0 0 26px rgba(255,47,137,0.8);
-  border-color: rgba(255,47,137,0.9);
-}
+    .jr-btn {
+      width: 200px;
+      margin: 8px;
+      padding: 12px 0;
+      border-radius: 30px;
+      font-size: 18px;
+      font-weight: 600;
+      text-align: center;
+      background: rgba(255,255,255,0.08);
+      border: 2px solid rgba(255,255,255,0.25);
+      color: var(--pink2);
+      cursor: pointer;
+      box-shadow: 0 4px 20px rgba(255,47,137,0.5);
+      backdrop-filter: blur(12px) saturate(160%);
+      -webkit-backdrop-filter: blur(12px) saturate(160%);
+      transition: box-shadow 0.25s ease, transform 0.1s ease;
+    }
 
-#actionBox {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  width: 320px;
-  height: 260px;
-  transform: translate(-50%, -50%) scale(0.9);
-  background: rgba(255,255,255,0.1);
-  backdrop-filter: blur(12px);
-  border: 3px solid var(--pink2);
-  border-radius: 20px;
-  color: var(--white);
-  display: none;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  z-index: 50;
-  box-shadow: 0 0 20px rgba(255,47,137,0.4);
-  transition: opacity 0.3s ease, transform 0.3s ease;
-  opacity: 0;
-}
-#actionBox.active {
-  display: flex;
-  opacity: 1;
-  transform: translate(-50%, -50%) scale(1);
-}
-#actionBox h2 {
-  font-size: 20px;
-  margin-bottom: 20px;
-  color: var(--pink2);
-}
-#closeAction {
-  margin-top: 20px;
-  font-weight: 600;
-  color: var(--white);
-  background: var(--pink2);
-  border: none;
-  border-radius: 20px;
-  padding: 8px 20px;
-  cursor: pointer;
-}
+    .jr-btn:hover {
+      box-shadow: 0 6px 24px rgba(255,47,137,0.8);
+      transform: scale(1.03);
+    }
 
-/* Chat Heart Button */
-#chatBtn {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  width: 90px;
-  height: 80px;
-  background: #ffb6c1;
-  color: white;
-  font-family: monospace;
-  font-weight: bold;
-  font-size: 16px;
-  text-align: center;
-  line-height: 80px;
-  border: none;
-  cursor: pointer;
-  z-index: 9999;
-  box-shadow: 0 0 20px #ff80ff;
-  clip-path: path("M45 80 Q35 68 25 56 Q5 34 25 12 Q35 0 45 12 Q55 0 65 12 Q85 34 65 56 Q55 68 45 80 Z");
-  transition: transform 0.2s ease;
-}
-#chatBtn:hover {
-  transform: scale(1.08);
-}
+    #githubSearch {
+      position: fixed;
+      bottom: 40px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 240px;
+      padding: 12px 24px;
+      border-radius: 30px;
+      font-size: 18px;
+      font-weight: 600;
+      text-align: center;
+      background: transparent;
+      border: 2px solid rgba(255,255,255,0.25);
+      color: var(--white);
+      box-shadow: 0 0 20px rgba(255,47,137,0.4);
+      z-index: 200;
+      transition: all 0.3s ease;
+    }
 
-/* Chat Modal */
-#chatModal {
-  position: fixed;
-  bottom: 80px;
-  right: 20px;
-  width: 320px;
-  height: 260px;
-  background: black;
-  border: 2px solid #0f0;
-  border-radius: 16px;
-  box-shadow: 0 0 30px #0f0;
-  z-index: 500;
-  display: none;
-  flex-direction: column;
-  overflow: hidden;
-}
-#chatModal iframe {
-  width: 100%;
-  height: 100%;
-}
-#chatClose {
-  position: absolute;
-  top: 6px;
-  right: 12px;
-  color: #0f0;
-  font-size: 20px;
-  cursor: pointer;
-  z-index: 10;
-}
-</style>
+    #githubSearch::placeholder {
+      color: rgba(255,255,255,0.85);
+    }
+
+    #githubSearch:focus {
+      outline: none;
+      box-shadow: 0 0 26px rgba(255,47,137,0.8);
+      border-color: rgba(255,47,137,0.9);
+    }
+
+    #actionBox {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      width: 320px;
+      height: 260px;
+      transform: translate(-50%, -50%) scale(0.9);
+      background: rgba(255,255,255,0.1);
+      backdrop-filter: blur(12px);
+      border: 3px solid var(--pink2);
+      border-radius: 20px;
+      color: var(--white);
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 50;
+      box-shadow: 0 0 20px rgba(255,47,137,0.4);
+      transition: opacity 0.3s ease, transform 0.3s ease;
+      opacity: 0;
+    }
+
+    #actionBox.active {
+      display: flex;
+      opacity: 1;
+      transform: translate(-50%, -50%) scale(1);
+    }
+
+    #actionBox h2 {
+      font-size: 20px;
+      margin-bottom: 20px;
+      color: var(--pink2);
+    }
+
+    #closeAction {
+      margin-top: 20px;
+      font-weight: 600;
+      color: var(--white);
+      background: var(--pink2);
+      border: none;
+      border-radius: 20px;
+      padding: 8px 20px;
+      cursor: pointer;
+    }
+
+    /* Pink Heart Chat Button */
+    #chatBtn {
+      position: fixed;
+      bottom: 16px;
+      right: 20px;
+      width: 90px;
+      height: 80px;
+      background: var(--pink2);
+      color: white;
+      font-weight: bold;
+      font-size: 18px;
+      border: none;
+      border-radius: 50% 50% 0 0;
+      clip-path: path("M45 80 Q15 45 45 15 Q75 45 45 80 Z");
+      box-shadow: 0 0 18px rgba(255,47,137,0.6);
+      z-index: 1000;
+      cursor: pointer;
+      transition: transform 0.2s ease;
+    }
+
+    #chatBtn:hover {
+      transform: scale(1.05);
+    }
+
+    /* Chat Modal */
+    #chatModal {
+      position: fixed;
+      bottom: 80px;
+      right: 20px;
+      width: 320px;
+      height: 260px;
+      background: black;
+      border: 2px solid #0f0;
+      border-radius: 16px;
+      box-shadow: 0 0 30px #0f0;
+      z-index: 500;
+      display: none;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    #chatModal iframe {
+      width: 100%;
+      height: 100%;
+    }
+
+    #chatClose {
+      position: absolute;
+      top: 6px;
+      right: 12px;
+      color: #0f0;
+      font-size: 20px;
+      cursor: pointer;
+      z-index: 10;
+    }
+  </style>
 </head>
 <body>
 
@@ -243,7 +251,7 @@ footer {
 
 <input type="text" id="githubSearch" placeholder="GitHub Username" autocomplete="off" />
 
-<!-- Heart Chat Button -->
+<!-- Pink Heart Chat Button -->
 <button id="chatBtn">chat</button>
 
 <!-- Modal Chat Box -->
@@ -275,10 +283,12 @@ function openBox(title) {
   actionBox.style.display = "flex";
   setTimeout(() => actionBox.classList.add("active"), 10);
 }
+
 function closeBox() {
   actionBox.classList.remove("active");
   setTimeout(() => (actionBox.style.display = "none"), 300);
 }
+
 for (const [key, btn] of Object.entries(buttons)) {
   btn.addEventListener("click", () => openBox(key));
 }
