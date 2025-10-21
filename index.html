@@ -37,9 +37,13 @@ footer{font-size:18px;font-weight:900;letter-spacing:2px;text-transform:uppercas
 
 #actionBox{
   position:fixed;top:50%;left:50%;width:360px;height:520px;transform:translate(-50%,-50%) scale(.9);
-  background:rgba(255,255,255,0.08);backdrop-filter:blur(12px);border:3px solid var(--pink2);border-radius:20px;color:var(--white);
-  display:none;flex-direction:column;z-index:500;box-shadow:0 0 20px rgba(255,47,137,0.4);transition:opacity .3s ease,transform .3s ease;
-  opacity:0;overflow:hidden;
+  background:rgba(255,255,255,0.08);
+  -webkit-backdrop-filter:blur(12px);
+  backdrop-filter:blur(12px);
+  border:3px solid var(--pink2);
+  border-radius:20px;
+  color:var(--white);
+  ...
 }
 #actionBox.active{display:flex;opacity:1;transform:translate(-50%,-50%) scale(1);}
 
