@@ -4,7 +4,6 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover" />
   <title>ECHO JR · UPDATE GOD</title>
-
   <style>
     :root {
       --pink1: #ff2e88;
@@ -26,7 +25,7 @@
       overflow: hidden;
     }
 
-    iframe.bg {
+    iframe.bg, iframe.front {
       position: fixed;
       top: 0;
       left: 0;
@@ -35,20 +34,15 @@
       border: none;
       background: transparent;
       pointer-events: none;
+    }
+
+    iframe.bg {
       z-index: -2;
     }
 
     iframe.front {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      border: none;
-      background: transparent;
-      pointer-events: none;
-      opacity: 0.65;
       z-index: 0;
+      opacity: 0.65;
     }
 
     .container {
@@ -166,31 +160,26 @@
       cursor: pointer;
     }
 
-    /* Pink Heart Chat Button */
     #chatBtn {
-      position: fixed;
-      bottom: 16px;
-      right: 20px;
-      width: 90px;
-      height: 80px;
-      background: var(--pink2);
-      color: white;
-      font-weight: bold;
-      font-size: 18px;
-      border: none;
-      border-radius: 50% 50% 0 0;
-      clip-path: path("M45 80 Q15 45 45 15 Q75 45 45 80 Z");
-      box-shadow: 0 0 18px rgba(255,47,137,0.6);
-      z-index: 1000;
+      margin-top: 20px;
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.08);
+      border: 2px solid rgba(255,255,255,0.25);
+      color: var(--pink2);
+      font-size: 22px;
+      box-shadow: 0 0 20px rgba(255,47,137,0.5);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
       cursor: pointer;
       transition: transform 0.2s ease;
     }
 
     #chatBtn:hover {
-      transform: scale(1.05);
+      transform: scale(1.1);
     }
 
-    /* Chat Modal */
     #chatModal {
       position: fixed;
       bottom: 80px;
@@ -247,64 +236,61 @@
   <button class="jr-btn" id="addBtn">Add</button>
   <button class="jr-btn" id="removeBtn">Remove</button>
   <button class="jr-btn" id="replaceBtn">Replace</button>
+  <button id="chatBtn">💬</button>
 </div>
 
 <input type="text" id="githubSearch" placeholder="GitHub Username" autocomplete="off" />
 
-<!-- Pink Heart Chat Button -->
-<button id="chatBtn">chat</button>
-
-<!-- Modal Chat Box -->
 <div id="chatModal">
   <div id="chatClose">×</div>
   <iframe src="talk2echojr.html" frameborder="0"></iframe>
 </div>
 
-<!-- Hidden Action Box -->
 <div id="actionBox">
   <h2 id="actionTitle">Action Mode</h2>
   <button id="closeAction">Close</button>
 </div>
 
 <script>
-const input = document.getElementById("githubSearch");
-const actionBox = document.getElementById("actionBox");
-const actionTitle = document.getElementById("actionTitle");
-const closeAction = document.getElementById("closeAction");
+  const input = document.getElementById("githubSearch");
+  const actionBox = document.getElementById("actionBox");
+  const actionTitle = document.getElementById("actionTitle");
+  const closeAction = document.getElementById("closeAction");
 
-const buttons = {
-  Add: document.getElementById("addBtn"),
-  Remove: document.getElementById("removeBtn"),
-  Replace: document.getElementById("replaceBtn"),
-};
+  const buttons = {
+    Add: document.getElementById("addBtn"),
+    Remove: document.getElementById("removeBtn"),
+    Replace: document.getElementById("replaceBtn"),
+  };
 
-function openBox(title) {
-  actionTitle.textContent = title + " Mode";
-  actionBox.style.display = "flex";
-  setTimeout(() => actionBox.classList.add("active"), 10);
-}
+  function openBox(title) {
+    actionTitle.textContent = title + " Mode";
+    actionBox.style.display = "flex";
+    setTimeout(() => actionBox.classList.add("active"), 10);
+  }
 
-function closeBox() {
-  actionBox.classList.remove("active");
-  setTimeout(() => (actionBox.style.display = "none"), 300);
-}
+  function closeBox() {
+    actionBox.classList.remove("active");
+    setTimeout(() => (actionBox.style.display = "none"), 300);
+  }
 
-for (const [key, btn] of Object.entries(buttons)) {
-  btn.addEventListener("click", () => openBox(key));
-}
-if (closeAction) closeAction.addEventListener("click", closeBox);
+  for (const [key, btn] of Object.entries(buttons)) {
+    btn.addEventListener("click", () => openBox(key));
+  }
 
-// Chat modal logic
-const chatBtn = document.getElementById("chatBtn");
-const chatModal = document.getElementById("chatModal");
-const chatClose = document.getElementById("chatClose");
+  if (closeAction) closeAction.addEventListener("click", closeBox);
 
-chatBtn.addEventListener("click", () => {
-  chatModal.style.display = "flex";
-});
-chatClose.addEventListener("click", () => {
-  chatModal.style.display = "none";
-});
+  const chatBtn = document.getElementById("chatBtn");
+  const chatModal = document.getElementById("chatModal");
+  const chatClose = document.getElementById("chatClose");
+
+  chatBtn.addEventListener("click", () => {
+    chatModal.style.display = "flex";
+  });
+
+  chatClose.addEventListener("click", () => {
+    chatModal.style.display = "none";
+  });
 </script>
 
 </body>
