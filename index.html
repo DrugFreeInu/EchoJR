@@ -158,46 +158,7 @@ footer {
   padding: 8px 20px;
   cursor: pointer;
 }
-</style>
-</head>
-<body>
 
-<iframe src="luhve.html" class="bg"></iframe>
-<iframe src="luhvefront.html" class="front"></iframe>
-
-<iframe 
-  src="spin.html?v=2" 
-  style="position:absolute;
-         top:calc(50% - 70px);
-         left:50%;
-         transform:translateX(-50%);
-         width:100%;
-         height:60px;
-         border:none;
-         background:transparent;
-         pointer-events:none;
-         z-index:1;">
-</iframe>
-
-<div class="container">
-  <footer>ECHO JR · UPDATE GOD</footer>
-  <button class="jr-btn" id="addBtn">Add</button>
-  <button class="jr-btn" id="removeBtn">Remove</button>
-  <button class="jr-btn" id="replaceBtn">Replace</button>
-
-  <!-- Heart button for chat -->
-  <button id="chatBtn" class="chat-heart">💬 Chat</button>
-</div>
-
-<input type="text" id="githubSearch" placeholder="GitHub Username" autocomplete="off" />
-
-<!-- Modal Chat Box -->
-<div id="chatModal">
-  <div id="chatClose">×</div>
-  <iframe src="talk2echojr.html" frameborder="0"></iframe>
-</div>
-
-<style>
 /* Heart Chat Button */
 .chat-heart {
   margin-top: 10px;
@@ -245,6 +206,43 @@ footer {
   z-index: 10;
 }
 </style>
+</head>
+<body>
+
+<iframe src="luhve.html" class="bg"></iframe>
+<iframe src="luhvefront.html" class="front"></iframe>
+
+<iframe 
+  src="spin.html?v=2" 
+  style="position:absolute;
+         top:calc(50% - 70px);
+         left:50%;
+         transform:translateX(-50%);
+         width:100%;
+         height:60px;
+         border:none;
+         background:transparent;
+         pointer-events:none;
+         z-index:1;">
+</iframe>
+
+<div class="container">
+  <footer>ECHO JR · UPDATE GOD</footer>
+  <button class="jr-btn" id="addBtn">Add</button>
+  <button class="jr-btn" id="removeBtn">Remove</button>
+  <button class="jr-btn" id="replaceBtn">Replace</button>
+
+  <!-- Heart Chat Button -->
+  <button id="chatBtn" class="chat-heart">💬</button>
+</div>
+
+<input type="text" id="githubSearch" placeholder="GitHub Username" autocomplete="off" />
+
+<!-- Modal Chat Box -->
+<div id="chatModal">
+  <div id="chatClose">×</div>
+  <iframe src="talk2echojr.html" frameborder="0"></iframe>
+</div>
 
 <script>
 const input = document.getElementById("githubSearch");
@@ -270,7 +268,7 @@ function closeBox() {
 for (const [key, btn] of Object.entries(buttons)) {
   btn.addEventListener("click", () => openBox(key));
 }
-closeAction.addEventListener("click", closeBox);
+if (closeAction) closeAction.addEventListener("click", closeBox);
 
 // Chat modal logic
 const chatBtn = document.getElementById("chatBtn");
