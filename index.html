@@ -253,14 +253,23 @@
 
 <script>
   const input = document.getElementById("githubSearch");
-  input.addEventListener("keydown", (e) => {
+  input.addEventListener("keydown", async (e) => {
   if (e.key === "Enter") {
     e.preventDefault();
     const user = input.value.trim();
-    if (user) {
-      window.open(`https://github.com/${user}?tab=repositories`, "_blank");
+    if (!user) return;
+
+    try {
+      const res = await fetch(`https://api.github.com/users/${user}/repos`);
+      const data = await res.json();
+      console.log("Repos:", data); // Echo Jr receives them silently
+
+      // You can later show them in a modal or log panel
+    } catch (err) {
+      console.error("GitHub fetch failed:", err);
     }
   }
+});
 });
   const actionBox = document.getElementById("actionBox");
   const actionTitle = document.getElementById("actionTitle");
