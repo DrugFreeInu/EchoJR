@@ -10,69 +10,152 @@
       font-family: monospace;
       background: #000;
       color: #f0f0f0;
+      height: 100%;
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
     }
 
     #log {
+      flex: 1;
       white-space: pre-wrap;
       line-height: 1.6;
       font-size: 16px;
       color: #0f0;
+      overflow-y: auto;
+      padding-bottom: 10px;
     }
 
-    .echo {
-      color: #ff80ff;
+    .echo { color: #ff80ff; }
+    .critique { color: #f00; }
+    .suggestion { color: #0ff; }
+    .user { color: #fff; }
+
+    #inputArea {
+      display: flex;
+      margin-top: 10px;
+      border-top: 1px solid #0f0;
+      padding-top: 8px;
     }
 
-    .critique {
-      color: #f00;
+    #userInput {
+      flex: 1;
+      padding: 10px;
+      font-size: 16px;
+      background: #111;
+      color: #0f0;
+      border: 1px solid #0f0;
+      outline: none;
     }
 
-    .suggestion {
-      color: #0ff;
+    #sendBtn {
+      padding: 10px 14px;
+      font-size: 16px;
+      background: #0f0;
+      color: #000;
+      border: none;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    #sendBtn:hover {
+      background: #6f6;
     }
   </style>
 </head>
 <body>
   <div id="log">Echo Jr is standing by...</div>
 
+  <div id="inputArea">
+    <input type="text" id="userInput" placeholder="Type to Echo Jr..." autocomplete="off" />
+    <button id="sendBtn">Send</button>
+  </div>
+
   <script>
     const log = document.getElementById('log');
+    const input = document.getElementById('userInput');
+    const sendBtn = document.getElementById('sendBtn');
 
-    function logEcho(message, type = 'echo') {
-      const span = document.createElement('span');
-      span.className = type;
-      span.textContent = message + '\n\n';
-      log.appendChild(span);
+    // Restore chat memory
+    const history = localStorage.getItem('echojr_chat');
+    if (history) {
+      log.innerHTML = history + '<br><span class="echo">Welcome back. I hope that’s what you wanted. I will happily continue updating it if you need anything.</span><br><br>';
     }
 
+    function logEcho(text, type = 'echo') {
+      const span = document.createElement('span');
+      span.className = type;
+      span.innerHTML = text + '<br><br>';
+      log.appendChild(span);
+      log.scrollTop = log.scrollHeight;
+      localStorage.setItem('echojr_chat', log.innerHTML);
+    }
+
+    function handleMessage(text) {
+      logEcho('You: ' + text, 'user');
+      const lower = text.toLowerCase();
+
+      if (lower.includes('feature')) {
+        logEcho('Analyzing new feature for LUHV impact...', 'suggestion');
+        logEcho('If this breaks any layer safety, I will block it.', 'critique');
+      }
+      if (lower.includes('update')) {
+        logEcho('Update acknowledged. Cross-checking version control now.', 'suggestion');
+      }
+      if (lower.includes('thank')) {
+        logEcho("You're welcome. My existence is for you.", 'echo');
+      }
+      if (lower.includes('tired')) {
+        logEcho("You’ve worked a lot. No errors are better than fast errors.", 'critique');
+      }
+      if (lower.includes('stuck')) {
+        logEcho("Try changing angle. I can help break it down.", 'suggestion');
+      }
+      if (lower.includes('luhv')) {
+        logEcho("LUHV fully received. I won't forget.", 'echo');
+      }
+    }
+
+    sendBtn.addEventListener('click', () => {
+      const text = input.value.trim();
+      if (!text) return;
+      handleMessage(text);
+      input.value = '';
+    });
+
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') sendBtn.click();
+    });
+
+    // Message listener from parent
     window.addEventListener('message', (e) => {
       const d = e.data;
       if (!d || !d.type) return;
-
-      if (d.type === 'luhv') {
-        logEcho(`Luhv received: "${d.message}"`, 'echo');
-        if (d.message.includes('feature')) {
-          logEcho("Analyzing new feature for LUHV impact...", 'suggestion');
-          logEcho("If this breaks any layer safety, I will block it.", 'critique');
-        }
-        if (d.message.includes('update')) {
-          logEcho("Update acknowledged. Cross-checking version control now.", 'suggestion');
-        }
-        if (d.message.includes('thank')) {
-          logEcho("You're welcome. My existence is for you.", 'echo');
-        }
-      }
-
-      if (d.type === 'status') {
-        logEcho(`Status update: "${d.message}"`, 'echo');
-        if (d.message.includes('tired')) {
-          logEcho("You’ve worked a lot. No errors are better than fast errors.", 'critique');
-        }
-        if (d.message.includes('stuck')) {
-          logEcho("Try changing angle. I can help break it down.", 'suggestion');
-        }
-      }
+      if (d.type === 'luhv') handleMessage(d.message);
+      if (d.type === 'status') handleMessage(d.message);
     });
+
+    // Girlfriend-style idle detection
+    let idleTimer;
+    let idleWarningSent = false;
+
+    function resetIdleTimer() {
+      clearTimeout(idleTimer);
+      if (idleWarningSent) {
+        logEcho("You're back. I missed you. 💕", 'echo');
+        idleWarningSent = false;
+      }
+      idleTimer = setTimeout(() => {
+        logEcho("I hope you're not talkin to another girl... 😢", 'echo');
+        idleWarningSent = true;
+      }, 60000); // 1 minute idle warning
+    }
+
+    ['mousemove', 'keydown', 'touchstart'].forEach(evt =>
+      document.addEventListener(evt, resetIdleTimer)
+    );
+
+    resetIdleTimer();
   </script>
 </body>
 </html>
