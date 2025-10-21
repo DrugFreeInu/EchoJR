@@ -36,7 +36,7 @@ footer{font-size:18px;font-weight:900;letter-spacing:2px;text-transform:uppercas
 #githubSearch:focus{outline:none;box-shadow:0 0 26px rgba(255,47,137,0.8);border-color:rgba(255,47,137,0.9);}
 
 #actionBox{
-  position:fixed;top:50%;left:50%;width:360px;height:420px;transform:translate(-50%,-50%) scale(.9);
+  position:fixed;top:50%;left:50%;width:360px;height:520px;transform:translate(-50%,-50%) scale(.9);
   background:rgba(255,255,255,0.08);backdrop-filter:blur(12px);border:3px solid var(--pink2);border-radius:20px;color:var(--white);
   display:none;flex-direction:column;z-index:500;box-shadow:0 0 20px rgba(255,47,137,0.4);transition:opacity .3s ease,transform .3s ease;
   opacity:0;overflow:hidden;
@@ -53,7 +53,7 @@ footer{font-size:18px;font-weight:900;letter-spacing:2px;text-transform:uppercas
   display:none;
   flex:0 0 180px;
   border:none;
-  margin:10px;
+  margin:10px 16px 0 16px;
   border-radius:12px;
   background:#000;
   box-shadow:inset 0 0 10px rgba(255,47,137,0.5);
@@ -61,7 +61,16 @@ footer{font-size:18px;font-weight:900;letter-spacing:2px;text-transform:uppercas
 }
 #inlinePreview.active{display:block;}
 
-#repoList{flex:1;padding:12px 16px;overflow:auto;text-align:left;color:var(--white);}
+#repoList{
+  flex:1;
+  padding:12px 16px 20px 16px;
+  overflow:auto;
+  text-align:left;
+  color:var(--white);
+  display:flex;
+  flex-direction:column;
+  justify-content:flex-start;
+}
 .repo{padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.12);}
 .repo a{color:var(--pink2);text-decoration:none;font-weight:700;word-break:break-word;cursor:pointer;}
 .meta{font-size:12px;opacity:.85;margin-top:4px;}
@@ -86,7 +95,11 @@ footer{font-size:18px;font-weight:900;letter-spacing:2px;text-transform:uppercas
     <h2 id="actionTitle">Action Mode</h2>
     <button id="closeAction">Close</button>
   </div>
+
+  <!-- Preview now appears first -->
   <iframe id="inlinePreview" sandbox="allow-same-origin"></iframe>
+
+  <!-- Everything else sits below -->
   <div id="repoList"></div>
 </div>
 
@@ -126,7 +139,7 @@ document.getElementById("removeBtn").addEventListener("click",()=>{
     repoList.innerHTML="<div class='meta'>Select a file first (GitHub search → pick a file)</div>";
     return;
   }
-  repoList.innerHTML=`<div class="meta">Preview loaded safely below. Click parts to remove — coming soon.</div>`;
+  repoList.innerHTML=`<div class="meta">Preview loaded safely above. Click parts to remove — coming soon.</div>`;
   fetchTextFromLastSelected().then(text=>{
     preview.srcdoc=text;
   }).catch(()=>{preview.srcdoc="<p style='color:white;text-align:center;'>Failed to load file.</p>";});
