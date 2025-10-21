@@ -253,6 +253,15 @@
 
 <script>
   const input = document.getElementById("githubSearch");
+  input.addEventListener("keydown", (e) => {
+  if (e.key === "Enter") {
+    e.preventDefault();
+    const user = input.value.trim();
+    if (user) {
+      window.open(`https://github.com/${user}?tab=repositories`, "_blank");
+    }
+  }
+});
   const actionBox = document.getElementById("actionBox");
   const actionTitle = document.getElementById("actionTitle");
   const closeAction = document.getElementById("closeAction");
