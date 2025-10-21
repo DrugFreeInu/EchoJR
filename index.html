@@ -174,6 +174,20 @@
       transition:transform .2s ease;
     }
     #chatBtn:hover{transform:scale(1.1);}
+
+    textarea#actionInput{
+      width:100%;
+      height:80%;
+      background:rgba(0,0,0,0.3);
+      color:var(--pink2);
+      border:none;
+      outline:none;
+      font-family:monospace;
+      font-size:14px;
+      border-radius:10px;
+      padding:10px;
+      resize:none;
+    }
   </style>
 </head>
 <body>
@@ -219,8 +233,9 @@
     const repoList=document.getElementById("repoList");
     const closeAction=document.getElementById("closeAction");
 
-    function openBox(title){
+    function openBox(title,content=""){
       actionTitle.textContent=title;
+      repoList.innerHTML=content;
       actionBox.style.display="flex";
       requestAnimationFrame(()=>actionBox.classList.add("active"));
     }
@@ -230,16 +245,16 @@
     }
     if(closeAction)closeAction.addEventListener("click",closeBox);
 
-    // restore Add/Remove/Replace modal
+    // Add / Remove / Replace with text areas
     const addBtn=document.getElementById("addBtn");
     const removeBtn=document.getElementById("removeBtn");
     const replaceBtn=document.getElementById("replaceBtn");
 
-    addBtn.addEventListener("click",()=>{openBox("Add Mode");repoList.innerHTML="<div class='meta'>Add action ready.</div>";});
-    removeBtn.addEventListener("click",()=>{openBox("Remove Mode");repoList.innerHTML="<div class='meta'>Remove action ready.</div>";});
-    replaceBtn.addEventListener("click",()=>{openBox("Replace Mode");repoList.innerHTML="<div class='meta'>Replace action ready.</div>";});
+    addBtn.addEventListener("click",()=>{openBox("Add Mode",'<textarea id="actionInput" placeholder="Type code or text to add..."></textarea>');});
+    removeBtn.addEventListener("click",()=>{openBox("Remove Mode",'<textarea id="actionInput" placeholder="Describe or paste code to remove..."></textarea>');});
+    replaceBtn.addEventListener("click",()=>{openBox("Replace Mode",'<textarea id="actionInput" placeholder="Paste new replacement code..."></textarea>');});
 
-    // Load repos
+    // GitHub search
     input.addEventListener("keydown",async(e)=>{
       if(e.key!=="Enter")return;
       e.preventDefault();
@@ -279,7 +294,7 @@
       }
     });
 
-    // Load files
+    // Files
     async function showFiles(user,repo){
       actionTitle.textContent=`Files · ${repo}`;
       repoList.innerHTML=`<div class="meta">Loading files…</div>`;
@@ -322,6 +337,5 @@
     chatBtn.addEventListener("click",()=>{chatModal.style.display="flex";});
     chatClose.addEventListener("click",()=>{chatModal.style.display="none";});
   </script>
-
 </body>
 </html>
