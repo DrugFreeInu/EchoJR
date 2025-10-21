@@ -6,204 +6,174 @@
   <title>ECHO JR · UPDATE GOD</title>
   <style>
     :root {
-      --pink1: #ff2e88;
-      --pink2: #ff6b9d;
-      --white: #ffffff;
+      --pink1:#ff2e88;
+      --pink2:#ff6b9d;
+      --white:#ffffff;
     }
 
-    html, body {
-      margin: 0;
-      height: 100%;
-      width: 100%;
-      background: transparent;
-      color: var(--pink2);
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      overflow: hidden;
+    html,body{
+      margin:0;
+      height:100%;
+      width:100%;
+      background:transparent;
+      color:var(--pink2);
+      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      text-align:center;
+      overflow:hidden;
     }
 
-    iframe.bg, iframe.front {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      border: none;
-      background: transparent;
-      pointer-events: none;
+    iframe.bg,iframe.front{
+      position:fixed;
+      top:0;left:0;
+      width:100%;height:100%;
+      border:none;
+      background:transparent;
+      pointer-events:none;
+    }
+    iframe.bg{z-index:-2;}
+    iframe.front{z-index:0;opacity:.65;}
+
+    .container{
+      position:relative;
+      z-index:2;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
     }
 
-    iframe.bg { z-index: -2; }
-    iframe.front { z-index: 0; opacity: 0.65; }
-
-    .container {
-      position: relative;
-      z-index: 2;
-      background: transparent;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
+    footer{
+      font-size:18px;
+      font-weight:900;
+      letter-spacing:2px;
+      text-transform:uppercase;
+      color:var(--pink2);
+      margin-bottom:25px;
     }
 
-    footer {
-      font-size: 18px;
-      font-weight: 900;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      color: var(--pink2);
-      margin-bottom: 25px;
+    .jr-btn{
+      width:200px;margin:8px;
+      padding:12px 0;
+      border-radius:30px;
+      font-size:18px;font-weight:600;
+      text-align:center;
+      background:rgba(255,255,255,0.08);
+      border:2px solid rgba(255,255,255,0.25);
+      color:var(--pink2);
+      cursor:pointer;
+      box-shadow:0 4px 20px rgba(255,47,137,0.5);
+      backdrop-filter:blur(12px) saturate(160%);
+      -webkit-backdrop-filter:blur(12px) saturate(160%);
+      transition:box-shadow .25s ease,transform .1s ease;
+    }
+    .jr-btn:hover{box-shadow:0 6px 24px rgba(255,47,137,0.8);transform:scale(1.03);}
+
+    #githubSearch{
+      position:fixed;
+      bottom:40px;left:50%;
+      transform:translateX(-50%);
+      width:240px;
+      padding:12px 24px;
+      border-radius:30px;
+      font-size:18px;font-weight:600;
+      text-align:center;
+      background:transparent;
+      border:2px solid rgba(255,255,255,0.25);
+      color:var(--pink2);
+      box-shadow:0 0 20px rgba(255,47,137,0.4);
+      z-index:200;
+      transition:all .3s ease;
+    }
+    #githubSearch::placeholder{color:var(--pink2);}
+    #githubSearch:focus{
+      outline:none;
+      box-shadow:0 0 26px rgba(255,47,137,0.8);
+      border-color:rgba(255,47,137,0.9);
     }
 
-    .jr-btn {
-      width: 200px;
-      margin: 8px;
-      padding: 12px 0;
-      border-radius: 30px;
-      font-size: 18px;
-      font-weight: 600;
-      text-align: center;
-      background: rgba(255,255,255,0.08);
-      border: 2px solid rgba(255,255,255,0.25);
-      color: var(--pink2);
-      cursor: pointer;
-      box-shadow: 0 4px 20px rgba(255,47,137,0.5);
-      backdrop-filter: blur(12px) saturate(160%);
-      -webkit-backdrop-filter: blur(12px) saturate(160%);
-      transition: box-shadow 0.25s ease, transform 0.1s ease;
+    #actionBox{
+      position:fixed;
+      top:50%;left:50%;
+      width:360px;height:420px;
+      transform:translate(-50%,-50%) scale(.9);
+      background:rgba(255,255,255,0.08);
+      backdrop-filter:blur(12px);
+      border:3px solid var(--pink2);
+      border-radius:20px;
+      color:var(--white);
+      display:none;
+      flex-direction:column;
+      z-index:500;
+      box-shadow:0 0 20px rgba(255,47,137,0.4);
+      transition:opacity .3s ease,transform .3s ease;
+      opacity:0;overflow:hidden;
     }
-    .jr-btn:hover { box-shadow: 0 6px 24px rgba(255,47,137,0.8); transform: scale(1.03); }
+    #actionBox.active{display:flex;opacity:1;transform:translate(-50%,-50%) scale(1);}
+    #actionHeader{
+      padding:12px 16px;
+      border-bottom:2px solid rgba(255,255,255,0.15);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+    }
+    #actionTitle{font-size:18px;color:var(--pink2);margin:0;}
+    #closeAction{
+      font-weight:700;color:var(--white);
+      background:var(--pink2);
+      border:none;border-radius:16px;
+      padding:6px 12px;cursor:pointer;
+    }
+    #repoList{
+      flex:1;padding:12px 16px;
+      overflow:auto;
+      text-align:left;
+      color:var(--white);
+    }
+    .repo{padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.12);}
+    .repo a{
+      color:var(--pink2);
+      text-decoration:none;
+      font-weight:700;
+      word-break:break-word;
+      cursor:pointer;
+    }
+    .meta{font-size:12px;opacity:.85;margin-top:4px;}
 
-    #githubSearch {
-      position: fixed;
-      bottom: 40px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 240px;
-      padding: 12px 24px;
-      border-radius: 30px;
-      font-size: 18px;
-      font-weight: 600;
-      text-align: center;
-      background: transparent;
-      border: 2px solid rgba(255,255,255,0.25);
-      color: var(--pink2);
-      box-shadow: 0 0 20px rgba(255,47,137,0.4);
-      z-index: 200;
-      transition: all 0.3s ease;
+    #chatModal{
+      position:fixed;
+      bottom:80px;right:20px;
+      width:320px;height:260px;
+      background:black;
+      border:2px solid #0f0;
+      border-radius:16px;
+      box-shadow:0 0 30px #0f0;
+      z-index:600;
+      display:none;
+      flex-direction:column;
+      overflow:hidden;
     }
-    #githubSearch::placeholder { color: var(--pink2); }
-    #githubSearch:focus {
-      outline: none;
-      box-shadow: 0 0 26px rgba(255,47,137,0.8);
-      border-color: rgba(255,47,137,0.9);
+    #chatModal iframe{width:100%;height:100%;}
+    #chatClose{
+      position:absolute;top:6px;right:12px;
+      color:#0f0;font-size:20px;
+      cursor:pointer;z-index:10;
     }
-
-    #actionBox {
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      width: 360px;
-      height: 420px;
-      transform: translate(-50%, -50%) scale(0.9);
-      background: rgba(255,255,255,0.08);
-      backdrop-filter: blur(12px);
-      border: 3px solid var(--pink2);
-      border-radius: 20px;
-      color: var(--white);
-      display: none;
-      flex-direction: column;
-      z-index: 500;
-      box-shadow: 0 0 20px rgba(255,47,137,0.4);
-      transition: opacity 0.3s ease, transform 0.3s ease;
-      opacity: 0;
-      overflow: hidden;
+    #chatBtn{
+      margin-top:20px;width:60px;height:60px;
+      border-radius:50%;
+      background:rgba(255,255,255,0.08);
+      border:2px solid rgba(255,255,255,0.25);
+      color:var(--pink2);
+      font-size:22px;
+      box-shadow:0 0 20px rgba(255,47,137,0.5);
+      backdrop-filter:blur(12px);
+      -webkit-backdrop-filter:blur(12px);
+      cursor:pointer;
+      transition:transform .2s ease;
     }
-    #actionBox.active { display: flex; opacity: 1; transform: translate(-50%, -50%) scale(1); }
-    #actionHeader {
-      padding: 12px 16px;
-      border-bottom: 2px solid rgba(255,255,255,0.15);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-    #actionTitle { font-size: 18px; color: var(--pink2); margin: 0; }
-    #closeAction {
-      font-weight: 700;
-      color: var(--white);
-      background: var(--pink2);
-      border: none;
-      border-radius: 16px;
-      padding: 6px 12px;
-      cursor: pointer;
-    }
-    #repoList {
-      flex: 1;
-      padding: 12px 16px;
-      overflow: auto;
-      text-align: left;
-      color: var(--white);
-    }
-    .repo {
-      padding: 10px 0;
-      border-bottom: 1px solid rgba(255,255,255,0.12);
-    }
-    .repo a {
-      color: var(--pink2);
-      text-decoration: none;
-      font-weight: 700;
-      word-break: break-word;
-      cursor: pointer;
-    }
-    .meta {
-      font-size: 12px;
-      opacity: 0.85;
-      margin-top: 4px;
-    }
-
-    #chatModal {
-      position: fixed;
-      bottom: 80px;
-      right: 20px;
-      width: 320px;
-      height: 260px;
-      background: black;
-      border: 2px solid #0f0;
-      border-radius: 16px;
-      box-shadow: 0 0 30px #0f0;
-      z-index: 600;
-      display: none;
-      flex-direction: column;
-      overflow: hidden;
-    }
-    #chatModal iframe { width: 100%; height: 100%; }
-    #chatClose {
-      position: absolute;
-      top: 6px;
-      right: 12px;
-      color: #0f0;
-      font-size: 20px;
-      cursor: pointer;
-      z-index: 10;
-    }
-    #chatBtn {
-      margin-top: 20px;
-      width: 60px;
-      height: 60px;
-      border-radius: 50%;
-      background: rgba(255,255,255,0.08);
-      border: 2px solid rgba(255,255,255,0.25);
-      color: var(--pink2);
-      font-size: 22px;
-      box-shadow: 0 0 20px rgba(255,47,137,0.5);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      cursor: pointer;
-      transition: transform 0.2s ease;
-    }
-    #chatBtn:hover { transform: scale(1.1); }
+    #chatBtn:hover{transform:scale(1.1);}
   </style>
 </head>
 <body>
@@ -213,16 +183,10 @@
 
   <iframe 
     src="spin.html?v=2" 
-    style="position:absolute;
-           top:calc(50% - 70px);
-           left:50%;
+    style="position:absolute;top:calc(50% - 70px);left:50%;
            transform:translateX(-50%);
-           width:100%;
-           height:60px;
-           border:none;
-           background:transparent;
-           pointer-events:none;
-           z-index:1;">
+           width:100%;height:60px;border:none;
+           background:transparent;pointer-events:none;z-index:1;">
   </iframe>
 
   <div class="container">
@@ -255,97 +219,101 @@
     const repoList = document.getElementById("repoList");
     const closeAction = document.getElementById("closeAction");
 
-    function openBox(title) {
-      actionTitle.textContent = title;
-      actionBox.style.display = "flex";
-      requestAnimationFrame(() => actionBox.classList.add("active"));
+    function openBox(title){
+      actionTitle.textContent=title;
+      actionBox.style.display="flex";
+      requestAnimationFrame(()=>actionBox.classList.add("active"));
     }
-
-    function closeBox() {
+    function closeBox(){
       actionBox.classList.remove("active");
-      setTimeout(() => (actionBox.style.display = "none"), 300);
+      setTimeout(()=>actionBox.style.display="none",300);
     }
+    if(closeAction)closeAction.addEventListener("click",closeBox);
 
-    if (closeAction) closeAction.addEventListener("click", closeBox);
-
-    // Fetch repos
-    input.addEventListener("keydown", async (e) => {
-      if (e.key !== "Enter") return;
+    // Load repos
+    input.addEventListener("keydown",async(e)=>{
+      if(e.key!=="Enter")return;
       e.preventDefault();
+      const user=input.value.trim();
+      if(!user)return;
 
-      const user = input.value.trim();
-      if (!user) return;
-
-      actionTitle.textContent = `Repos · ${user}`;
-      repoList.innerHTML = `<div class="meta">Loading repositories…</div>`;
+      actionTitle.textContent=`Repos · ${user}`;
+      repoList.innerHTML=`<div class="meta">Loading repositories…</div>`;
       openBox(actionTitle.textContent);
 
-      try {
-        const res = await fetch(`https://api.github.com/users/${encodeURIComponent(user)}/repos?per_page=100&sort=updated`);
-        const data = await res.json();
-
-        if (!Array.isArray(data) || data.length === 0) {
-          repoList.innerHTML = `<div class="meta">No repositories found for <strong>${user}</strong>.</div>`;
+      try{
+        const res=await fetch(`https://api.github.com/users/${encodeURIComponent(user)}/repos?per_page=100&sort=updated`);
+        const data=await res.json();
+        if(!Array.isArray(data)||data.length===0){
+          repoList.innerHTML=`<div class="meta">No repositories found for <strong>${user}</strong>.</div>`;
           return;
         }
 
-        repoList.innerHTML = data.map(repo => `
+        repoList.innerHTML=data.map(repo=>`
           <div class="repo" data-user="${user}" data-repo="${repo.name}">
             <a href="#" class="repo-link">${repo.name}</a>
-            ${repo.description ? `<div class="meta">${repo.description}</div>` : ``}
-            <div class="meta">Updated: ${new Date(repo.pushed_at).toLocaleString()} · ⭐ ${repo.stargazers_count ?? 0}</div>
+            ${repo.description?`<div class="meta">${repo.description}</div>`:""}
           </div>
         `).join("");
 
-        document.querySelectorAll(".repo-link").forEach(link => {
-          link.addEventListener("click", async (ev) => {
+        document.querySelectorAll(".repo-link").forEach(link=>{
+          link.addEventListener("click",async(ev)=>{
             ev.preventDefault();
-            const repoDiv = ev.target.closest(".repo");
-            const repoName = repoDiv.getAttribute("data-repo");
-            const username = repoDiv.getAttribute("data-user");
-            await showFiles(username, repoName);
+            const repoDiv=ev.target.closest(".repo");
+            const repoName=repoDiv.getAttribute("data-repo");
+            const username=repoDiv.getAttribute("data-user");
+            await showFiles(username,repoName);
           });
         });
-      } catch (err) {
-        repoList.innerHTML = `<div class="meta">Failed to load repos. ${err}</div>`;
+      }catch(err){
+        repoList.innerHTML=`<div class="meta">Failed to load repos. ${err}</div>`;
       }
     });
 
-    // Fetch files in repo
-    async function showFiles(user, repo) {
-      actionTitle.textContent = `Files · ${repo}`;
-      repoList.innerHTML = `<div class="meta">Loading files…</div>`;
+    // Load files
+    async function showFiles(user,repo){
+      actionTitle.textContent=`Files · ${repo}`;
+      repoList.innerHTML=`<div class="meta">Loading files…</div>`;
 
-      try {
-        const res = await fetch(`https://api.github.com/repos/${encodeURIComponent(user)}/${encodeURIComponent(repo)}/contents`);
-        const data = await res.json();
-
-        if (!Array.isArray(data)) {
-          repoList.innerHTML = `<div class="meta">No files found.</div>`;
+      try{
+        const res=await fetch(`https://api.github.com/repos/${encodeURIComponent(user)}/${encodeURIComponent(repo)}/contents`);
+        const data=await res.json();
+        if(!Array.isArray(data)){
+          repoList.innerHTML=`<div class="meta">No files found.</div>`;
           return;
         }
 
-        repoList.innerHTML = data.map(file => {
-          const icon = file.type === "dir" ? "📁" : "📄";
-          return `<div class="repo"><a href="${file.html_url}" target="_blank">${icon} ${file.name}</a></div>`;
+        repoList.innerHTML=data.map(file=>{
+          const icon=file.type==="dir"?"📁":"📄";
+          return `<div class="repo"><a href="#" class="file-link" data-path="${file.path}">${icon} ${file.name}</a></div>`;
         }).join("");
-      } catch (err) {
-        repoList.innerHTML = `<div class="meta">Failed to load files. ${err}</div>`;
+
+        document.querySelectorAll(".file-link").forEach(link=>{
+          link.addEventListener("click",(ev)=>{
+            ev.preventDefault();
+            const path=ev.target.getAttribute("data-path");
+            input.value=`${user}/${repo}/${path}`;
+            closeBox();
+            console.log("Echo Jr code ready:",path);
+          });
+        });
+      }catch(err){
+        repoList.innerHTML=`<div class="meta">Failed to load files. ${err}</div>`;
       }
     }
 
-    // ESC closes the box
-    window.addEventListener("keydown", (e) => {
-      if (e.key === "Escape" && actionBox.classList.contains("active")) closeBox();
+    // ESC closes
+    window.addEventListener("keydown",(e)=>{
+      if(e.key==="Escape"&&actionBox.classList.contains("active"))closeBox();
     });
 
     // Chat modal
-    const chatBtn = document.getElementById("chatBtn");
-    const chatModal = document.getElementById("chatModal");
-    const chatClose = document.getElementById("chatClose");
+    const chatBtn=document.getElementById("chatBtn");
+    const chatModal=document.getElementById("chatModal");
+    const chatClose=document.getElementById("chatClose");
 
-    chatBtn.addEventListener("click", () => { chatModal.style.display = "flex"; });
-    chatClose.addEventListener("click", () => { chatModal.style.display = "none"; });
+    chatBtn.addEventListener("click",()=>{chatModal.style.display="flex";});
+    chatClose.addEventListener("click",()=>{chatModal.style.display="none";});
   </script>
 
 </body>
