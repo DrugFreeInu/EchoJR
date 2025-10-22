@@ -45,9 +45,7 @@ footer{font-size:18px;font-weight:900;letter-spacing:2px;text-transform:uppercas
 iframe.bg, iframe.front, .jr-btn, #githubSearch {
   transition: opacity .5s ease;
 }
-.faded {
-  opacity: 0 !important;
-}
+.faded { opacity: 0 !important; }
 
 #actionBox{
   position:fixed;top:50%;left:50%;width:360px;height:520px;transform:translate(-50%,-50%) scale(.9);
@@ -197,20 +195,12 @@ document.getElementById("removeBtn").addEventListener("click", async () => {
     repoList.innerHTML = "<div class='meta'>Failed to load file text.</div>";
   }
 });
-  
+
 document.getElementById("replaceBtn").addEventListener("click", () => {
   openBox("Replace Mode");
   preview.classList.add("active");
   preview.srcdoc = "<p style='color:white;font-family:monospace;text-align:center;margin-top:70px;'>Replace mode preview area</p>";
 });
-
-async function fetchTextFromLastSelected() {
-  if (lastSelectedFile?.downloadUrl) {
-    const r = await fetch(lastSelectedFile.downloadUrl);
-    return await r.text();
-  }
-  throw new Error("No download URL");
-}
 
 input.addEventListener("keydown", async e => {
   if (e.key !== "Enter") return;
@@ -280,7 +270,7 @@ async function showFiles(user, repo) {
           data-repo="${repo}">📄 ${file.name}</a>
       </div>`).join("");
     document.querySelectorAll(".file-link").forEach(link => {
-      link.addEventListener("click", ev => {
+      link.addEventListener("click", async ev => {
         ev.preventDefault();
         const el = ev.target.closest(".file-link");
         lastSelectedFile = {
