@@ -28,17 +28,26 @@ footer{font-size:18px;font-weight:900;letter-spacing:2px;text-transform:uppercas
   width:200px;margin:8px;padding:12px 0;border-radius:30px;font-size:18px;font-weight:600;text-align:center;
   background:rgba(255,255,255,0.08);border:2px solid rgba(255,255,255,0.25);color:var(--pink2);cursor:pointer;
   box-shadow:0 4px 20px rgba(255,47,137,0.5);backdrop-filter:blur(12px) saturate(160%);-webkit-backdrop-filter:blur(12px) saturate(160%);
-  transition:box-shadow .25s ease,transform .1s ease;
+  transition:box-shadow .25s ease,transform .1s ease,opacity .3s ease;
 }
 .jr-btn:hover{box-shadow:0 6px 24px rgba(255,47,137,0.8);transform:scale(1.03);}
 
 #githubSearch{
   position:fixed;bottom:40px;left:50%;transform:translateX(-50%);width:240px;padding:12px 24px;border-radius:30px;
   font-size:18px;font-weight:600;text-align:center;background:transparent;border:2px solid rgba(255,255,255,0.25);
-  color:var(--pink2);box-shadow:0 0 20px rgba(255,47,137,0.4);z-index:200;transition:all .3s ease;
+  color:var(--pink2);box-shadow:0 0 20px rgba(255,47,137,0.4);z-index:200;
+  transition:all .3s ease, opacity .3s ease;
 }
 #githubSearch::placeholder{color:var(--pink2);}
 #githubSearch:focus{outline:none;box-shadow:0 0 26px rgba(255,47,137,0.8);border-color:rgba(255,47,137,0.9);}
+
+/* Shared fade logic */
+iframe.bg, iframe.front, .jr-btn, #githubSearch {
+  transition: opacity .5s ease;
+}
+.faded {
+  opacity: 0.1 !important;
+}
 
 #actionBox{
   position:fixed;top:50%;left:50%;width:360px;height:520px;transform:translate(-50%,-50%) scale(.9);
@@ -116,173 +125,170 @@ footer{font-size:18px;font-weight:900;letter-spacing:2px;text-transform:uppercas
     <h2 id="actionTitle">Action Mode</h2>
     <button id="closeAction">Close</button>
   </div>
-
-  <!-- Repo filter (new) -->
   <input type="text" id="repoFilter" placeholder="Filter repositories..." />
-
   <iframe id="inlinePreview" sandbox="allow-same-origin"></iframe>
   <div id="repoList"></div>
 </div>
 
 <script>
-const input=document.getElementById("githubSearch");
-const actionBox=document.getElementById("actionBox");
-const actionTitle=document.getElementById("actionTitle");
-const repoList=document.getElementById("repoList");
-const closeAction=document.getElementById("closeAction");
-const preview=document.getElementById("inlinePreview");
-const repoFilter=document.getElementById("repoFilter");
+const input = document.getElementById("githubSearch");
+const actionBox = document.getElementById("actionBox");
+const actionTitle = document.getElementById("actionTitle");
+const repoList = document.getElementById("repoList");
+const closeAction = document.getElementById("closeAction");
+const preview = document.getElementById("inlinePreview");
+const repoFilter = document.getElementById("repoFilter");
 
-let lastSelectedFile=null;
+let lastSelectedFile = null;
 
-function openBox(title,content=""){
-  actionTitle.textContent=title;
-  if(content)repoList.innerHTML=content;
-  actionBox.style.display="flex";
-  requestAnimationFrame(()=>{
+function openBox(title, content = "") {
+  actionTitle.textContent = title;
+  if (content) repoList.innerHTML = content;
+  actionBox.style.display = "flex";
+  requestAnimationFrame(() => {
     actionBox.classList.add("active");
-    document.querySelectorAll("iframe.bg, iframe.front").forEach(f=>f.style.opacity="0.1");
+    document.querySelectorAll("iframe.bg, iframe.front").forEach(f => f.classList.add("faded"));
+    document.querySelectorAll(".jr-btn, #githubSearch").forEach(el => el.classList.add("faded"));
   });
 }
-function closeBox(){
+
+function closeBox() {
   actionBox.classList.remove("active");
   preview.classList.remove("active");
-  preview.srcdoc="";
+  preview.srcdoc = "";
   repoFilter.classList.remove("active");
-  repoFilter.value="";
-  document.querySelectorAll("iframe.bg, iframe.front").forEach(f=>f.style.opacity="1");
-  setTimeout(()=>actionBox.style.display="none",300);
+  repoFilter.value = "";
+  document.querySelectorAll("iframe.bg, iframe.front").forEach(f => f.classList.remove("faded"));
+  document.querySelectorAll(".jr-btn, #githubSearch").forEach(el => el.classList.remove("faded"));
+  setTimeout(() => actionBox.style.display = "none", 300);
 }
-closeAction.addEventListener("click",closeBox);
+closeAction.addEventListener("click", closeBox);
 
-document.getElementById("addBtn").addEventListener("click",()=>{
+document.getElementById("addBtn").addEventListener("click", () => {
   openBox("Add Mode");
   preview.classList.add("active");
-  preview.srcdoc="<p style='color:white;font-family:monospace;text-align:center;margin-top:70px;'>Add mode preview area</p>";
+  preview.srcdoc = "<p style='color:white;font-family:monospace;text-align:center;margin-top:70px;'>Add mode preview area</p>";
 });
 
-document.getElementById("removeBtn").addEventListener("click",()=>{
+document.getElementById("removeBtn").addEventListener("click", () => {
   openBox("Remove Mode");
   preview.classList.add("active");
-  if(!lastSelectedFile){
-    repoList.innerHTML="<div class='meta'>Select a file first (GitHub search → pick a file)</div>";
+  if (!lastSelectedFile) {
+    repoList.innerHTML = "<div class='meta'>Select a file first (GitHub search → pick a file)</div>";
     return;
   }
-  repoList.innerHTML="<div class='meta'>Loading file...</div>";
-  fetchTextFromLastSelected().then(text=>{
-    preview.srcdoc=text;
-    const safeText=text.replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
-    repoList.innerHTML=`
+  repoList.innerHTML = "<div class='meta'>Loading file...</div>";
+  fetchTextFromLastSelected().then(text => {
+    preview.srcdoc = text;
+    const safeText = text.replace(/[&<>]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]));
+    repoList.innerHTML = `
       <div class="meta">Preview loaded safely above. Click parts to remove — coming soon.</div>
       <pre style="white-space:pre-wrap;color:#fff;font-size:12px;margin-top:10px;max-height:180px;overflow:auto;border-top:1px solid rgba(255,255,255,0.15);padding-top:10px;">${safeText}</pre>
     `;
-  }).catch(()=>{
-    preview.srcdoc="<p style='color:white;text-align:center;'>Failed to load file.</p>";
-    repoList.innerHTML="<div class='meta'>Failed to load file text.</div>";
+  }).catch(() => {
+    preview.srcdoc = "<p style='color:white;text-align:center;'>Failed to load file.</p>";
+    repoList.innerHTML = "<div class='meta'>Failed to load file text.</div>";
   });
 });
 
-document.getElementById("replaceBtn").addEventListener("click",()=>{
+document.getElementById("replaceBtn").addEventListener("click", () => {
   openBox("Replace Mode");
   preview.classList.add("active");
-  preview.srcdoc="<p style='color:white;font-family:monospace;text-align:center;margin-top:70px;'>Replace mode preview area</p>";
+  preview.srcdoc = "<p style='color:white;font-family:monospace;text-align:center;margin-top:70px;'>Replace mode preview area</p>";
 });
 
-async function fetchTextFromLastSelected(){
-  if(lastSelectedFile?.downloadUrl){
-    const r=await fetch(lastSelectedFile.downloadUrl);
+async function fetchTextFromLastSelected() {
+  if (lastSelectedFile?.downloadUrl) {
+    const r = await fetch(lastSelectedFile.downloadUrl);
     return await r.text();
   }
   throw new Error("No download URL");
 }
 
-input.addEventListener("keydown",async e=>{
-  if(e.key!=="Enter")return;
+input.addEventListener("keydown", async e => {
+  if (e.key !== "Enter") return;
   e.preventDefault();
-  const user=input.value.trim();
-  if(!user)return;
+  const user = input.value.trim();
+  if (!user) return;
 
-  actionTitle.textContent=`Repos · ${user}`;
-  repoList.innerHTML="<div class='meta'>Loading repositories…</div>";
+  actionTitle.textContent = `Repos · ${user}`;
+  repoList.innerHTML = "<div class='meta'>Loading repositories…</div>";
   openBox(actionTitle.textContent);
-
-  // Close iOS keyboard on the next tick (reliable after popup opens)
-  setTimeout(()=> input.blur(), 0);
+  setTimeout(() => input.blur(), 0);
 
   preview.classList.remove("active");
   repoFilter.classList.add("active");
 
-  try{
-    const res=await fetch(`https://api.github.com/users/${encodeURIComponent(user)}/repos?per_page=100&sort=updated`);
-    const data=await res.json();
-    if(!Array.isArray(data)||!data.length){
-      repoList.innerHTML=`<div class='meta'>No repositories found for <strong>${user}</strong>.</div>`;
+  try {
+    const res = await fetch(`https://api.github.com/users/${encodeURIComponent(user)}/repos?per_page=100&sort=updated`);
+    const data = await res.json();
+    if (!Array.isArray(data) || !data.length) {
+      repoList.innerHTML = `<div class='meta'>No repositories found for <strong>${user}</strong>.</div>`;
       return;
     }
-    repoList.innerHTML=data.map(repo=>`
+    repoList.innerHTML = data.map(repo => `
       <div class="repo" data-user="${user}" data-repo="${repo.name}">
         <a href="#" class="repo-link">${repo.name}</a>
       </div>`).join("");
-    document.querySelectorAll(".repo-link").forEach(link=>{
-      link.addEventListener("click",async ev=>{
+    document.querySelectorAll(".repo-link").forEach(link => {
+      link.addEventListener("click", async ev => {
         ev.preventDefault();
-        const repoDiv=ev.target.closest(".repo");
-        const repoName=repoDiv.getAttribute("data-repo");
-        const username=repoDiv.getAttribute("data-user");
-        await showFiles(username,repoName);
+        const repoDiv = ev.target.closest(".repo");
+        const repoName = repoDiv.getAttribute("data-repo");
+        const username = repoDiv.getAttribute("data-user");
+        await showFiles(username, repoName);
       });
     });
 
-    // 🔍 Live filter logic
-    repoFilter.addEventListener("input",()=>{
-      const term=repoFilter.value.toLowerCase();
-      document.querySelectorAll(".repo").forEach(r=>{
-        r.style.display=r.textContent.toLowerCase().includes(term)?"block":"none";
+    repoFilter.addEventListener("input", () => {
+      const term = repoFilter.value.toLowerCase();
+      document.querySelectorAll(".repo").forEach(r => {
+        r.style.display = r.textContent.toLowerCase().includes(term) ? "block" : "none";
       });
     });
-  }catch(err){
-    repoList.innerHTML=`<div class='meta'>Failed to load repos. ${err}</div>`;
+  } catch (err) {
+    repoList.innerHTML = `<div class='meta'>Failed to load repos. ${err}</div>`;
   }
 });
 
-async function showFiles(user,repo){
-  actionTitle.textContent=`Files · ${repo}`;
-  repoList.innerHTML="<div class='meta'>Loading files…</div>";
+async function showFiles(user, repo) {
+  actionTitle.textContent = `Files · ${repo}`;
+  repoList.innerHTML = "<div class='meta'>Loading files…</div>";
   preview.classList.remove("active");
   repoFilter.classList.remove("active");
-  try{
-    const res=await fetch(`https://api.github.com/repos/${encodeURIComponent(user)}/${encodeURIComponent(repo)}/contents`);
-    const data=await res.json();
-    if(!Array.isArray(data)){
-      repoList.innerHTML="<div class='meta'>No files found.</div>";
+  try {
+    const res = await fetch(`https://api.github.com/repos/${encodeURIComponent(user)}/${encodeURIComponent(repo)}/contents`);
+    const data = await res.json();
+    if (!Array.isArray(data)) {
+      repoList.innerHTML = "<div class='meta'>No files found.</div>";
       return;
     }
-    repoList.innerHTML=data.map(file=>`
+    repoList.innerHTML = data.map(file => `
       <div class="repo">
         <a href="#" class="file-link"
           data-path="${file.path}"
           data-name="${file.name}"
-          data-download="${file.download_url||''}"
+          data-download="${file.download_url || ''}"
           data-user="${user}"
           data-repo="${repo}">📄 ${file.name}</a>
       </div>`).join("");
-    document.querySelectorAll(".file-link").forEach(link=>{
-      link.addEventListener("click",ev=>{
+    document.querySelectorAll(".file-link").forEach(link => {
+      link.addEventListener("click", ev => {
         ev.preventDefault();
-        const el=ev.target.closest(".file-link");
-        lastSelectedFile={
-          user:el.getAttribute("data-user"),
-          repo:el.getAttribute("data-repo"),
-          path:el.getAttribute("data-path"),
-          downloadUrl:el.getAttribute("data-download"),
-          name:el.getAttribute("data-name")
+        const el = ev.target.closest(".file-link");
+        lastSelectedFile = {
+          user: el.getAttribute("data-user"),
+          repo: el.getAttribute("data-repo"),
+          path: el.getAttribute("data-path"),
+          downloadUrl: el.getAttribute("data-download"),
+          name: el.getAttribute("data-name")
         };
-        input.value=lastSelectedFile.name;
+        input.value = lastSelectedFile.name;
         closeBox();
       });
     });
-  }catch(err){
-    repoList.innerHTML=`<div class='meta'>Failed to load files. ${err}</div>`;
+  } catch (err) {
+    repoList.innerHTML = `<div class='meta'>Failed to load files. ${err}</div>`;
   }
 }
 </script>
