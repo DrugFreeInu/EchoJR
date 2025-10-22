@@ -171,12 +171,8 @@ document.getElementById("addBtn").addEventListener("click", () => {
 });
 
 document.getElementById("removeBtn").addEventListener("click", () => {
-  openBox("Remove Mode");
-  preview.classList.add("active");
-  if (!lastSelectedFile) {
-    repoList.innerHTML = "<div class='meta'>Select a file first (GitHub search → pick a file)</div>";
-    return;
-  }
+  window.open('removetest.html', '_blank');
+});
   repoList.innerHTML = "<div class='meta'>Loading file...</div>";
   fetchTextFromLastSelected().then(text => {
     preview.srcdoc = text;
