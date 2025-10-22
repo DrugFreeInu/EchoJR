@@ -170,8 +170,32 @@ document.getElementById("addBtn").addEventListener("click", () => {
   preview.srcdoc = "<p style='color:white;font-family:monospace;text-align:center;margin-top:70px;'>Add mode preview area</p>";
 });
 
-document.getElementById("removeBtn").addEventListener("click", () => {
-  window.open('removetest.html', '_blank');
+document.getElementById("removeBtn").addEventListener("click", async () => {
+  openBox("Remove Mode");
+  preview.classList.add("active");
+
+  if (!lastSelectedFile) {
+    repoList.innerHTML = "<div class='meta'>Select a file first (GitHub search → pick a file)</div>";
+    return;
+  }
+
+  try {
+    const res = await fetch(lastSelectedFile.downloadUrl);
+    const text = await res.text();
+    preview.srcdoc = text;
+
+    const highlightedHTML = await fetch("removePreview.html");
+    const visual = await highlightedHTML.text();
+
+    repoList.innerHTML = `
+      <div class="meta">Tap elements to highlight parts of code. Then remove.</div>
+      <iframe id="tapRemoveFrame" srcdoc="${text.replace(/</g, "&lt;").replace(/>/g, "&gt;")}" style="width:100%;height:180px;border:none;margin-top:12px;background:#000;color:#fff;"></iframe>
+      <div id="removeOptions" style="margin-top:10px;">${visual}</div>
+    `;
+  } catch (err) {
+    preview.srcdoc = "<p style='color:white;text-align:center;'>Failed to load file.</p>";
+    repoList.innerHTML = "<div class='meta'>Failed to load file text.</div>";
+  }
 });
   repoList.innerHTML = "<div class='meta'>Loading file...</div>";
   fetchTextFromLastSelected().then(text => {
