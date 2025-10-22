@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <title>Remove Test</title>
+  <style>
+    body {
+      background: #000;
+      color: var(--pink2, #ff6b9d);
+      font-family: monospace;
+      padding: 20px;
+    }
+
+    .btn-preview {
+      margin: 30px auto;
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+    }
+
+    .code-block {
+      background: #111;
+      padding: 16px;
+      border: 1px solid #ff2e88;
+      border-radius: 12px;
+      margin-top: 20px;
+      white-space: pre-wrap;
+      color: #ff6b9d;
+      font-size: 14px;
+    }
+
+    .code-line {
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .code-line:hover {
+      background: rgba(255, 47, 137, 0.1);
+    }
+
+    #testButton {
+      font-size: 20px;
+      padding: 14px 28px;
+      color: white;
+      background: #ff2e63;
+      border: none;
+      border-radius: 30px;
+      box-shadow: 0 0 25px rgba(255, 46, 136, 0.8);
+      transition: box-shadow 0.3s ease, transform 0.2s ease;
+    }
+
+    /* Optional: glow layer removed on click */
+    .glow-removed {
+      box-shadow: none !important;
+    }
+
+    .radius-removed {
+      border-radius: 0 !important;
+    }
+
+    .bg-removed {
+      background: black !important;
+    }
+
+    .text-removed {
+      color: black !important;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="btn-preview">
+    <button id="testButton">GLOWING BUTTON</button>
+  </div>
+
+  <div class="code-block">
+    <div class="code-line" onclick="removePart('glow')">box-shadow: 0 0 25px rgba(255, 46, 136, 0.8);</div>
+    <div class="code-line" onclick="removePart('radius')">border-radius: 30px;</div>
+    <div class="code-line" onclick="removePart('bg')">background: #ff2e63;</div>
+    <div class="code-line" onclick="removePart('text')">color: white;</div>
+  </div>
+
+  <script>
+    function removePart(type) {
+      const btn = document.getElementById("testButton");
+      if (type === "glow") btn.classList.add("glow-removed");
+      if (type === "radius") btn.classList.add("radius-removed");
+      if (type === "bg") btn.classList.add("bg-removed");
+      if (type === "text") btn.classList.add("text-removed");
+    }
+  </script>
+
+</body>
+</html>
