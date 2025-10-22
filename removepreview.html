@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Remove Preview</title>
+<style>
+  body {
+    margin: 0;
+    background: #000;
+    color: #fff;
+    font-family: monospace;
+    padding: 20px;
+    box-sizing: border-box;
+  }
+
+  .code-line {
+    padding: 4px 8px;
+    border-left: 4px solid transparent;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .code-line:hover {
+    background: rgba(255,255,255,0.05);
+  }
+
+  .highlight {
+    border-left-color: #ff2e88;
+    background: rgba(255,47,137,0.1);
+  }
+
+  .note {
+    font-size: 14px;
+    color: #ff6b9d;
+    margin-bottom: 12px;
+  }
+</style>
+</head>
+<body>
+
+<div class="note">Tap a line to highlight it for removal</div>
+
+<pre id="codeBlock">
+  <div class="code-line">&lt;div class="box"&gt;</div>
+  <div class="code-line">  &lt;h1&gt;Hello World&lt;/h1&gt;</div>
+  <div class="code-line">  &lt;p&gt;Tap any line to mark it&lt;/p&gt;</div>
+  <div class="code-line">&lt;/div&gt;</div>
+</pre>
+
+<script>
+  document.querySelectorAll('.code-line').forEach(line => {
+    line.addEventListener('click', () => {
+      line.classList.toggle('highlight');
+    });
+  });
+</script>
+
+</body>
+</html>
