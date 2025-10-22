@@ -196,7 +196,6 @@ input.addEventListener("keydown",async e=>{
     repoList.innerHTML=data.map(repo=>`
       <div class="repo" data-user="${user}" data-repo="${repo.name}">
         <a href="#" class="repo-link">${repo.name}</a>
-        ${repo.description?`<div class="meta">${repo.description}</div>`:""}
       </div>`).join("");
     document.querySelectorAll(".repo-link").forEach(link=>{
       link.addEventListener("click",async ev=>{
