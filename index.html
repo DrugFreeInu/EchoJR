@@ -56,6 +56,20 @@ footer{font-size:18px;font-weight:900;letter-spacing:2px;text-transform:uppercas
 #actionTitle{font-size:18px;color:var(--pink2);margin:0;}
 #closeAction{font-weight:700;color:var(--white);background:var(--pink2);border:none;border-radius:16px;padding:6px 12px;cursor:pointer;}
 
+#repoFilter{
+  margin:10px 16px;
+  padding:8px 12px;
+  font-size:15px;
+  border:2px solid var(--pink2);
+  border-radius:12px;
+  color:var(--pink2);
+  outline:none;
+  width:calc(100% - 40px);
+  display:none;
+}
+#repoFilter::placeholder{color:var(--pink2);opacity:0.6;}
+#repoFilter.active{display:block;}
+
 #inlinePreview{
   display:none;
   flex:0 0 180px;
@@ -103,8 +117,10 @@ footer{font-size:18px;font-weight:900;letter-spacing:2px;text-transform:uppercas
     <button id="closeAction">Close</button>
   </div>
 
-  <iframe id="inlinePreview" sandbox="allow-same-origin"></iframe>
+  <!-- Repo filter (new) -->
+  <input type="text" id="repoFilter" placeholder="Filter repositories..." />
 
+  <iframe id="inlinePreview" sandbox="allow-same-origin"></iframe>
   <div id="repoList"></div>
 </div>
 
@@ -115,6 +131,7 @@ const actionTitle=document.getElementById("actionTitle");
 const repoList=document.getElementById("repoList");
 const closeAction=document.getElementById("closeAction");
 const preview=document.getElementById("inlinePreview");
+const repoFilter=document.getElementById("repoFilter");
 
 let lastSelectedFile=null;
 
@@ -131,6 +148,8 @@ function closeBox(){
   actionBox.classList.remove("active");
   preview.classList.remove("active");
   preview.srcdoc="";
+  repoFilter.classList.remove("active");
+  repoFilter.value="";
   document.querySelectorAll("iframe.bg, iframe.front").forEach(f=>f.style.opacity="1");
   setTimeout(()=>actionBox.style.display="none",300);
 }
@@ -186,6 +205,7 @@ input.addEventListener("keydown",async e=>{
   repoList.innerHTML="<div class='meta'>Loading repositories…</div>";
   openBox(actionTitle.textContent);
   preview.classList.remove("active");
+  repoFilter.classList.add("active");
   try{
     const res=await fetch(`https://api.github.com/users/${encodeURIComponent(user)}/repos?per_page=100&sort=updated`);
     const data=await res.json();
@@ -206,6 +226,14 @@ input.addEventListener("keydown",async e=>{
         await showFiles(username,repoName);
       });
     });
+
+    // 🔍 Live filter logic
+    repoFilter.addEventListener("input",()=>{
+      const term=repoFilter.value.toLowerCase();
+      document.querySelectorAll(".repo").forEach(r=>{
+        r.style.display=r.textContent.toLowerCase().includes(term)?"block":"none";
+      });
+    });
   }catch(err){
     repoList.innerHTML=`<div class='meta'>Failed to load repos. ${err}</div>`;
   }
@@ -215,6 +243,7 @@ async function showFiles(user,repo){
   actionTitle.textContent=`Files · ${repo}`;
   repoList.innerHTML="<div class='meta'>Loading files…</div>";
   preview.classList.remove("active");
+  repoFilter.classList.remove("active");
   try{
     const res=await fetch(`https://api.github.com/repos/${encodeURIComponent(user)}/${encodeURIComponent(repo)}/contents`);
     const data=await res.json();
