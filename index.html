@@ -201,6 +201,12 @@ input.addEventListener("keydown",async e=>{
   e.preventDefault();
   const user=input.value.trim();
   if(!user)return;
+  input.addEventListener("keydown",async e=>{
+  if(e.key!=="Enter")return;
+  e.preventDefault();
+  const user=input.value.trim();
+  if(!user)return;
+  input.blur(); // closes the iOS keyboard instantly after pressing Enter
   actionTitle.textContent=`Repos · ${user}`;
   repoList.innerHTML="<div class='meta'>Loading repositories…</div>";
   openBox(actionTitle.textContent);
