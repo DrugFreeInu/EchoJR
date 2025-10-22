@@ -180,7 +180,7 @@ document.getElementById("removeBtn").addEventListener("click", async () => {
   try {
     const res = await fetch(lastSelectedFile.downloadUrl);
     const text = await res.text();
-    preview.srcdoc = text;
+    preview.src = "removepreview.html";
 
     const highlightedHTML = await fetch("removePreview.html");
     const visual = await highlightedHTML.text();
