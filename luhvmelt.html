@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>LUHVmelt</title>
+<style>
+html,body{
+  margin:0;
+  height:100%;
+  width:100%;
+  overflow:hidden;
+  background:transparent;
+  position:relative;
+}
+
+.heart{
+  position:absolute;
+  top:-40px;
+  left:50%;
+  width:20px;
+  height:20px;
+  background:radial-gradient(circle at 30% 30%, #ff2e88, #ff6b9d);
+  transform:rotate(45deg);
+  opacity:0;
+  animation:melt 8s ease-in-out infinite;
+}
+
+.heart::before,
+.heart::after{
+  content:'';
+  position:absolute;
+  width:20px;
+  height:20px;
+  background:radial-gradient(circle at 30% 30%, #ff2e88, #ff6b9d);
+  border-radius:50%;
+}
+
+.heart::before{ top:-10px; left:0; }
+.heart::after{ left:-10px; top:0; }
+
+@keyframes melt{
+  0%{
+    transform:rotate(45deg) scale(1);
+    top:-40px;
+    opacity:0;
+    filter:blur(0);
+  }
+  10%{
+    opacity:1;
+  }
+  50%{
+    top:40%;
+    transform:rotate(45deg) scale(1.05);
+    filter:blur(1px);
+  }
+  70%{
+    top:80%;
+    transform:rotate(45deg) scaleY(1.8) scaleX(0.7);
+    filter:blur(2px);
+    opacity:0.8;
+  }
+  85%{
+    transform:rotate(45deg) scaleY(2.5) scaleX(0.4);
+    opacity:0.5;
+    filter:blur(3px);
+  }
+  100%{
+    top:100%;
+    transform:rotate(45deg) scaleY(3) scaleX(0.2);
+    opacity:0;
+    filter:blur(4px);
+  }
+}
+</style>
+</head>
+<body>
+
+<script>
+const total = 12;
+for(let i=0;i<total;i++){
+  const h = document.createElement('div');
+  h.className='heart';
+  h.style.left = Math.random()*100+'%';
+  h.style.animationDelay = (Math.random()*6)+'s';
+  h.style.animationDuration = (6+Math.random()*4)+'s';
+  document.body.appendChild(h);
+}
+</script>
+
+</body>
+</html>
