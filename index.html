@@ -173,10 +173,10 @@ window.addEventListener("message", e => {
       actionBox.style.opacity = "0";
       actionBox.style.pointerEvents = "none";
       setTimeout(() => {
-        actionBox.style.display = "none"; // completely hide behind
+        actionBox.style.display = "none"; // fully hide
       }, 300);
     } else {
-      actionBox.style.display = "flex"; // bring it back clean
+      actionBox.style.display = "flex";
       setTimeout(() => {
         actionBox.style.opacity = "1";
         actionBox.style.pointerEvents = "auto";
@@ -191,6 +191,7 @@ window.addEventListener("message", e => {
     }, 10);
   }
 });
+
 input.addEventListener("keydown", async e => {
   if (e.key !== "Enter") return;
   e.preventDefault();
