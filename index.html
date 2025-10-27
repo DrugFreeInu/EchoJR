@@ -137,6 +137,7 @@ const repoList = document.getElementById("repoList");
 const closeAction = document.getElementById("closeAction");
 const preview = document.getElementById("inlinePreview");
 const finderFrame = document.getElementById("finderFrame");
+
 let lastSelectedFile = null;
 
 function openBox(title, content = "") {
@@ -154,7 +155,8 @@ function openBox(title, content = "") {
 function closeBox() {
   actionBox.classList.remove("active");
   finderFrame.classList.remove("visible");
-  repoList.style.visibility = "visible";
+  actionBox.style.opacity = "1";
+  actionBox.style.pointerEvents = "auto";
   preview.classList.remove("active");
   preview.srcdoc = "";
   document.querySelectorAll("iframe.bg, iframe.front").forEach(f => f.classList.remove("faded"));
@@ -163,17 +165,22 @@ function closeBox() {
 }
 closeAction.addEventListener("click", closeBox);
 
-// ✅ Correct filter behavior
+// 💗 Hide full action box when searching
 window.addEventListener("message", e => {
   if (e.data.type === "filter") {
     const term = e.data.value.toLowerCase();
-    if (term.trim() === "") {
-      repoList.style.visibility = "visible"; // show list if empty search
+    if (term.trim() !== "") {
+      actionBox.style.opacity = "0";          // fully fade out main box
+      actionBox.style.pointerEvents = "none"; // disable clicks
     } else {
-      repoList.style.visibility = "hidden"; // hide only while typing
+      actionBox.style.opacity = "1";
+      actionBox.style.pointerEvents = "auto";
     }
   }
-  if (e.data.type === "closeFilter") repoList.style.visibility = "visible";
+  if (e.data.type === "closeFilter") {
+    actionBox.style.opacity = "1";
+    actionBox.style.pointerEvents = "auto";
+  }
 });
 
 input.addEventListener("keydown", async e => {
@@ -219,7 +226,8 @@ async function showFiles(user, repo) {
   repoList.innerHTML = "<div class='meta'>Loading files…</div>";
   preview.classList.remove("active");
   finderFrame.classList.remove("visible");
-  repoList.style.visibility = "visible";
+  actionBox.style.opacity = "1";
+  actionBox.style.pointerEvents = "auto";
   try {
     const res = await fetch(`https://api.github.com/repos/${encodeURIComponent(user)}/${encodeURIComponent(repo)}/contents`);
     const data = await res.json();
