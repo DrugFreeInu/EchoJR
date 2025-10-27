@@ -172,19 +172,17 @@ window.addEventListener("message", e => {
     if (term.trim() !== "") {
       actionBox.style.opacity = "0";
       actionBox.style.pointerEvents = "none";
-      actionBox.style.transition = "opacity .3s ease";
       setTimeout(() => {
-        actionBox.style.display = "none"; // fully hide box
+        actionBox.style.display = "none"; // completely hide behind
       }, 300);
     } else {
-      actionBox.style.display = "flex"; // bring it back
+      actionBox.style.display = "flex"; // bring it back clean
       setTimeout(() => {
         actionBox.style.opacity = "1";
         actionBox.style.pointerEvents = "auto";
       }, 10);
     }
   }
-
   if (e.data.type === "closeFilter") {
     actionBox.style.display = "flex";
     setTimeout(() => {
@@ -193,7 +191,6 @@ window.addEventListener("message", e => {
     }, 10);
   }
 });
-
 input.addEventListener("keydown", async e => {
   if (e.key !== "Enter") return;
   e.preventDefault();
