@@ -165,27 +165,38 @@ function closeBox() {
 }
 closeAction.addEventListener("click", closeBox);
 
-// 💗 Hide full action box when searching
+// 💗 Hide full action box + button container when searching
 window.addEventListener("message", e => {
   if (e.data.type === "filter") {
     const term = e.data.value.toLowerCase();
+    const container = document.querySelector(".container");
+
     if (term.trim() !== "") {
       actionBox.style.opacity = "0";
       actionBox.style.pointerEvents = "none";
+      container.style.opacity = "0"; // fade buttons too
+      container.style.pointerEvents = "none";
       setTimeout(() => {
-        actionBox.style.display = "none"; // fully hide
+        actionBox.style.display = "none";
+        container.style.display = "none"; // fully gone
       }, 300);
     } else {
+      container.style.display = "flex";
       actionBox.style.display = "flex";
       setTimeout(() => {
+        container.style.opacity = "1";
+        container.style.pointerEvents = "auto";
         actionBox.style.opacity = "1";
         actionBox.style.pointerEvents = "auto";
       }, 10);
     }
   }
   if (e.data.type === "closeFilter") {
-    actionBox.style.display = "flex";
+    const container = document.querySelector(".container");
+    container.style.display = "flex";
     setTimeout(() => {
+      container.style.opacity = "1";
+      container.style.pointerEvents = "auto";
       actionBox.style.opacity = "1";
       actionBox.style.pointerEvents = "auto";
     }, 10);
