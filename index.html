@@ -223,23 +223,6 @@ const closeAction = document.getElementById("closeAction");
 const preview = document.getElementById("inlinePreview");
 const finderFrame = document.getElementById("finderFrame");
 
-// show repo finder only when repo list is open and user taps search
-document.addEventListener('click', e=>{
-  if(e.target.id === 'githubSearch'){
-    finderFrame.contentWindow.postMessage('showFilter','*');
-  }
-});
-
-// hide finder when action box closes
-closeAction.addEventListener('click', ()=>{
-  finderFrame.contentWindow.postMessage('hideFilter','*');
-});
-
-// hide finder when action box closes
-closeAction.addEventListener('click', ()=>{
-  finderFrame.contentWindow.postMessage('hideFilter','*');
-});
-
 let lastSelectedFile = null;
 
 function openBox(title, content = "") {
