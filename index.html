@@ -170,16 +170,27 @@ window.addEventListener("message", e => {
   if (e.data.type === "filter") {
     const term = e.data.value.toLowerCase();
     if (term.trim() !== "") {
-      actionBox.style.opacity = "0";          // fully fade out main box
-      actionBox.style.pointerEvents = "none"; // disable clicks
+      actionBox.style.opacity = "0";
+      actionBox.style.pointerEvents = "none";
+      actionBox.style.transition = "opacity .3s ease";
+      setTimeout(() => {
+        actionBox.style.display = "none"; // fully hide box
+      }, 300);
     } else {
-      actionBox.style.opacity = "1";
-      actionBox.style.pointerEvents = "auto";
+      actionBox.style.display = "flex"; // bring it back
+      setTimeout(() => {
+        actionBox.style.opacity = "1";
+        actionBox.style.pointerEvents = "auto";
+      }, 10);
     }
   }
+
   if (e.data.type === "closeFilter") {
-    actionBox.style.opacity = "1";
-    actionBox.style.pointerEvents = "auto";
+    actionBox.style.display = "flex";
+    setTimeout(() => {
+      actionBox.style.opacity = "1";
+      actionBox.style.pointerEvents = "auto";
+    }, 10);
   }
 });
 
