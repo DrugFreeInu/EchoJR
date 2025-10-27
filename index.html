@@ -75,17 +75,23 @@ iframe.bg, iframe.front, .jr-btn, #githubSearch {
   display:none;
 }
 #repoFilter::placeholder{color:var(--pink2);opacity:0.6;}
-#repoFilter.active{display:block;}
-/* Move repo filter bar to bottom of the repo window */
+#repoFilter.active{display:block;}/* Move repo filter completely outside the pink window, below it */
 #repoFilter {
-  position: absolute;
-  bottom: 10px;
+  position: fixed;
+  bottom: 0;
   left: 50%;
-  transform: translateX(-50%);
-  width: calc(100% - 40px);
+  transform: translateX(-50%) translateY(-20px);
+  width: 260px;
   margin: 0;
+  padding: 10px 16px;
+  border: 2px solid var(--pink2);
+  border-radius: 12px;
+  background: #fff;
+  color: var(--pink2);
+  font-size: 15px;
+  box-shadow: 0 0 25px rgba(255,47,137,0.45);
+  z-index: 600;
 }
-
 #inlinePreview{
   display:none;
   flex:0 0 180px;
