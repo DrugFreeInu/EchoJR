@@ -76,6 +76,15 @@ iframe.bg, iframe.front, .jr-btn, #githubSearch {
 }
 #repoFilter::placeholder{color:var(--pink2);opacity:0.6;}
 #repoFilter.active{display:block;}
+/* Move repo filter bar to bottom of the repo window */
+#repoFilter {
+  position: absolute;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: calc(100% - 40px);
+  margin: 0;
+}
 
 #inlinePreview{
   display:none;
