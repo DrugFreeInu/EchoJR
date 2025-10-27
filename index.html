@@ -63,26 +63,13 @@ iframe.bg, iframe.front, .jr-btn, #githubSearch {
 #actionTitle{font-size:18px;color:var(--pink2);margin:0;}
 #closeAction{font-weight:700;color:var(--white);background:var(--pink2);border:none;border-radius:16px;padding:6px 12px;cursor:pointer;}
 
-#repoFilter{
-  margin:10px 16px;
-  padding:8px 12px;
-  font-size:15px;
-  border:2px solid var(--pink2);
-  border-radius:12px;
-  color:var(--pink2);
-  outline:none;
-  width:calc(100% - 40px);
-  display:none;
-}
-#repoFilter::placeholder{color:var(--pink2);opacity:0.6;}
-#repoFilter.active{display:block;}/* Move repo filter completely outside the pink window, below it */
+
 #repoFilter {
-  position: fixed;
-  bottom: 0;
+  position: fixed !important;
+  bottom: 25px;
   left: 50%;
-  transform: translateX(-50%) translateY(-20px);
+  transform: translateX(-50%);
   width: 260px;
-  margin: 0;
   padding: 10px 16px;
   border: 2px solid var(--pink2);
   border-radius: 12px;
@@ -90,7 +77,11 @@ iframe.bg, iframe.front, .jr-btn, #githubSearch {
   color: var(--pink2);
   font-size: 15px;
   box-shadow: 0 0 25px rgba(255,47,137,0.45);
-  z-index: 600;
+  z-index: 9999;
+  display: none;
+}
+#repoFilter.active {
+  display: block;
 }
 #inlinePreview{
   display:none;
