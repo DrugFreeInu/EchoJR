@@ -63,7 +63,6 @@ iframe.bg, iframe.front, .jr-btn, #githubSearch {
 #actionTitle{font-size:18px;color:var(--pink2);margin:0;}
 #closeAction{font-weight:700;color:var(--white);background:var(--pink2);border:none;border-radius:16px;padding:6px 12px;cursor:pointer;}
 
-
 #repoFilter {
   position: fixed !important;
   bottom: 25px;
@@ -80,9 +79,8 @@ iframe.bg, iframe.front, .jr-btn, #githubSearch {
   z-index: 9999;
   display: none;
 }
-#repoFilter.active {
-  display: block;
-}
+#repoFilter.active { display: block; }
+
 #inlinePreview{
   display:none;
   flex:0 0 180px;
@@ -129,10 +127,11 @@ iframe.bg, iframe.front, .jr-btn, #githubSearch {
     <h2 id="actionTitle">Action Mode</h2>
     <button id="closeAction">Close</button>
   </div>
-  <input type="text" id="repoFilter" placeholder="Filter repositories..." />
   <iframe id="inlinePreview" sandbox="allow-same-origin"></iframe>
   <div id="repoList"></div>
 </div>
+
+<input type="text" id="repoFilter" placeholder="Filter repositories..." />
 
 <script>
 const input = document.getElementById("githubSearch");
