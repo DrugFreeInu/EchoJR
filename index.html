@@ -147,14 +147,17 @@ function openBox(title, content = "") {
     actionBox.classList.add("active");
     document.querySelectorAll("iframe.bg, iframe.front").forEach(f => f.classList.add("faded"));
     document.querySelectorAll(".jr-btn, #githubSearch").forEach(el => el.classList.add("faded"));
-    if (title.startsWith("Repos ·")) finderFrame.classList.add("visible");
+    if (title.startsWith("Repos ·")) {
+      finderFrame.classList.add("visible");
+      repoList.style.visibility = "hidden"; // hide the main list when finder opens
+    }
   });
 }
 
 function closeBox() {
   actionBox.classList.remove("active");
   finderFrame.classList.remove("visible");
-  repoList.style.display = "flex";
+  repoList.style.visibility = "visible";
   preview.classList.remove("active");
   preview.srcdoc = "";
   document.querySelectorAll("iframe.bg, iframe.front").forEach(f => f.classList.remove("faded"));
@@ -168,14 +171,14 @@ window.addEventListener("message", e => {
   if (e.data.type === "filter") {
     const term = e.data.value.toLowerCase();
     if (term.trim() !== "") {
-      repoList.style.display = "none"; // hide behind completely
+      repoList.style.visibility = "hidden"; // vanish behind finder
     } else {
-      repoList.style.display = "flex"; // show when cleared
+      repoList.style.visibility = "visible"; // restore cleanly
     }
   }
 
   if (e.data.type === "closeFilter") {
-    repoList.style.display = "flex";
+    repoList.style.visibility = "visible";
   }
 });
 
@@ -222,6 +225,7 @@ async function showFiles(user, repo) {
   repoList.innerHTML = "<div class='meta'>Loading files…</div>";
   preview.classList.remove("active");
   finderFrame.classList.remove("visible");
+  repoList.style.visibility = "visible";
   try {
     const res = await fetch(`https://api.github.com/repos/${encodeURIComponent(user)}/${encodeURIComponent(repo)}/contents`);
     const data = await res.json();
