@@ -147,10 +147,7 @@ function openBox(title, content = "") {
     actionBox.classList.add("active");
     document.querySelectorAll("iframe.bg, iframe.front").forEach(f => f.classList.add("faded"));
     document.querySelectorAll(".jr-btn, #githubSearch").forEach(el => el.classList.add("faded"));
-    if (title.startsWith("Repos ·")) {
-      finderFrame.classList.add("visible");
-      repoList.style.visibility = "hidden"; // hide the main list when finder opens
-    }
+    if (title.startsWith("Repos ·")) finderFrame.classList.add("visible");
   });
 }
 
@@ -166,20 +163,17 @@ function closeBox() {
 }
 closeAction.addEventListener("click", closeBox);
 
-// handle filter messages
+// ✅ Correct filter behavior
 window.addEventListener("message", e => {
   if (e.data.type === "filter") {
     const term = e.data.value.toLowerCase();
-    if (term.trim() !== "") {
-      repoList.style.visibility = "hidden"; // vanish behind finder
+    if (term.trim() === "") {
+      repoList.style.visibility = "visible"; // show list if empty search
     } else {
-      repoList.style.visibility = "visible"; // restore cleanly
+      repoList.style.visibility = "hidden"; // hide only while typing
     }
   }
-
-  if (e.data.type === "closeFilter") {
-    repoList.style.visibility = "visible";
-  }
+  if (e.data.type === "closeFilter") repoList.style.visibility = "visible";
 });
 
 input.addEventListener("keydown", async e => {
