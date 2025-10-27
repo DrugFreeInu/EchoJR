@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
+<title>Repo Filter · EchoJR</title>
+<style>
+:root {
+  --pink1:#ff2e88;
+  --pink2:#ff6b9d;
+  --white:#ffffff;
+}
+
+html,body{
+  margin:0;
+  padding:0;
+  height:100%;
+  width:100%;
+  background:transparent;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  display:flex;
+  flex-direction:column;
+  justify-content:flex-end;
+  align-items:center;
+  overflow:hidden;
+}
+
+/* floating filter input */
+#repoFilter{
+  position:fixed;
+  bottom:20px;
+  left:50%;
+  transform:translateX(-50%);
+  width:280px;
+  padding:12px 18px;
+  border:2px solid var(--pink2);
+  border-radius:14px;
+  font-size:16px;
+  color:var(--pink2);
+  background:var(--white);
+  box-shadow:0 0 25px rgba(255,47,137,0.5);
+  outline:none;
+  z-index:9999;
+  transition:all .3s ease;
+}
+#repoFilter::placeholder{
+  color:var(--pink2);
+  opacity:0.7;
+}
+#repoFilter:focus{
+  box-shadow:0 0 35px rgba(255,47,137,0.9);
+}
+
+/* results floating just above the bar */
+#resultsBox{
+  position:fixed;
+  bottom:80px;
+  left:50%;
+  transform:translateX(-50%);
+  width:300px;
+  max-height:45%;
+  overflow-y:auto;
+  background:rgba(255,255,255,0.95);
+  border:2px solid var(--pink2);
+  border-radius:14px;
+  box-shadow:0 0 30px rgba(255,47,137,0.4);
+  display:none;
+  flex-direction:column;
+  z-index:9998;
+  backdrop-filter:blur(10px);
+}
+.repo{
+  padding:10px 0;
+  text-align:center;
+  color:var(--pink2);
+  font-weight:700;
+  border-bottom:1px solid rgba(255,47,137,0.15);
+  cursor:pointer;
+  transition:background .15s ease;
+}
+.repo:hover{
+  background:rgba(255,47,137,0.08);
+}
+</style>
+</head>
+<body>
+
+<div id="resultsBox"></div>
+<input id="repoFilter" type="text" placeholder="Filter repositories...">
+
+<script>
+const repoFilter = document.getElementById('repoFilter');
+const resultsBox = document.getElementById('resultsBox');
+
+// sample test data — replace or feed dynamically
+const repos = [
+  "EchoJR",
+  "drugfreeinu.page",
+  "drugfreeinu.foundation",
+  "GodlyEditor",
+  "LUHV.love",
+  "drawPad",
+  "Nowl",
+  "drugfreeinu.link",
+  "drugfreeinu.fun",
+  "bndl",
+  "drugfreeinu.blog",
+  "drugfreeinu.church",
+  "drugfreeinu.money"
+];
+
+repoFilter.addEventListener('input', () => {
+  const term = repoFilter.value.toLowerCase();
+  if (!term.trim()) {
+    resultsBox.style.display = 'none';
+    return;
+  }
+
+  const filtered = repos.filter(r => r.toLowerCase().includes(term));
+  if (filtered.length === 0) {
+    resultsBox.style.display = 'none';
+    return;
+  }
+
+  resultsBox.innerHTML = filtered
+    .map(r => `<div class="repo">${r}</div>`)
+    .join('');
+  resultsBox.style.display = 'flex';
+
+  // tap handler
+  document.querySelectorAll('.repo').forEach(el => {
+    el.onclick = () => {
+      repoFilter.value = el.textContent;
+      resultsBox.style.display = 'none';
+      // could trigger callback for selection here
+    };
+  });
+});
+</script>
+</body>
+</html>
