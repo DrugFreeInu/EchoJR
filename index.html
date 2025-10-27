@@ -81,13 +81,13 @@ footer{
   border-color:rgba(255,47,137,0.9);
 }
 
-/* Shared fade logic */
+/* Fade logic */
 iframe.bg, iframe.front, .jr-btn, #githubSearch {
   transition: opacity .5s ease;
 }
 .faded { opacity: 0 !important; }
 
-/* Action box (repo results window) */
+/* Repo results window */
 #actionBox{
   position:fixed;
   top:50%;
@@ -167,6 +167,25 @@ iframe.bg, iframe.front, .jr-btn, #githubSearch {
   cursor:pointer;
 }
 .meta{font-size:12px;opacity:.85;margin-top:4px;}
+
+/* Finder slide + fade */
+#finderFrame{
+  position:fixed;
+  bottom:-40%;
+  left:0;
+  width:100%;
+  height:40%;
+  border:none;
+  z-index:9999;
+  pointer-events:auto;
+  background:transparent;
+  opacity:0;
+  transition:bottom .4s ease, opacity .4s ease;
+}
+#finderFrame.visible{
+  bottom:0;
+  opacity:1;
+}
 </style>
 </head>
 <body>
@@ -192,9 +211,8 @@ iframe.bg, iframe.front, .jr-btn, #githubSearch {
   <div id="repoList"></div>
 </div>
 
-<!-- load floating finder -->
-<iframe id="finderFrame" src="repoFilter.html"
-  style="position:fixed;bottom:0;left:0;width:100%;height:40%;border:none;z-index:9999;pointer-events:auto;background:transparent;"></iframe>
+<!-- floating repo finder -->
+<iframe id="finderFrame" src="repoFilter.html"></iframe>
 
 <script>
 const input = document.getElementById("githubSearch");
@@ -206,7 +224,6 @@ const preview = document.getElementById("inlinePreview");
 const finderFrame = document.getElementById("finderFrame");
 
 let lastSelectedFile = null;
-let allRepos = [];
 
 function openBox(title, content = "") {
   actionTitle.textContent = title;
@@ -216,11 +233,14 @@ function openBox(title, content = "") {
     actionBox.classList.add("active");
     document.querySelectorAll("iframe.bg, iframe.front").forEach(f => f.classList.add("faded"));
     document.querySelectorAll(".jr-btn, #githubSearch").forEach(el => el.classList.add("faded"));
+    // Show finder only for GitHub repos window
+    if (title.startsWith("Repos ·")) finderFrame.classList.add("visible");
   });
 }
 
 function closeBox() {
   actionBox.classList.remove("active");
+  finderFrame.classList.remove("visible");
   preview.classList.remove("active");
   preview.srcdoc = "";
   document.querySelectorAll("iframe.bg, iframe.front").forEach(f => f.classList.remove("faded"));
@@ -229,7 +249,7 @@ function closeBox() {
 }
 closeAction.addEventListener("click", closeBox);
 
-// Connect finder filter live
+// Live search connection
 window.addEventListener("message", e => {
   if (e.data.type === "filter") {
     const term = e.data.value.toLowerCase();
@@ -258,14 +278,11 @@ input.addEventListener("keydown", async e => {
       return;
     }
 
-    allRepos = data.map(repo => repo.name);
-    repoList.innerHTML = allRepos.map(repo =>
-      `<div class="repo" data-user="${user}" data-repo="${repo}">
-         <a href="#" class="repo-link">${repo}</a>
-       </div>`
-    ).join("");
+    repoList.innerHTML = data.map(repo => `
+      <div class="repo" data-user="${user}" data-repo="${repo.name}">
+        <a href="#" class="repo-link">${repo.name}</a>
+      </div>`).join("");
 
-    // attach file loading
     document.querySelectorAll(".repo-link").forEach(link => {
       link.addEventListener("click", async ev => {
         ev.preventDefault();
@@ -284,6 +301,7 @@ async function showFiles(user, repo) {
   actionTitle.textContent = `Files · ${repo}`;
   repoList.innerHTML = "<div class='meta'>Loading files…</div>";
   preview.classList.remove("active");
+  finderFrame.classList.remove("visible");
   try {
     const res = await fetch(`https://api.github.com/repos/${encodeURIComponent(user)}/${encodeURIComponent(repo)}/contents`);
     const data = await res.json();
