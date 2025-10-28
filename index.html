@@ -170,11 +170,9 @@ iframe.bg, iframe.front, .jr-btn, #githubSearch {
 }
 .repo {
   padding: 14px 0;
-  border-bottom: 1px solid rgba(255, 47, 137, 0.25);
+  border-bottom: 1px solid rgba(255,47,137,0.25);
 }
-.repo:last-child {
-  border-bottom: none;
-}
+.repo:last-child { border-bottom:none; }
 .repo a{
   color:var(--pink2);
   text-decoration:none;
@@ -239,7 +237,7 @@ function closeBox() {
 }
 closeAction.addEventListener("click", closeBox);
 
-// 🔍 Live filtering within same window
+// 🔍 Live filtering
 repoFilter.addEventListener("input", () => {
   const term = repoFilter.value.toLowerCase();
   document.querySelectorAll(".repo").forEach(r => {
@@ -247,6 +245,7 @@ repoFilter.addEventListener("input", () => {
   });
 });
 
+// Main GitHub search
 input.addEventListener("keydown", async e => {
   if (e.key !== "Enter") return;
   e.preventDefault();
@@ -309,6 +308,20 @@ async function showFiles(user, repo) {
     repoList.innerHTML = `<div class='meta'>Failed to load files. ${err}</div>`;
   }
 }
+
+// ✅ Option 2: Instant search on file click
+document.addEventListener("click", e => {
+  const link = e.target.closest(".file-link");
+  if (!link) return;
+  e.preventDefault();
+  const repo = link.getAttribute("data-repo");
+  const file = link.getAttribute("data-name");
+  const user = link.getAttribute("data-user");
+  input.value = `${user}/${repo}/${file}`;
+  closeBox();
+  const event = new KeyboardEvent("keydown", { key: "Enter" });
+  input.dispatchEvent(event);
+});
 </script>
 </body>
 </html>
