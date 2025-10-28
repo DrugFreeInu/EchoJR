@@ -189,7 +189,6 @@ function openBox(title,content=""){
     document.querySelectorAll("iframe.bg,iframe.front").forEach(f=>f.classList.add("faded"));
     document.querySelectorAll(".jr-btn,#githubSearch").forEach(el=>el.classList.add("faded"));
   });
-  // force large scrollbar instantly
   scrollBar.style.height="120px";
   scrollBar.style.top="100px";
   scrollBar.style.opacity="1";
@@ -235,11 +234,37 @@ input.addEventListener("keydown",async e=>{
       <div class="repo" data-user="${user}" data-repo="${repo.name}">
         <a href="#" class="repo-link">${repo.name}</a>
       </div>`).join("");
-    // ensure it stays big
     scrollBar.style.height="120px";
     scrollBar.style.opacity="1";
   }catch(err){
     repoList.innerHTML=`<div class='meta'>Failed to load repos. ${err}</div>`;
+  }
+});
+
+/* click to load repo contents */
+repoList.addEventListener("click",async e=>{
+  const link=e.target.closest(".repo-link");
+  if(!link)return;
+  e.preventDefault();
+  const repoDiv=link.closest(".repo");
+  const user=repoDiv.dataset.user;
+  const repo=repoDiv.dataset.repo;
+  repoList.innerHTML=`<div class='meta'>Loading files for <strong>${repo}</strong>…</div>`;
+  try{
+    const res=await fetch(`https://api.github.com/repos/${encodeURIComponent(user)}/${encodeURIComponent(repo)}/contents`);
+    const data=await res.json();
+    if(!Array.isArray(data)||!data.length){
+      repoList.innerHTML=`<div class='meta'>No files found in <strong>${repo}</strong>.</div>`;
+      return;
+    }
+    repoList.innerHTML=data.map(file=>`
+      <div class="repo">
+        <a href="${file.html_url}" target="_blank">${file.name}</a>
+        <div class="meta">${file.type}</div>
+      </div>`).join("");
+    actionTitle.textContent=`Files · ${repo}`;
+  }catch(err){
+    repoList.innerHTML=`<div class='meta'>Failed to load files. ${err}</div>`;
   }
 });
 
@@ -248,7 +273,7 @@ repoList.addEventListener("scroll",()=>{
   const {scrollTop,scrollHeight,clientHeight}=repoList;
   const visibleRatio=clientHeight/scrollHeight;
   const topRatio=scrollTop/(scrollHeight-clientHeight);
-  const barHeight=120; // locked large
+  const barHeight=120;
   scrollBar.style.height=barHeight+"px";
   scrollBar.style.top=(100+topRatio*(clientHeight-barHeight))+"px";
 });
