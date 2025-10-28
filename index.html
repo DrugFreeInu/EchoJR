@@ -179,6 +179,7 @@ const repoList=document.getElementById("repoList");
 const scrollBar=document.getElementById("scrollBar");
 const closeAction=document.getElementById("closeAction");
 
+/* open/close */
 function openBox(title,content=""){
   actionTitle.textContent=title;
   if(content)repoList.innerHTML=content;
@@ -188,11 +189,13 @@ function openBox(title,content=""){
     document.querySelectorAll("iframe.bg,iframe.front").forEach(f=>f.classList.add("faded"));
     document.querySelectorAll(".jr-btn,#githubSearch").forEach(el=>el.classList.add("faded"));
   });
-  scrollBar.style.height="80px";
+  // force large scrollbar instantly
+  scrollBar.style.height="120px";
+  scrollBar.style.top="100px";
   scrollBar.style.opacity="1";
-  scrollBar.style.transform="scaleY(1)";
 }
 
+/* close */
 function closeBox(){
   actionBox.classList.remove("active");
   document.querySelectorAll("iframe.bg,iframe.front").forEach(f=>f.classList.remove("faded"));
@@ -201,6 +204,7 @@ function closeBox(){
 }
 closeAction.addEventListener("click",closeBox);
 
+/* filter */
 repoFilter.addEventListener("input",()=>{
   const term=repoFilter.value.toLowerCase();
   document.querySelectorAll(".repo").forEach(r=>{
@@ -208,15 +212,18 @@ repoFilter.addEventListener("input",()=>{
   });
 });
 
+/* GitHub repos */
 input.addEventListener("keydown",async e=>{
   if(e.key!=="Enter")return;
   e.preventDefault();
   const user=input.value.trim();
   if(!user)return;
+
   actionTitle.textContent=`Repos · ${user}`;
   repoList.innerHTML="<div class='meta'>Loading repositories…</div>";
   openBox(actionTitle.textContent);
   setTimeout(()=>input.blur(),0);
+
   try{
     const res=await fetch(`https://api.github.com/users/${encodeURIComponent(user)}/repos?per_page=100&sort=updated`);
     const data=await res.json();
@@ -228,18 +235,20 @@ input.addEventListener("keydown",async e=>{
       <div class="repo" data-user="${user}" data-repo="${repo.name}">
         <a href="#" class="repo-link">${repo.name}</a>
       </div>`).join("");
-    scrollBar.style.height="80px";
+    // ensure it stays big
+    scrollBar.style.height="120px";
     scrollBar.style.opacity="1";
   }catch(err){
     repoList.innerHTML=`<div class='meta'>Failed to load repos. ${err}</div>`;
   }
 });
 
+/* fixed large scroll */
 repoList.addEventListener("scroll",()=>{
   const {scrollTop,scrollHeight,clientHeight}=repoList;
   const visibleRatio=clientHeight/scrollHeight;
   const topRatio=scrollTop/(scrollHeight-clientHeight);
-  const barHeight=Math.max(visibleRatio*clientHeight,80);
+  const barHeight=120; // locked large
   scrollBar.style.height=barHeight+"px";
   scrollBar.style.top=(100+topRatio*(clientHeight-barHeight))+"px";
 });
