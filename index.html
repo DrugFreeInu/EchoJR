@@ -98,7 +98,7 @@ iframe.bg, iframe.front, .jr-btn, #githubSearch {transition:opacity .5s ease;}
 /* scrollable repo list */
 #repoList{
   flex:1;
-  padding:12px 32px 20px 16px; /* space for scrollbar column */
+  padding:12px 32px 20px 16px;
   overflow-y:auto;
   -webkit-overflow-scrolling:touch;
   position:relative;
@@ -109,27 +109,27 @@ iframe.bg, iframe.front, .jr-btn, #githubSearch {transition:opacity .5s ease;}
   justify-content:flex-start;
 }
 
-/* custom scrollbar: full track + moving thumb */
+/* calm scroll track & thumb */
 #scrollBarTrack {
   position:absolute;
   top:100px;
   right:22px;
-  width:12px;
+  width:10px;
   height:calc(100% - 120px);
-  background:rgba(255,47,137,0.1);
+  background:rgba(255,47,137,0.12);
   border-radius:10px;
-  box-shadow:inset 0 0 6px rgba(255,47,137,0.25);
+  box-shadow:inset 0 0 8px rgba(255,47,137,0.15);
   z-index:8;
 }
 #scrollBar {
   position:absolute;
   top:100px;
   right:22px;
-  width:12px;
+  width:10px;
   height:40px;
-  background:var(--pink2);
+  background:rgba(255,47,137,0.4);
   border-radius:10px;
-  box-shadow:0 0 8px rgba(255,47,137,0.7);
+  box-shadow:none;
   z-index:9;
   transition:height .2s ease, opacity .3s ease, top .2s ease;
 }
@@ -175,7 +175,6 @@ const actionBox=document.getElementById("actionBox");
 const actionTitle=document.getElementById("actionTitle");
 const repoList=document.getElementById("repoList");
 const scrollBar=document.getElementById("scrollBar");
-const scrollTrack=document.getElementById("scrollBarTrack");
 const closeAction=document.getElementById("closeAction");
 
 function openBox(title,content=""){
@@ -259,7 +258,7 @@ async function showFiles(user,repo){
   }
 }
 
-/* glowing LUHV scroll logic */
+/* soft scroll motion */
 repoList.addEventListener("scroll",()=>{
   const {scrollTop,scrollHeight,clientHeight}=repoList;
   const visibleRatio=clientHeight/scrollHeight;
@@ -267,18 +266,6 @@ repoList.addEventListener("scroll",()=>{
   const barHeight=Math.max(visibleRatio*clientHeight,40);
   scrollBar.style.height=barHeight+"px";
   scrollBar.style.top=(100+topRatio*(clientHeight-barHeight))+"px";
-  scrollBar.style.opacity=1;
-  clearTimeout(scrollBar._fade);
-  scrollBar._fade=setTimeout(()=>scrollBar.style.opacity=0.6,800);
-});
-
-document.addEventListener("click",e=>{
-  const link=e.target.closest(".file-link");
-  if(!link)return;
-  e.preventDefault();
-  const file=link.getAttribute("data-name");
-  input.value=file;
-  closeBox();
 });
 </script>
 </body>
