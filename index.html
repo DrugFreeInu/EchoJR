@@ -258,7 +258,7 @@ repoList.addEventListener("click",async e=>{
       return;
     }
     repoList.innerHTML=data.map(file=>`
-      <div class="repo" data-user="${user}" data-repo="${repo}" data-file="${file.name}">
+      <div class="repo" data-file="${file.name}">
         <a href="#" class="file-link">${file.name}</a>
         <div class="meta">${file.type}</div>
       </div>`).join("");
@@ -276,7 +276,16 @@ repoList.addEventListener("click",e=>{
   const div=file.closest(".repo");
   const filename=div.dataset.file;
   input.value=filename;
+  input.dataset.autofilled="true";
   closeBox();
+});
+
+/* clear on focus if it was autofilled */
+input.addEventListener("focus",()=>{
+  if(input.dataset.autofilled==="true"){
+    input.value="";
+    input.dataset.autofilled="false";
+  }
 });
 
 /* fixed large scroll */
