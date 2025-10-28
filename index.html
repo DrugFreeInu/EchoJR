@@ -109,12 +109,12 @@ iframe.bg, iframe.front, .jr-btn, #githubSearch {transition:opacity .5s ease;}
   justify-content:flex-start;
 }
 
-/* smooth soft scroll visuals */
+/* LUHV scroll visuals */
 #scrollBarTrack {
   position:absolute;
   top:100px;
   right:22px;
-  width:12px;
+  width:14px;
   height:calc(100% - 120px);
   background:rgba(255,47,137,0.12);
   border-radius:10px;
@@ -125,13 +125,14 @@ iframe.bg, iframe.front, .jr-btn, #githubSearch {transition:opacity .5s ease;}
   position:absolute;
   top:100px;
   right:22px;
-  width:12px;
-  height:40px;
-  background:rgba(255,47,137,0.5);
+  width:14px;
+  height:80px; /* start large */
+  background:rgba(255,47,137,0.6);
   border-radius:10px;
-  box-shadow:0 0 6px rgba(255,47,137,0.3);
+  box-shadow:0 0 8px rgba(255,47,137,0.5);
   z-index:9;
-  transition:height .25s ease, top .25s ease, background .4s ease;
+  opacity:1;
+  transition:height .3s ease, top .25s ease, background .4s ease, box-shadow .4s ease;
 }
 
 /* repo list items */
@@ -177,6 +178,7 @@ const repoList=document.getElementById("repoList");
 const scrollBar=document.getElementById("scrollBar");
 const closeAction=document.getElementById("closeAction");
 
+/* open/close logic */
 function openBox(title,content=""){
   actionTitle.textContent=title;
   if(content)repoList.innerHTML=content;
@@ -186,7 +188,12 @@ function openBox(title,content=""){
     document.querySelectorAll("iframe.bg,iframe.front").forEach(f=>f.classList.add("faded"));
     document.querySelectorAll(".jr-btn,#githubSearch").forEach(el=>el.classList.add("faded"));
   });
+  // show scrollbar big right away
+  scrollBar.style.height="80px";
+  scrollBar.style.top="100px";
+  scrollBar.style.opacity="1";
 }
+
 function closeBox(){
   actionBox.classList.remove("active");
   document.querySelectorAll("iframe.bg,iframe.front").forEach(f=>f.classList.remove("faded"));
@@ -195,6 +202,7 @@ function closeBox(){
 }
 closeAction.addEventListener("click",closeBox);
 
+/* filter logic */
 repoFilter.addEventListener("input",()=>{
   const term=repoFilter.value.toLowerCase();
   document.querySelectorAll(".repo").forEach(r=>{
@@ -202,6 +210,7 @@ repoFilter.addEventListener("input",()=>{
   });
 });
 
+/* github repo loading */
 input.addEventListener("keydown",async e=>{
   if(e.key!=="Enter")return;
   e.preventDefault();
@@ -225,6 +234,11 @@ input.addEventListener("keydown",async e=>{
         <a href="#" class="repo-link">${repo.name}</a>
       </div>`).join("");
 
+    // ensure scrollbar visible from start
+    scrollBar.style.height="80px";
+    scrollBar.style.top="100px";
+    scrollBar.style.opacity="1";
+
     document.querySelectorAll(".repo-link").forEach(link=>{
       link.addEventListener("click",async ev=>{
         ev.preventDefault();
@@ -239,6 +253,7 @@ input.addEventListener("keydown",async e=>{
   }
 });
 
+/* show files */
 async function showFiles(user,repo){
   actionTitle.textContent=`Files · ${repo}`;
   repoList.innerHTML="<div class='meta'>Loading files…</div>";
@@ -258,7 +273,7 @@ async function showFiles(user,repo){
   }
 }
 
-/* soft LUHV scroll */
+/* LUHV scroll motion */
 repoList.addEventListener("scroll",()=>{
   const {scrollTop,scrollHeight,clientHeight}=repoList;
   const visibleRatio=clientHeight/scrollHeight;
