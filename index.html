@@ -132,7 +132,8 @@ iframe.bg, iframe.front, .jr-btn, #githubSearch {transition:opacity .5s ease;}
   box-shadow:0 0 10px rgba(255,47,137,0.5);
   z-index:9;
   opacity:1;
-  transition:top .25s ease;
+  transform:scaleY(1)!important;
+  transition:none!important;
 }
 
 /* repo list items */
@@ -178,7 +179,6 @@ const repoList=document.getElementById("repoList");
 const scrollBar=document.getElementById("scrollBar");
 const closeAction=document.getElementById("closeAction");
 
-/* open and close */
 function openBox(title,content=""){
   actionTitle.textContent=title;
   if(content)repoList.innerHTML=content;
@@ -188,6 +188,9 @@ function openBox(title,content=""){
     document.querySelectorAll("iframe.bg,iframe.front").forEach(f=>f.classList.add("faded"));
     document.querySelectorAll(".jr-btn,#githubSearch").forEach(el=>el.classList.add("faded"));
   });
+  scrollBar.style.height="80px";
+  scrollBar.style.opacity="1";
+  scrollBar.style.transform="scaleY(1)";
 }
 
 function closeBox(){
@@ -198,7 +201,6 @@ function closeBox(){
 }
 closeAction.addEventListener("click",closeBox);
 
-/* repo filter */
 repoFilter.addEventListener("input",()=>{
   const term=repoFilter.value.toLowerCase();
   document.querySelectorAll(".repo").forEach(r=>{
@@ -206,18 +208,15 @@ repoFilter.addEventListener("input",()=>{
   });
 });
 
-/* github fetch */
 input.addEventListener("keydown",async e=>{
   if(e.key!=="Enter")return;
   e.preventDefault();
   const user=input.value.trim();
   if(!user)return;
-
   actionTitle.textContent=`Repos · ${user}`;
   repoList.innerHTML="<div class='meta'>Loading repositories…</div>";
   openBox(actionTitle.textContent);
   setTimeout(()=>input.blur(),0);
-
   try{
     const res=await fetch(`https://api.github.com/users/${encodeURIComponent(user)}/repos?per_page=100&sort=updated`);
     const data=await res.json();
@@ -229,42 +228,13 @@ input.addEventListener("keydown",async e=>{
       <div class="repo" data-user="${user}" data-repo="${repo.name}">
         <a href="#" class="repo-link">${repo.name}</a>
       </div>`).join("");
-
-    document.querySelectorAll(".repo-link").forEach(link=>{
-      link.addEventListener("click",async ev=>{
-        ev.preventDefault();
-        const repoDiv=ev.target.closest(".repo");
-        const repoName=repoDiv.getAttribute("data-repo");
-        const username=repoDiv.getAttribute("data-user");
-        await showFiles(username,repoName);
-      });
-    });
+    scrollBar.style.height="80px";
+    scrollBar.style.opacity="1";
   }catch(err){
     repoList.innerHTML=`<div class='meta'>Failed to load repos. ${err}</div>`;
   }
 });
 
-/* file view */
-async function showFiles(user,repo){
-  actionTitle.textContent=`Files · ${repo}`;
-  repoList.innerHTML="<div class='meta'>Loading files…</div>";
-  try{
-    const res=await fetch(`https://api.github.com/repos/${encodeURIComponent(user)}/${encodeURIComponent(repo)}/contents`);
-    const data=await res.json();
-    if(!Array.isArray(data)){
-      repoList.innerHTML="<div class='meta'>No files found.</div>";
-      return;
-    }
-    repoList.innerHTML=data.map(file=>`
-      <div class="repo">
-        <a href="#" class="file-link" data-name="${file.name}">📄 ${file.name}</a>
-      </div>`).join("");
-  }catch(err){
-    repoList.innerHTML=`<div class='meta'>Failed to load files. ${err}</div>`;
-  }
-}
-
-/* LUHV scroll */
 repoList.addEventListener("scroll",()=>{
   const {scrollTop,scrollHeight,clientHeight}=repoList;
   const visibleRatio=clientHeight/scrollHeight;
