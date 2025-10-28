@@ -309,7 +309,7 @@ async function showFiles(user, repo) {
   }
 }
 
-// ✅ Option 2: Instant search on file click
+// ✅ Option 1: Fill only, no instant search
 document.addEventListener("click", e => {
   const link = e.target.closest(".file-link");
   if (!link) return;
@@ -319,8 +319,6 @@ document.addEventListener("click", e => {
   const user = link.getAttribute("data-user");
   input.value = `${user}/${repo}/${file}`;
   closeBox();
-  const event = new KeyboardEvent("keydown", { key: "Enter" });
-  input.dispatchEvent(event);
 });
 </script>
 </body>
