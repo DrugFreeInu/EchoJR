@@ -133,18 +133,6 @@ iframe.bg, iframe.front, .jr-btn, #githubSearch {
   cursor:pointer;
 }
 
-#inlinePreview{
-  display:none;
-  flex:0 0 180px;
-  border:none;
-  margin:10px 16px 0 16px;
-  border-radius:12px;
-  background:#000;
-  box-shadow:inset 0 0 10px rgba(255,47,137,0.5);
-  transition:opacity .3s ease;
-}
-#inlinePreview.active{display:block;}
-
 #repoFilter{
   margin:12px auto 0 auto;
   width:85%;
@@ -169,10 +157,10 @@ iframe.bg, iframe.front, .jr-btn, #githubSearch {
   justify-content:flex-start;
 }
 .repo {
-  padding: 14px 0;
-  border-bottom: 1px solid rgba(255,47,137,0.25);
+  padding:14px 0;
+  border-bottom:1px solid rgba(255,47,137,0.25);
 }
-.repo:last-child { border-bottom:none; }
+.repo:last-child{border-bottom:none;}
 .repo a{
   color:var(--pink2);
   text-decoration:none;
@@ -203,7 +191,6 @@ iframe.bg, iframe.front, .jr-btn, #githubSearch {
     <button id="closeAction">Close</button>
   </div>
   <input type="text" id="repoFilter" placeholder="Filter Repos..." />
-  <iframe id="inlinePreview" sandbox="allow-same-origin"></iframe>
   <div id="repoList"></div>
 </div>
 
@@ -214,7 +201,6 @@ const actionBox = document.getElementById("actionBox");
 const actionTitle = document.getElementById("actionTitle");
 const repoList = document.getElementById("repoList");
 const closeAction = document.getElementById("closeAction");
-const preview = document.getElementById("inlinePreview");
 
 function openBox(title, content = "") {
   actionTitle.textContent = title;
@@ -229,15 +215,13 @@ function openBox(title, content = "") {
 
 function closeBox() {
   actionBox.classList.remove("active");
-  preview.classList.remove("active");
-  preview.srcdoc = "";
   document.querySelectorAll("iframe.bg, iframe.front").forEach(f => f.classList.remove("faded"));
   document.querySelectorAll(".jr-btn, #githubSearch").forEach(el => el.classList.remove("faded"));
   setTimeout(() => actionBox.style.display = "none", 300);
 }
 closeAction.addEventListener("click", closeBox);
 
-// 🔍 Live filtering
+// Live filtering
 repoFilter.addEventListener("input", () => {
   const term = repoFilter.value.toLowerCase();
   document.querySelectorAll(".repo").forEach(r => {
@@ -245,7 +229,6 @@ repoFilter.addEventListener("input", () => {
   });
 });
 
-// Main GitHub search
 input.addEventListener("keydown", async e => {
   if (e.key !== "Enter") return;
   e.preventDefault();
@@ -287,7 +270,6 @@ input.addEventListener("keydown", async e => {
 async function showFiles(user, repo) {
   actionTitle.textContent = `Files · ${repo}`;
   repoList.innerHTML = "<div class='meta'>Loading files…</div>";
-  preview.classList.remove("active");
   try {
     const res = await fetch(`https://api.github.com/repos/${encodeURIComponent(user)}/${encodeURIComponent(repo)}/contents`);
     const data = await res.json();
@@ -297,27 +279,20 @@ async function showFiles(user, repo) {
     }
     repoList.innerHTML = data.map(file => `
       <div class="repo">
-        <a href="#" class="file-link"
-          data-path="${file.path}"
-          data-name="${file.name}"
-          data-download="${file.download_url || ''}"
-          data-user="${user}"
-          data-repo="${repo}">📄 ${file.name}</a>
+        <a href="#" class="file-link" data-name="${file.name}">📄 ${file.name}</a>
       </div>`).join("");
   } catch (err) {
     repoList.innerHTML = `<div class='meta'>Failed to load files. ${err}</div>`;
   }
 }
 
-// ✅ Option 1: Fill only, no instant search
+// ✅ Only fill file name (not full path)
 document.addEventListener("click", e => {
   const link = e.target.closest(".file-link");
   if (!link) return;
   e.preventDefault();
-  const repo = link.getAttribute("data-repo");
   const file = link.getAttribute("data-name");
-  const user = link.getAttribute("data-user");
-  input.value = `${user}/${repo}/${file}`;
+  input.value = file;
   closeBox();
 });
 </script>
