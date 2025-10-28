@@ -71,7 +71,7 @@ iframe.bg, iframe.front, .jr-btn, #githubSearch {transition:opacity .5s ease;}
   transform:translate(-50%,-50%) scale(.9);
   background:#fff;border:3px solid var(--pink2);
   display:none;flex-direction:column;z-index:500;
-  box-shadow:0 0 20px rgba(255,47,137,0.4);
+  box-shadow:0 0 30px rgba(255,47,137,0.6);
   transition:opacity .3s ease,transform .3s ease;
   opacity:0;overflow:hidden;
 }
@@ -109,30 +109,35 @@ iframe.bg, iframe.front, .jr-btn, #githubSearch {transition:opacity .5s ease;}
   justify-content:flex-start;
 }
 
-/* LUHV scroll visuals */
+/* LUHV scroll visuals — always big */
 #scrollBarTrack {
   position:absolute;
   top:100px;
   right:22px;
-  width:14px;
+  width:16px;
   height:calc(100% - 120px);
-  background:rgba(255,47,137,0.14);
-  border-radius:10px;
-  box-shadow:inset 0 0 12px rgba(255,47,137,0.2);
+  background:rgba(255,47,137,0.15);
+  border-radius:12px;
+  box-shadow:inset 0 0 14px rgba(255,47,137,0.25);
   z-index:8;
 }
 #scrollBar {
   position:absolute;
   top:100px;
   right:22px;
-  width:14px;
-  height:80px; /* always start large */
-  background:rgba(255,47,137,0.6);
-  border-radius:10px;
-  box-shadow:0 0 10px rgba(255,47,137,0.5);
+  width:16px;
+  height:80px;
+  background:rgba(255,47,137,0.65);
+  border-radius:12px;
+  box-shadow:0 0 14px rgba(255,47,137,0.6);
   z-index:9;
   opacity:1;
-  transition:height .3s ease, top .25s ease, background .4s ease, box-shadow .4s ease, opacity .5s ease;
+  animation:luhvPulse 4s ease-in-out infinite;
+}
+
+@keyframes luhvPulse {
+  0%,100% { box-shadow:0 0 12px rgba(255,47,137,0.6); }
+  50% { box-shadow:0 0 18px rgba(255,47,137,0.8); }
 }
 
 /* repo list items */
@@ -178,7 +183,7 @@ const repoList=document.getElementById("repoList");
 const scrollBar=document.getElementById("scrollBar");
 const closeAction=document.getElementById("closeAction");
 
-/* open/close */
+/* open / close */
 function openBox(title,content=""){
   actionTitle.textContent=title;
   if(content)repoList.innerHTML=content;
@@ -188,10 +193,6 @@ function openBox(title,content=""){
     document.querySelectorAll("iframe.bg,iframe.front").forEach(f=>f.classList.add("faded"));
     document.querySelectorAll(".jr-btn,#githubSearch").forEach(el=>el.classList.add("faded"));
   });
-  // scrollbar visible immediately
-  scrollBar.style.height="80px";
-  scrollBar.style.top="100px";
-  scrollBar.style.opacity="1";
 }
 
 function closeBox(){
@@ -234,11 +235,6 @@ input.addEventListener("keydown",async e=>{
         <a href="#" class="repo-link">${repo.name}</a>
       </div>`).join("");
 
-    // scrollbar ready instantly
-    scrollBar.style.height="80px";
-    scrollBar.style.top="100px";
-    scrollBar.style.opacity="1";
-
     document.querySelectorAll(".repo-link").forEach(link=>{
       link.addEventListener("click",async ev=>{
         ev.preventDefault();
@@ -278,7 +274,7 @@ repoList.addEventListener("scroll",()=>{
   const {scrollTop,scrollHeight,clientHeight}=repoList;
   const visibleRatio=clientHeight/scrollHeight;
   const topRatio=scrollTop/(scrollHeight-clientHeight);
-  const barHeight=Math.max(visibleRatio*clientHeight,40);
+  const barHeight=Math.max(visibleRatio*clientHeight,80); // always stays large
   scrollBar.style.height=barHeight+"px";
   scrollBar.style.top=(100+topRatio*(clientHeight-barHeight))+"px";
 });
