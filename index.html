@@ -112,10 +112,10 @@ iframe.bg, iframe.front, .jr-btn, #githubSearch {transition:opacity .5s ease;}
 /* permanent LUHV scroll visuals */
 #scrollBarTrack {
   position:absolute;
-  top:100px;
+  top:110px; /* lowered so it doesn’t touch the filter */
   right:22px;
   width:14px;
-  height:calc(100% - 120px);
+  height:calc(100% - 140px);
   background:rgba(255,47,137,0.14);
   border-radius:10px;
   box-shadow:inset 0 0 12px rgba(255,47,137,0.2);
@@ -123,7 +123,7 @@ iframe.bg, iframe.front, .jr-btn, #githubSearch {transition:opacity .5s ease;}
 }
 #scrollBar {
   position:absolute;
-  top:100px;
+  top:110px; /* match track start */
   right:22px;
   width:14px;
   height:80px;
@@ -190,7 +190,7 @@ function openBox(title,content=""){
     document.querySelectorAll(".jr-btn,#githubSearch").forEach(el=>el.classList.add("faded"));
   });
   scrollBar.style.height="120px";
-  scrollBar.style.top="100px";
+  scrollBar.style.top="110px";
   scrollBar.style.opacity="1";
 }
 
@@ -258,7 +258,7 @@ repoList.addEventListener("click",async e=>{
       return;
     }
     repoList.innerHTML=data.map(file=>`
-      <div class="repo" data-file="${file.name}">
+      <div class="repo" data-user="${user}" data-repo="${repo}" data-file="${file.name}">
         <a href="#" class="file-link">${file.name}</a>
         <div class="meta">${file.type}</div>
       </div>`).join("");
@@ -280,7 +280,7 @@ repoList.addEventListener("click",e=>{
   closeBox();
 });
 
-/* clear on focus if it was autofilled */
+/* clear on focus if autofilled */
 input.addEventListener("focus",()=>{
   if(input.dataset.autofilled==="true"){
     input.value="";
@@ -294,7 +294,7 @@ repoList.addEventListener("scroll",()=>{
   const topRatio=scrollTop/(scrollHeight-clientHeight);
   const barHeight=120;
   scrollBar.style.height=barHeight+"px";
-  scrollBar.style.top=(100+topRatio*(clientHeight-barHeight))+"px";
+  scrollBar.style.top=(110+topRatio*(clientHeight-barHeight))+"px";
 });
 </script>
 </body>
