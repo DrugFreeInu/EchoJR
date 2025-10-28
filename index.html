@@ -50,7 +50,7 @@ footer{
 /* github search input */
 #githubSearch{
   position:fixed;bottom:40px;left:50%;transform:translateX(-50%);
-  width:240px;padding:12px 24px;border-radius:30px;font-size:18px;font-weight:600;text-align:center;
+  width:260px;padding:12px 24px;border-radius:30px;font-size:18px;font-weight:600;text-align:center;
   background:transparent;border:2px solid rgba(255,255,255,0.25);color:var(--pink2);
   box-shadow:0 0 20px rgba(255,47,137,0.4);z-index:200;
   transition:all .3s ease, opacity .3s ease;
@@ -258,8 +258,8 @@ repoList.addEventListener("click",async e=>{
       return;
     }
     repoList.innerHTML=data.map(file=>`
-      <div class="repo">
-        <a href="${file.html_url}" target="_blank">${file.name}</a>
+      <div class="repo" data-user="${user}" data-repo="${repo}" data-file="${file.name}">
+        <a href="#" class="file-link">${file.name}</a>
         <div class="meta">${file.type}</div>
       </div>`).join("");
     actionTitle.textContent=`Files · ${repo}`;
@@ -268,10 +268,20 @@ repoList.addEventListener("click",async e=>{
   }
 });
 
+/* click file -> fill search bar (only file name) */
+repoList.addEventListener("click",e=>{
+  const file=e.target.closest(".file-link");
+  if(!file)return;
+  e.preventDefault();
+  const div=file.closest(".repo");
+  const filename=div.dataset.file;
+  input.value=filename;
+  closeBox();
+});
+
 /* fixed large scroll */
 repoList.addEventListener("scroll",()=>{
   const {scrollTop,scrollHeight,clientHeight}=repoList;
-  const visibleRatio=clientHeight/scrollHeight;
   const topRatio=scrollTop/(scrollHeight-clientHeight);
   const barHeight=120;
   scrollBar.style.height=barHeight+"px";
