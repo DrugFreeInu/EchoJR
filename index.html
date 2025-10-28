@@ -95,26 +95,32 @@ iframe.bg, iframe.front, .jr-btn, #githubSearch {transition:opacity .5s ease;}
   background:transparent;text-align:center;outline:none;
 }
 
-/* always-visible scrollbar */
+/* scrollable repo list */
 #repoList{
-  flex:1;padding:12px 16px 20px 16px;overflow-y:scroll;
+  flex:1;
+  padding:12px 16px 20px 16px;
+  overflow-y:auto;
   -webkit-overflow-scrolling:touch;
-  scrollbar-color:rgba(255,47,137,0.6) rgba(255,255,255,0.15);
-  scrollbar-width:thin;
-  text-align:center;color:var(--white);
-  display:flex;flex-direction:column;justify-content:flex-start;
+  position:relative;
+  text-align:center;
+  color:var(--white);
+  display:flex;
+  flex-direction:column;
+  justify-content:flex-start;
 }
-#repoList::-webkit-scrollbar{width:8px;}
-#repoList::-webkit-scrollbar-track{
-  background:rgba(255,255,255,0.15);
-  border-radius:6px;
-}
-#repoList::-webkit-scrollbar-thumb{
-  background:rgba(255,47,137,0.6);
-  border-radius:6px;
-}
-#repoList::-webkit-scrollbar-thumb:hover{
-  background:rgba(255,47,137,0.85);
+
+/* custom scrollbar */
+#scrollBar {
+  position:absolute;
+  top:0;
+  right:3px;
+  width:5px;
+  height:40px;
+  background:var(--pink2);
+  border-radius:4px;
+  opacity:0.9;
+  z-index:20;
+  transition:height .2s ease, opacity .3s ease;
 }
 
 /* repo list items */
@@ -147,6 +153,7 @@ iframe.bg, iframe.front, .jr-btn, #githubSearch {transition:opacity .5s ease;}
   </div>
   <input type="text" id="repoFilter" placeholder="Filter Repos..." />
   <div id="repoList"></div>
+  <div id="scrollBar"></div>
 </div>
 
 <script>
@@ -155,6 +162,7 @@ const repoFilter=document.getElementById("repoFilter");
 const actionBox=document.getElementById("actionBox");
 const actionTitle=document.getElementById("actionTitle");
 const repoList=document.getElementById("repoList");
+const scrollBar=document.getElementById("scrollBar");
 const closeAction=document.getElementById("closeAction");
 
 function openBox(title,content=""){
@@ -237,6 +245,19 @@ async function showFiles(user,repo){
     repoList.innerHTML=`<div class='meta'>Failed to load files. ${err}</div>`;
   }
 }
+
+/* custom scrollbar logic */
+repoList.addEventListener("scroll",()=>{
+  const {scrollTop,scrollHeight,clientHeight}=repoList;
+  const visibleRatio=clientHeight/scrollHeight;
+  const topRatio=scrollTop/(scrollHeight-clientHeight);
+  const barHeight=Math.max(visibleRatio*clientHeight,40);
+  scrollBar.style.height=barHeight+"px";
+  scrollBar.style.top=(topRatio*(clientHeight-barHeight))+"px";
+  scrollBar.style.opacity=1;
+  clearTimeout(scrollBar._fade);
+  scrollBar._fade=setTimeout(()=>scrollBar.style.opacity=0.5,800);
+});
 
 document.addEventListener("click",e=>{
   const link=e.target.closest(".file-link");
