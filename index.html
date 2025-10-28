@@ -87,7 +87,7 @@ iframe.bg, iframe.front, .jr-btn, #githubSearch {
 }
 .faded { opacity: 0 !important; }
 
-/* Repo results window */
+/* Repo window */
 #actionBox{
   position:fixed;
   top:50%;
@@ -146,17 +146,33 @@ iframe.bg, iframe.front, .jr-btn, #githubSearch {
   outline:none;
 }
 
+/* Repo list with soft pink scrollbar */
 #repoList{
   flex:1;
   padding:12px 16px 20px 16px;
-  overflow:auto;
+  overflow-y:auto;
   text-align:center;
   color:var(--white);
   display:flex;
   flex-direction:column;
   justify-content:flex-start;
 }
-.repo {
+#repoList::-webkit-scrollbar{
+  width:6px;
+}
+#repoList::-webkit-scrollbar-thumb{
+  background:rgba(255,47,137,0.3);
+  border-radius:6px;
+}
+#repoList::-webkit-scrollbar-thumb:hover{
+  background:rgba(255,47,137,0.5);
+}
+#repoList::-webkit-scrollbar-track{
+  background:rgba(255,255,255,0.1);
+  border-radius:6px;
+}
+
+.repo{
   padding:14px 0;
   border-bottom:1px solid rgba(255,47,137,0.25);
 }
@@ -221,7 +237,6 @@ function closeBox() {
 }
 closeAction.addEventListener("click", closeBox);
 
-// Live filtering
 repoFilter.addEventListener("input", () => {
   const term = repoFilter.value.toLowerCase();
   document.querySelectorAll(".repo").forEach(r => {
@@ -247,7 +262,6 @@ input.addEventListener("keydown", async e => {
       repoList.innerHTML = `<div class='meta'>No repositories found for <strong>${user}</strong>.</div>`;
       return;
     }
-
     repoList.innerHTML = data.map(repo => `
       <div class="repo" data-user="${user}" data-repo="${repo.name}">
         <a href="#" class="repo-link">${repo.name}</a>
@@ -286,7 +300,6 @@ async function showFiles(user, repo) {
   }
 }
 
-// ✅ Only fill file name (not full path)
 document.addEventListener("click", e => {
   const link = e.target.closest(".file-link");
   if (!link) return;
