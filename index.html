@@ -296,7 +296,7 @@ function updateScrollBar(){
   const {scrollHeight,clientHeight,scrollTop}=repoList;
   const trackHeight=scrollBarTrack.offsetHeight;
   const ratio=clientHeight/scrollHeight;
-  const thumbHeight=Math.max(trackHeight*ratio,40); 
+  const thumbHeight=Math.max(trackHeight*ratio,40);
   scrollBar.style.height=thumbHeight+"px";
   const maxScroll=scrollHeight-clientHeight;
   const maxMove=trackHeight-thumbHeight;
@@ -308,10 +308,11 @@ function updateScrollBar(){
 repoList.addEventListener("scroll",updateScrollBar);
 window.addEventListener("resize",updateScrollBar);
 
-/* touch drag support */
+/* touch drag support - optimized (no lag) */
 let isDragging=false,startY=0,startTop=0;
 scrollBar.addEventListener("touchstart",e=>{
   isDragging=true;
+  scrollBar.style.transition="none";   // disable smooth transition while dragging
   startY=e.touches[0].clientY;
   startTop=parseFloat(scrollBar.style.top)||scrollBarTrack.offsetTop;
 });
@@ -331,7 +332,10 @@ scrollBar.addEventListener("touchmove",e=>{
   const {scrollHeight,clientHeight}=repoList;
   repoList.scrollTop=ratio*(scrollHeight-clientHeight);
 });
-scrollBar.addEventListener("touchend",()=>isDragging=false);
+scrollBar.addEventListener("touchend",()=>{
+  isDragging=false;
+  scrollBar.style.transition="top 0.3s cubic-bezier(0.25,0.1,0.25,1)";
+});
 </script>
 </body>
 </html>
