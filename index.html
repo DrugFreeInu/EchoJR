@@ -189,7 +189,6 @@ function openBox(title,content=""){
     document.querySelectorAll("iframe.bg,iframe.front").forEach(f=>f.classList.add("faded"));
     document.querySelectorAll(".jr-btn,#githubSearch").forEach(el=>el.classList.add("faded"));
   });
-  // initialize scroll thumb
   updateScrollBar();
 }
 
@@ -297,7 +296,7 @@ function updateScrollBar(){
   const {scrollHeight,clientHeight,scrollTop}=repoList;
   const trackHeight=scrollBarTrack.offsetHeight;
   const ratio=clientHeight/scrollHeight;
-  const thumbHeight=Math.max(trackHeight*ratio,40); // min size
+  const thumbHeight=Math.max(trackHeight*ratio,40); 
   scrollBar.style.height=thumbHeight+"px";
   const maxScroll=scrollHeight-clientHeight;
   const maxMove=trackHeight-thumbHeight;
@@ -305,9 +304,34 @@ function updateScrollBar(){
   scrollBar.style.top=(scrollBarTrack.offsetTop+top)+"px";
 }
 
-/* listen scroll */
-repoList.addEventListener("scroll",()=>updateScrollBar());
-window.addEventListener("resize",()=>updateScrollBar());
+/* mouse/scroll sync */
+repoList.addEventListener("scroll",updateScrollBar);
+window.addEventListener("resize",updateScrollBar);
+
+/* touch drag support */
+let isDragging=false,startY=0,startTop=0;
+scrollBar.addEventListener("touchstart",e=>{
+  isDragging=true;
+  startY=e.touches[0].clientY;
+  startTop=parseFloat(scrollBar.style.top)||scrollBarTrack.offsetTop;
+});
+scrollBar.addEventListener("touchmove",e=>{
+  if(!isDragging)return;
+  e.preventDefault();
+  const deltaY=e.touches[0].clientY-startY;
+  const trackTop=scrollBarTrack.offsetTop;
+  const trackHeight=scrollBarTrack.offsetHeight;
+  const thumbHeight=scrollBar.offsetHeight;
+  const newTop=startTop+deltaY;
+  const minTop=trackTop;
+  const maxTop=trackTop+trackHeight-thumbHeight;
+  const clampedTop=Math.min(Math.max(newTop,minTop),maxTop);
+  scrollBar.style.top=clampedTop+"px";
+  const ratio=(clampedTop-trackTop)/(trackHeight-thumbHeight);
+  const {scrollHeight,clientHeight}=repoList;
+  repoList.scrollTop=ratio*(scrollHeight-clientHeight);
+});
+scrollBar.addEventListener("touchend",()=>isDragging=false);
 </script>
 </body>
 </html>
