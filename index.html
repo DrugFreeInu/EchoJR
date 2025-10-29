@@ -101,6 +101,7 @@ iframe.bg, iframe.front, .jr-btn, #githubSearch {transition:opacity .5s ease;}
   padding:12px 32px 20px 16px;
   overflow-y:auto;
   -webkit-overflow-scrolling:touch;
+  scroll-behavior:smooth; /* LUHV-smooth scrolling */
   position:relative;
   text-align:center;
   color:var(--white);
@@ -112,7 +113,7 @@ iframe.bg, iframe.front, .jr-btn, #githubSearch {transition:opacity .5s ease;}
 /* permanent LUHV scroll visuals */
 #scrollBarTrack {
   position:absolute;
-  top:110px; /* lowered so it doesn’t touch the filter */
+  top:110px;
   right:22px;
   width:14px;
   height:calc(100% - 140px);
@@ -123,7 +124,7 @@ iframe.bg, iframe.front, .jr-btn, #githubSearch {transition:opacity .5s ease;}
 }
 #scrollBar {
   position:absolute;
-  top:110px; /* match track start */
+  top:110px;
   right:22px;
   width:14px;
   height:80px;
@@ -133,7 +134,7 @@ iframe.bg, iframe.front, .jr-btn, #githubSearch {transition:opacity .5s ease;}
   z-index:9;
   opacity:1;
   transform:scaleY(1)!important;
-  transition:none!important;
+  transition:top 0.35s cubic-bezier(0.25,0.1,0.25,1); /* LUHV-glide easing */
 }
 
 /* repo list items */
@@ -296,15 +297,6 @@ repoList.addEventListener("scroll",()=>{
   scrollBar.style.height=barHeight+"px";
   scrollBar.style.top=(110+topRatio*(clientHeight-barHeight))+"px";
 });
-/* smooth scrolling */
-#repoList {
-  scroll-behavior: smooth;
-}
-
-/* inertia & easing feel for scrollbar thumb */
-#scrollBar {
-  transition: top 0.35s cubic-bezier(0.25, 0.1, 0.25, 1);
-}
 </script>
 </body>
 </html>
