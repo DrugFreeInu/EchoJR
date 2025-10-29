@@ -229,6 +229,7 @@ input.addEventListener("keydown",async e=>{
     const data=await res.json();
     if(!Array.isArray(data)||!data.length){
       repoList.innerHTML=`<div class='meta'>No repositories found for <strong>${user}</strong>.</div>`;
+      updateScrollVisibility();
       return;
     }
     repoList.innerHTML=data.map(repo=>`
@@ -237,8 +238,10 @@ input.addEventListener("keydown",async e=>{
       </div>`).join("");
     scrollBar.style.height="120px";
     scrollBar.style.opacity="1";
+    updateScrollVisibility();
   }catch(err){
     repoList.innerHTML=`<div class='meta'>Failed to load repos. ${err}</div>`;
+    updateScrollVisibility();
   }
 });
 
@@ -256,6 +259,7 @@ repoList.addEventListener("click",async e=>{
     const data=await res.json();
     if(!Array.isArray(data)||!data.length){
       repoList.innerHTML=`<div class='meta'>No files found in <strong>${repo}</strong>.</div>`;
+      updateScrollVisibility();
       return;
     }
     repoList.innerHTML=data.map(file=>`
@@ -264,8 +268,10 @@ repoList.addEventListener("click",async e=>{
         <div class="meta">${file.type}</div>
       </div>`).join("");
     actionTitle.textContent=`Files · ${repo}`;
+    updateScrollVisibility();
   }catch(err){
     repoList.innerHTML=`<div class='meta'>Failed to load files. ${err}</div>`;
+    updateScrollVisibility();
   }
 });
 
@@ -297,6 +303,21 @@ repoList.addEventListener("scroll",()=>{
   scrollBar.style.height=barHeight+"px";
   scrollBar.style.top=(110+topRatio*(clientHeight-barHeight))+"px";
 });
+
+/* hide scroll visuals when not needed */
+function updateScrollVisibility() {
+  const { scrollHeight, clientHeight } = repoList;
+  const needsScroll = scrollHeight > clientHeight;
+  const track = document.getElementById("scrollBarTrack");
+  const bar = document.getElementById("scrollBar");
+  track.style.display = needsScroll ? "block" : "none";
+  bar.style.display = needsScroll ? "block" : "none";
+}
+repoList.addEventListener("scroll", updateScrollVisibility);
+const observer = new MutationObserver(updateScrollVisibility);
+observer.observe(repoList, { childList: true, subtree: true });
+window.addEventListener("resize", updateScrollVisibility);
+updateScrollVisibility();
 </script>
 </body>
 </html>
