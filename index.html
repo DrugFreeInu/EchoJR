@@ -110,11 +110,11 @@ iframe.bg, iframe.front, .jr-btn, #githubSearch {transition:opacity .5s ease;}
   justify-content:flex-start;
 }
 
-/* refined LUHV scroll visuals — centered perfectly */
+  /* refined LUHV scroll visuals — centered perfectly inside track */
 #scrollBarTrack {
   position:absolute;
   top:120px;
-  right:12px; /* small inward shift */
+  right:12px; /* balanced to inner edge */
   width:22px;
   height:calc(100% - 160px);
   background:rgba(255,47,137,0.14);
@@ -126,9 +126,8 @@ iframe.bg, iframe.front, .jr-btn, #githubSearch {transition:opacity .5s ease;}
 #scrollBar {
   position:absolute;
   top:120px;
-  right:12px; /* aligns with track center */
-  left:auto;
-  width:22px; /* full width match */
+  right:12px; /* matches track exactly */
+  width:22px; /* same width as track */
   height:70px;
   background:rgba(255,47,137,0.7);
   border-radius:12px;
@@ -138,6 +137,7 @@ iframe.bg, iframe.front, .jr-btn, #githubSearch {transition:opacity .5s ease;}
   transform:scaleY(1)!important;
   transition:top 0.35s cubic-bezier(0.25,0.1,0.25,1);
 }
+
 /* repo list items */
 .repo{padding:14px 0;border-bottom:1px solid rgba(255,47,137,0.25);}
 .repo:last-child{border-bottom:none;}
