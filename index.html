@@ -1,218 +1,68 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover" />
-<title>ECHO JR · UPDATE GOD</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>NOWL REPORT</title>
 <style>
-:root { --pink1:#ff2e88; --pink2:#ff6b9d; --white:#ffffff; }
-
 html,body{
-  margin:0;height:100%;width:100%;
-  background:transparent;color:var(--pink2);
-  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
-  display:flex;align-items:center;justify-content:center;text-align:center;overflow:hidden;
+  margin:0;height:100%;
+  display:flex;justify-content:center;align-items:center;
+  background:#000;overflow:hidden;
 }
-
-/* background layers */
-iframe.bg,iframe.front{
-  position:fixed;top:0;left:0;width:100%;height:100%;
-  border:none;background:transparent;pointer-events:none;
-  transition:opacity .5s ease;
-}
-iframe.bg{z-index:-2;}
-iframe.front{z-index:0;opacity:.65;}
 
 /* layout */
-.container{
-  position:relative;z-index:2;
-  display:flex;flex-direction:column;align-items:center;
+.wrapper{display:flex;gap:4px;}
+
+/* letter style */
+.letter{
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  font-weight:900;
+  font-size:70px;
+  color:transparent;
+  -webkit-text-stroke:3px #ff2e88;
+  text-transform:uppercase;
+  opacity:0;
+  filter:drop-shadow(0 0 12px rgba(255,47,137,0.8)) drop-shadow(0 0 24px rgba(255,47,137,0.4));
+  animation:drawLetter 0.3s forwards;
 }
+
+@keyframes drawLetter{
+  0%{opacity:0;transform:scale(0.8);-webkit-text-stroke-color:#ff2e88;}
+  60%{opacity:1;transform:scale(1.05);-webkit-text-stroke-color:#ff6b9d;}
+  100%{opacity:1;transform:scale(1);-webkit-text-stroke-color:#ff2e88;}
+}
+
+/* glowing pulse after all letters drawn */
+@keyframes glowPulse{
+  0%,100%{filter:drop-shadow(0 0 12px rgba(255,47,137,0.6))}
+  50%{filter:drop-shadow(0 0 24px rgba(255,47,137,0.9))}
+}
+
 footer{
-  font-size:18px;font-weight:900;letter-spacing:2px;text-transform:uppercase;
-  color:var(--pink2);margin-bottom:25px;
+  position:fixed;bottom:30px;left:50%;transform:translateX(-50%);
+  color:#ff6b9d;font-size:14px;opacity:.7;font-weight:600;
 }
-
-/* buttons */
-.jr-btn{
-  width:200px;margin:8px;padding:12px 0;border-radius:30px;
-  font-size:18px;font-weight:600;text-align:center;
-  background:rgba(255,255,255,0.08);
-  border:2px solid rgba(255,255,255,0.25);
-  color:var(--pink2);cursor:pointer;
-  box-shadow:0 4px 20px rgba(255,47,137,0.5);
-  backdrop-filter:blur(12px) saturate(160%);
-  -webkit-backdrop-filter:blur(12px) saturate(160%);
-  transition:box-shadow .25s ease,transform .1s ease,opacity .3s ease;
-}
-.jr-btn:hover{box-shadow:0 6px 24px rgba(255,47,137,0.8);transform:scale(1.03);}
-
-/* github search input */
-#githubSearch{
-  position:fixed;bottom:40px;left:50%;transform:translateX(-50%);
-  width:260px;padding:12px 24px;border-radius:30px;font-size:18px;font-weight:600;text-align:center;
-  background:transparent;border:2px solid rgba(255,255,255,0.25);color:var(--pink2);
-  box-shadow:0 0 20px rgba(255,47,137,0.4);z-index:200;
-  transition:all .3s ease, opacity .3s ease;
-}
-#githubSearch::placeholder{color:var(--pink2);}
-#githubSearch:focus{
-  outline:none;box-shadow:0 0 26px rgba(255,47,137,0.8);border-color:rgba(255,47,137,0.9);
-}
-
-/* fade logic */
-iframe.bg, iframe.front, .jr-btn, #githubSearch {transition:opacity .5s ease;}
-.faded{opacity:0!important;}
-
-/* shared popup box */
-.popupBox{
-  position:fixed;top:50%;left:50%;
-  width:360px;height:300px;
-  transform:translate(-50%,-50%) scale(.9);
-  background:#fff;border:3px solid var(--pink2);
-  display:none;flex-direction:column;z-index:600;
-  box-shadow:0 0 20px rgba(255,47,137,0.4);
-  transition:opacity .3s ease,transform .3s ease;
-  opacity:0;overflow:hidden;border-radius:14px;
-}
-.popupBox.active{display:flex;opacity:1;transform:translate(-50%,-50%) scale(1);}
-.popupHeader{
-  padding:12px 16px;border-bottom:2px solid rgba(255,47,137,0.2);
-  display:flex;align-items:center;justify-content:space-between;
-}
-.popupTitle{font-size:18px;color:var(--pink2);margin:0;}
-.closePopup{
-  font-weight:700;color:var(--white);background:var(--pink2);
-  border:none;border-radius:16px;padding:6px 12px;cursor:pointer;
-}
-.popupContent{
-  flex:1;padding:24px;text-align:center;color:var(--pink2);
-  display:flex;align-items:center;justify-content:center;font-size:16px;
-}
-
-/* repo box (original GitHub modal) */
-#actionBox{
-  position:fixed;top:50%;left:50%;
-  width:360px;height:520px;
-  transform:translate(-50%,-50%) scale(.9);
-  background:#fff;border:3px solid var(--pink2);
-  display:none;flex-direction:column;z-index:500;
-  box-shadow:0 0 20px rgba(255,47,137,0.4);
-  transition:opacity .3s ease,transform .3s ease;
-  opacity:0;overflow:hidden;border-radius:14px;
-}
-#actionBox.active{display:flex;opacity:1;transform:translate(-50%,-50%) scale(1);}
-
-/* header */
-#actionHeader{
-  padding:12px 16px;border-bottom:2px solid rgba(255,255,255,0.15);
-  display:flex;align-items:center;justify-content:space-between;
-}
-#actionTitle{font-size:18px;color:var(--pink2);margin:0;}
-#closeAction{
-  font-weight:700;color:var(--white);background:var(--pink2);
-  border:none;border-radius:16px;padding:6px 12px;cursor:pointer;
-}
-
-/* repo list area */
-#repoList{flex:1;overflow-y:auto;padding:16px;color:var(--pink2);text-align:center;}
-.repo{padding:10px 0;border-bottom:1px solid rgba(255,47,137,0.25);}
-.repo:last-child{border-bottom:none;}
-.repo a{color:var(--pink2);text-decoration:none;font-weight:700;word-break:break-word;}
-.meta{font-size:12px;opacity:.85;margin-top:4px;}
+a{color:#ff6b9d;text-decoration:none;}
 </style>
 </head>
 <body>
 
-<iframe src="luhve.html" class="bg"></iframe>
-<iframe src="luhvefront.html" class="front"></iframe>
-
-<div class="container">
-  <footer>ECHO JR · UPDATE GOD</footer>
-  <button class="jr-btn" id="addBtn">Add</button>
-  <button class="jr-btn" id="removeBtn">Remove</button>
-  <button class="jr-btn" id="replaceBtn">Replace</button>
-</div>
-
-<input type="text" id="githubSearch" placeholder="GitHub Username" autocomplete="off" />
-
-<!-- Action Box (GitHub Repos) -->
-<div id="actionBox">
-  <div id="actionHeader">
-    <h2 id="actionTitle">Action Mode</h2>
-    <button id="closeAction">Close</button>
-  </div>
-  <div id="repoList"></div>
-</div>
-
-<!-- Add / Remove / Replace Popups -->
-<div id="addPopup" class="popupBox">
-  <div class="popupHeader">
-    <h2 class="popupTitle">Add Mode</h2>
-    <button class="closePopup">Close</button>
-  </div>
-  <div class="popupContent">You pressed Add. (Future UI goes here)</div>
-</div>
-
-<div id="removePopup" class="popupBox">
-  <div class="popupHeader">
-    <h2 class="popupTitle">Remove Mode</h2>
-    <button class="closePopup">Close</button>
-  </div>
-  <div class="popupContent">You pressed Remove. (Future UI goes here)</div>
-</div>
-
-<div id="replacePopup" class="popupBox">
-  <div class="popupHeader">
-    <h2 class="popupTitle">Replace Mode</h2>
-    <button class="closePopup">Close</button>
-  </div>
-  <div class="popupContent">You pressed Replace. (Future UI goes here)</div>
-</div>
+<div class="wrapper" id="title"></div>
+<footer>Written with LUHV · <a href="write.html">Write new</a></footer>
 
 <script>
-const input=document.getElementById("githubSearch");
-const actionBox=document.getElementById("actionBox");
-const closeAction=document.getElementById("closeAction");
-const repoList=document.getElementById("repoList");
-
-/* universal fade helpers */
-function fadeAll(state){
-  document.querySelectorAll("iframe.bg,iframe.front,.jr-btn,#githubSearch")
-    .forEach(el=>el.classList[state?"add":"remove"]("faded"));
-}
-
-/* open/close for generic popups */
-function openPopup(id){
-  const box=document.getElementById(id);
-  box.style.display="flex";
-  requestAnimationFrame(()=>{
-    box.classList.add("active");
-    fadeAll(true);
-  });
-}
-function closePopup(box){
-  box.classList.remove("active");
-  fadeAll(false);
-  setTimeout(()=>box.style.display="none",300);
-}
-
-/* attach to close buttons */
-document.querySelectorAll(".closePopup").forEach(btn=>{
-  btn.addEventListener("click",()=>closePopup(btn.closest(".popupBox")));
+const text="NOWL REPORT";
+const wrapper=document.getElementById("title");
+[...text].forEach((char,i)=>{
+  const span=document.createElement("span");
+  span.textContent=char;
+  span.className="letter";
+  span.style.animationDelay=`${i*0.2}s`;
+  wrapper.appendChild(span);
 });
-
-/* buttons */
-document.getElementById("addBtn").onclick=()=>openPopup("addPopup");
-document.getElementById("removeBtn").onclick=()=>openPopup("removePopup");
-document.getElementById("replaceBtn").onclick=()=>openPopup("replacePopup");
-
-/* GitHub action box close */
-closeAction.addEventListener("click",()=>{
-  actionBox.classList.remove("active");
-  fadeAll(false);
-  setTimeout(()=>actionBox.style.display="none",300);
-});
+setTimeout(()=>wrapper.style.animation="glowPulse 3s ease-in-out infinite",text.length*200+500);
 </script>
+
 </body>
 </html>
