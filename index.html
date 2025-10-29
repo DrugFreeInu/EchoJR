@@ -110,32 +110,31 @@ iframe.bg, iframe.front, .jr-btn, #githubSearch {transition:opacity .5s ease;}
   justify-content:flex-start;
 }
 
-  /* refined LUHV scroll visuals — centered perfectly inside track */
+/* permanent LUHV scroll visuals */
 #scrollBarTrack {
   position:absolute;
-  top:120px;
-  right:12px; /* balanced to inner edge */
-  width:22px;
-  height:calc(100% - 160px);
+  top:110px;
+  right:15px;
+  width:25px;
+  height:calc(100% - 140px);
   background:rgba(255,47,137,0.14);
-  border-radius:12px;
-  box-shadow:inset 0 0 10px rgba(255,47,137,0.2);
+  border-radius:10px;
+  box-shadow:inset 0 0 12px rgba(255,47,137,0.2);
   z-index:8;
 }
-
 #scrollBar {
   position:absolute;
-  top:120px;
-  right:12px; /* matches track exactly */
-  width:22px; /* same width as track */
-  height:70px;
-  background:rgba(255,47,137,0.7);
-  border-radius:12px;
+  top:110px;
+  right:22px;
+  width:10px;
+  height:80px;
+  background:rgba(255,47,137,0.65);
+  border-radius:10px;
   box-shadow:0 0 10px rgba(255,47,137,0.5);
   z-index:9;
   opacity:1;
   transform:scaleY(1)!important;
-  transition:top 0.35s cubic-bezier(0.25,0.1,0.25,1);
+  transition:top 0.35s cubic-bezier(0.25,0.1,0.25,1); /* LUHV-glide easing */
 }
 
 /* repo list items */
@@ -230,7 +229,6 @@ input.addEventListener("keydown",async e=>{
     const data=await res.json();
     if(!Array.isArray(data)||!data.length){
       repoList.innerHTML=`<div class='meta'>No repositories found for <strong>${user}</strong>.</div>`;
-      updateScrollVisibility();
       return;
     }
     repoList.innerHTML=data.map(repo=>`
@@ -239,10 +237,8 @@ input.addEventListener("keydown",async e=>{
       </div>`).join("");
     scrollBar.style.height="120px";
     scrollBar.style.opacity="1";
-    updateScrollVisibility();
   }catch(err){
     repoList.innerHTML=`<div class='meta'>Failed to load repos. ${err}</div>`;
-    updateScrollVisibility();
   }
 });
 
@@ -260,7 +256,6 @@ repoList.addEventListener("click",async e=>{
     const data=await res.json();
     if(!Array.isArray(data)||!data.length){
       repoList.innerHTML=`<div class='meta'>No files found in <strong>${repo}</strong>.</div>`;
-      updateScrollVisibility();
       return;
     }
     repoList.innerHTML=data.map(file=>`
@@ -269,10 +264,8 @@ repoList.addEventListener("click",async e=>{
         <div class="meta">${file.type}</div>
       </div>`).join("");
     actionTitle.textContent=`Files · ${repo}`;
-    updateScrollVisibility();
   }catch(err){
     repoList.innerHTML=`<div class='meta'>Failed to load files. ${err}</div>`;
-    updateScrollVisibility();
   }
 });
 
@@ -304,21 +297,6 @@ repoList.addEventListener("scroll",()=>{
   scrollBar.style.height=barHeight+"px";
   scrollBar.style.top=(110+topRatio*(clientHeight-barHeight))+"px";
 });
-
-/* hide scroll visuals when not needed */
-function updateScrollVisibility() {
-  const { scrollHeight, clientHeight } = repoList;
-  const needsScroll = scrollHeight > clientHeight;
-  const track = document.getElementById("scrollBarTrack");
-  const bar = document.getElementById("scrollBar");
-  track.style.display = needsScroll ? "block" : "none";
-  bar.style.display = needsScroll ? "block" : "none";
-}
-repoList.addEventListener("scroll", updateScrollVisibility);
-const observer = new MutationObserver(updateScrollVisibility);
-observer.observe(repoList, { childList: true, subtree: true });
-window.addEventListener("resize", updateScrollVisibility);
-updateScrollVisibility();
 </script>
 </body>
 </html>
