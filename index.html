@@ -73,7 +73,7 @@ iframe.bg, iframe.front, .jr-btn, #githubSearch {transition:opacity .5s ease;}
   display:none;flex-direction:column;z-index:500;
   box-shadow:0 0 20px rgba(255,47,137,0.4);
   transition:opacity .3s ease,transform .3s ease;
-  opacity:0;overflow:hidden;
+  opacity:0;overflow:hidden;border-radius:14px;
 }
 #actionBox.active{display:flex;opacity:1;transform:translate(-50%,-50%) scale(1);}
 
@@ -98,10 +98,10 @@ iframe.bg, iframe.front, .jr-btn, #githubSearch {transition:opacity .5s ease;}
 /* scrollable repo list */
 #repoList{
   flex:1;
-  padding:12px 32px 20px 16px;
+  padding:12px 32px 28px 16px; /* bottom space added */
   overflow-y:auto;
   -webkit-overflow-scrolling:touch;
-  scroll-behavior:smooth; /* LUHV-smooth scrolling */
+  scroll-behavior:smooth;
   position:relative;
   text-align:center;
   color:var(--white);
@@ -110,13 +110,13 @@ iframe.bg, iframe.front, .jr-btn, #githubSearch {transition:opacity .5s ease;}
   justify-content:flex-start;
 }
 
-/* permanent LUHV scroll visuals */
+/* LUHV scroll visuals */
 #scrollBarTrack {
   position:absolute;
   top:110px;
   right:15px;
   width:25px;
-  height:calc(100% - 140px);
+  bottom:28px; /* bottom lock to avoid overflow */
   background:rgba(255,47,137,0.14);
   border-radius:10px;
   box-shadow:inset 0 0 12px rgba(255,47,137,0.2);
@@ -134,7 +134,7 @@ iframe.bg, iframe.front, .jr-btn, #githubSearch {transition:opacity .5s ease;}
   z-index:9;
   opacity:1;
   transform:scaleY(1)!important;
-  transition:top 0.35s cubic-bezier(0.25,0.1,0.25,1); /* LUHV-glide easing */
+  transition:top 0.35s cubic-bezier(0.25,0.1,0.25,1);
 }
 
 /* repo list items */
@@ -269,7 +269,7 @@ repoList.addEventListener("click",async e=>{
   }
 });
 
-/* click file -> fill search bar (only file name) */
+/* click file -> fill search bar */
 repoList.addEventListener("click",e=>{
   const file=e.target.closest(".file-link");
   if(!file)return;
@@ -289,13 +289,14 @@ input.addEventListener("focus",()=>{
   }
 });
 
-/* fixed large scroll */
+/* scrollbar tracking */
 repoList.addEventListener("scroll",()=>{
   const {scrollTop,scrollHeight,clientHeight}=repoList;
+  const trackTop=110;
+  const trackBottom=actionBox.offsetHeight-28; /* bottom margin space */
+  const trackRange=trackBottom-trackTop-120;
   const topRatio=scrollTop/(scrollHeight-clientHeight);
-  const barHeight=120;
-  scrollBar.style.height=barHeight+"px";
-  scrollBar.style.top=(110+topRatio*(clientHeight-barHeight))+"px";
+  scrollBar.style.top=(trackTop+topRatio*trackRange)+"px";
 });
 </script>
 </body>
