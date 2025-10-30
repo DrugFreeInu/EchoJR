@@ -176,13 +176,13 @@ const actionBox=document.getElementById("actionBox");
 const closeAction=document.getElementById("closeAction");
 const repoList=document.getElementById("repoList");
 
-/* universal fade helpers */
+/* fade helpers */
 function fadeAll(state){
   document.querySelectorAll("iframe.bg,iframe.front,.jr-btn,#githubSearch")
     .forEach(el=>el.classList[state?"add":"remove"]("faded"));
 }
 
-/* open/close for generic popups */
+/* popup control */
 function openPopup(id){
   const box=document.getElementById(id);
   box.style.display="flex";
@@ -202,10 +202,38 @@ document.querySelectorAll(".closePopup").forEach(btn=>{
   btn.addEventListener("click",()=>closePopup(btn.closest(".popupBox")));
 });
 
-/* buttons */
+/* main buttons */
 document.getElementById("addBtn").onclick=()=>openPopup("addPopup");
 document.getElementById("removeBtn").onclick=()=>openPopup("removePopup");
 document.getElementById("replaceBtn").onclick=()=>openPopup("replacePopup");
+
+/* GitHub search restored */
+input.addEventListener("keydown",e=>{
+  if(e.key==="Enter"){
+    e.preventDefault();
+    const user=input.value.trim();
+    if(!user) return;
+
+    fadeAll(true);
+    repoList.innerHTML="<p>Loading repos for <b>"+user+"</b>...</p>";
+
+    fetch(`https://api.github.com/users/${user}/repos`)
+      .then(r=>r.json())
+      .then(data=>{
+        if(!Array.isArray(data)){repoList.innerHTML="<p>No repos found.</p>";return;}
+        repoList.innerHTML=data.map(repo=>
+          `<div class='repo'>
+             <a href='${repo.html_url}' target='_blank'>${repo.name}</a>
+             <div class='meta'>⭐ ${repo.stargazers_count} | ${repo.language||'n/a'}</div>
+           </div>`
+        ).join('');
+      })
+      .catch(()=>{repoList.innerHTML="<p>Error loading repos.</p>";});
+
+    actionBox.style.display="flex";
+    requestAnimationFrame(()=>actionBox.classList.add("active"));
+  }
+});
 
 /* GitHub action box close */
 closeAction.addEventListener("click",()=>{
