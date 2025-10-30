@@ -1,1 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1.0" />
+<title>LUHV Front</title>
+<style>
+html,body{
+  margin:0;padding:0;width:100%;height:100%;
+  background:transparent;overflow:hidden;
+}
+canvas{
+  position:fixed;top:0;left:0;width:100%;height:100%;
+  pointer-events:none;background:transparent;
+}
+</style>
+</head>
+<body>
+<canvas id="bokeh"></canvas>
+<script>
+const c=document.getElementById("bokeh");
+const ctx=c.getContext("2d");
+let W,H;
+function resize(){
+  W=c.width=window.innerWidth;
+  H=c.height=window.innerHeight;
+}
+window.addEventListener("resize",resize);
+resize();
 
+const hearts=Array.from({length:18}).map(()=>({
+  x:Math.random()*W,
+  y:Math.random()*H,
+  r:15+Math.random()*45,
+  dx:(Math.random()-.5)*0.25,
+  dy:(Math.random()-.5)*0.25,
+  hue:330+Math.random()*30,
+  alpha:0.18+Math.random()*0.1
+}));
+
+function drawHeart(x0,y0,s,hue,a){
+  ctx.beginPath();
+  ctx.moveTo(x0,y0);
+  ctx.bezierCurveTo(x0-s/2,y0-s/2,x0-s,y0+s/3,x0,y0+s);
+  ctx.bezierCurveTo(x0+s,y0+s/3,x0+s/2,y0-s/2,x0,y0);
+  ctx.closePath();
+  ctx.fillStyle=`hsla(${hue},90%,70%,${a})`;
+  ctx.shadowBlur=25;
+  ctx.shadowColor=`hsla(${hue},90%,70%,${a*3})`;
+  ctx.fill();
+}
+
+function animate(){
+  ctx.clearRect(0,0,W,H);
+  for(let h of hearts){
+    drawHeart(h.x,h.y,h.r,h.hue,h.alpha);
+    h.x+=h.dx;
+    h.y+=h.dy;
+    if(h.x<-80)h.x=W+80;
+    if(h.x>W+80)h.x=-80;
+    if(h.y<-80)h.y=H+80;
+    if(h.y>H+80)h.y=-80;
+  }
+  requestAnimationFrame(animate);
+}
+animate();
+</script>
+</body>
+</html>
