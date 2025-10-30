@@ -36,6 +36,7 @@ html,body{
   transform:rotate(45deg);
   opacity:0;
   animation:melt 9s ease-in-out infinite;
+  z-index:1;
 }
 .heart::before,
 .heart::after{
@@ -74,6 +75,7 @@ html,body{
   backdrop-filter:blur(10px) saturate(160%);
   -webkit-backdrop-filter:blur(10px) saturate(160%);
   transition:box-shadow .3s ease,transform .1s ease,opacity .4s ease;
+  z-index:10;
 }
 .jr-btn:hover{
   box-shadow:0 0 45px rgba(255,47,137,0.7);
@@ -97,7 +99,7 @@ footer{
   text-transform:uppercase;
 }
 
-/* portal button */
+/* portal button (light mode) */
 #lightBtn{
   position:fixed;
   bottom:40px;
@@ -117,7 +119,7 @@ footer{
   backdrop-filter:blur(12px) saturate(160%);
   -webkit-backdrop-filter:blur(12px) saturate(160%);
   transition:box-shadow .25s ease,transform .1s ease,opacity .5s ease;
-  z-index:99;
+  z-index:100;
 }
 #lightBtn:hover{
   box-shadow:0 0 40px rgba(255,47,137,0.9);
@@ -127,17 +129,8 @@ footer{
 </head>
 <body>
 
-<div class="container">
-  <footer>ECHO JR · DARK MODE</footer>
-  <button class="jr-btn">Add</button>
-  <button class="jr-btn">Remove</button>
-  <button class="jr-btn">Replace</button>
-</div>
-
-<button id="lightBtn">Light Mode ☀️</button>
-
+<!-- floating hearts (behind everything) -->
 <script>
-/* heart spawn */
 const total = 10;
 for(let i=0;i<total;i++){
   const h=document.createElement('div');
@@ -147,8 +140,21 @@ for(let i=0;i<total;i++){
   h.style.animationDuration=(8+Math.random()*4)+'s';
   document.body.appendChild(h);
 }
+</script>
 
-/* light-mode portal */
+<!-- main layout -->
+<div class="container">
+  <footer>ECHO JR · DARK MODE</footer>
+  <button class="jr-btn">Add</button>
+  <button class="jr-btn">Remove</button>
+  <button class="jr-btn">Replace</button>
+</div>
+
+<!-- light mode portal button -->
+<button id="lightBtn">Light Mode ☀️</button>
+
+<script>
+/* transition back to light mode */
 const lightBtn=document.getElementById("lightBtn");
 lightBtn.addEventListener("click",()=>{
   document.body.style.opacity="0";
