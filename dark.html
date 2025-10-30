@@ -99,13 +99,10 @@ footer{
   text-transform:uppercase;
 }
 
-/* portal button (light mode) */
+/* light mode button (under Replace) */
 #lightBtn{
-  position:fixed;
-  bottom:40px;
-  left:50%;
-  transform:translateX(-50%);
-  width:220px;
+  margin-top:15px;
+  width:200px;
   background:rgba(255,255,255,0.08);
   border:2px solid rgba(255,255,255,0.25);
   color:var(--pink2);
@@ -119,7 +116,6 @@ footer{
   backdrop-filter:blur(12px) saturate(160%);
   -webkit-backdrop-filter:blur(12px) saturate(160%);
   transition:box-shadow .25s ease,transform .1s ease,opacity .5s ease;
-  z-index:100;
 }
 #lightBtn:hover{
   box-shadow:0 0 40px rgba(255,47,137,0.9);
@@ -129,7 +125,7 @@ footer{
 </head>
 <body>
 
-<!-- floating hearts (behind everything) -->
+<!-- floating hearts -->
 <script>
 const total = 10;
 for(let i=0;i<total;i++){
@@ -148,10 +144,8 @@ for(let i=0;i<total;i++){
   <button class="jr-btn">Add</button>
   <button class="jr-btn">Remove</button>
   <button class="jr-btn">Replace</button>
+  <button id="lightBtn">Light Mode ☀️</button>
 </div>
-
-<!-- light mode portal button -->
-<button id="lightBtn">Light Mode ☀️</button>
 
 <script>
 /* transition back to light mode */
