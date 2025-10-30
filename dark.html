@@ -73,7 +73,7 @@ html,body{
   box-shadow:0 0 30px rgba(255,47,137,0.3);
   backdrop-filter:blur(10px) saturate(160%);
   -webkit-backdrop-filter:blur(10px) saturate(160%);
-  transition:box-shadow .3s ease,transform .1s ease;
+  transition:box-shadow .3s ease,transform .1s ease,opacity .4s ease;
 }
 .jr-btn:hover{
   box-shadow:0 0 45px rgba(255,47,137,0.7);
@@ -96,6 +96,33 @@ footer{
   color:var(--pink2);
   text-transform:uppercase;
 }
+
+/* portal button */
+#lightBtn{
+  position:fixed;
+  bottom:40px;
+  left:50%;
+  transform:translateX(-50%);
+  width:220px;
+  background:rgba(255,255,255,0.08);
+  border:2px solid rgba(255,255,255,0.25);
+  color:var(--pink2);
+  box-shadow:0 0 25px rgba(255,47,137,0.4);
+  border-radius:30px;
+  padding:12px 0;
+  font-size:18px;
+  font-weight:600;
+  text-align:center;
+  cursor:pointer;
+  backdrop-filter:blur(12px) saturate(160%);
+  -webkit-backdrop-filter:blur(12px) saturate(160%);
+  transition:box-shadow .25s ease,transform .1s ease,opacity .5s ease;
+  z-index:99;
+}
+#lightBtn:hover{
+  box-shadow:0 0 40px rgba(255,47,137,0.9);
+  transform:scale(1.05);
+}
 </style>
 </head>
 <body>
@@ -107,8 +134,11 @@ footer{
   <button class="jr-btn">Replace</button>
 </div>
 
+<button id="lightBtn">Light Mode ☀️</button>
+
 <script>
-const total = 10; // fewer hearts = calmer feel
+/* heart spawn */
+const total = 10;
 for(let i=0;i<total;i++){
   const h=document.createElement('div');
   h.className='heart';
@@ -117,6 +147,13 @@ for(let i=0;i<total;i++){
   h.style.animationDuration=(8+Math.random()*4)+'s';
   document.body.appendChild(h);
 }
+
+/* light-mode portal */
+const lightBtn=document.getElementById("lightBtn");
+lightBtn.addEventListener("click",()=>{
+  document.body.style.opacity="0";
+  setTimeout(()=>window.location.href="index.html",500);
+});
 </script>
 
 </body>
