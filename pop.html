@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1.0" />
-<title>Heart Balloon</title>
+<title>Perfect Heart Balloon</title>
 <style>
 html,body{
   margin:0;
@@ -12,38 +12,38 @@ html,body{
   overflow:hidden;
 }
 
-/* heart and string group */
+/* centered heart balloon */
 svg{
   position:absolute;
   left:50%;
   top:50%;
   transform:translate(-50%,-50%);
   width:120px;
-  height:200px;
-  filter:drop-shadow(0 0 15px rgba(255,80,150,0.6));
-  animation:gently 10s ease-in-out infinite;
+  height:220px;
+  filter:drop-shadow(0 0 18px rgba(255,80,150,0.6));
+  animation: float 10s ease-in-out infinite;
 }
 
-/* floating motion */
-@keyframes gently{
-  0%{ transform:translate(-50%,-50%) translate(0,0); }
-  25%{ transform:translate(-50%,-50%) translate(15px,-20px); }
-  50%{ transform:translate(-50%,-50%) translate(-10px,-10px); }
-  75%{ transform:translate(-50%,-50%) translate(10px,15px); }
-  100%{ transform:translate(-50%,-50%) translate(0,0); }
+/* soft float */
+@keyframes float{
+  0%{transform:translate(-50%,-50%) translate(0,0);}
+  25%{transform:translate(-50%,-50%) translate(10px,-20px);}
+  50%{transform:translate(-50%,-50%) translate(-15px,-10px);}
+  75%{transform:translate(-50%,-50%) translate(10px,20px);}
+  100%{transform:translate(-50%,-50%) translate(0,0);}
 }
 
-/* string sway */
+/* slow sway of string */
 #string{
   transform-origin:top center;
   animation:sway 6s ease-in-out infinite;
 }
 @keyframes sway{
-  0%{ transform:rotate(0deg); }
-  25%{ transform:rotate(2deg); }
-  50%{ transform:rotate(0deg); }
-  75%{ transform:rotate(-2deg); }
-  100%{ transform:rotate(0deg); }
+  0%{transform:rotate(0deg);}
+  25%{transform:rotate(1.5deg);}
+  50%{transform:rotate(0deg);}
+  75%{transform:rotate(-1.5deg);}
+  100%{transform:rotate(0deg);}
 }
 </style>
 </head>
@@ -62,17 +62,17 @@ svg{
     </linearGradient>
   </defs>
 
-  <!-- heart with slight bottom taper -->
+  <!-- refined heart taper -->
   <path id="heart" fill="url(#grad)" d="
     M50 20
     C35 0, 5 10, 5 40
-    C5 65, 50 100, 50 115
-    C50 100, 95 65, 95 40
+    C5 70, 40 100, 50 130
+    C60 100, 95 70, 95 40
     C95 10, 65 0, 50 20Z
   "/>
 
-  <!-- seamlessly attached string -->
-  <path id="string" d="M50 115 Q48 145 52 180" stroke="url(#stringGrad)" stroke-width="2.2" fill="none" />
+  <!-- seamlessly blended string -->
+  <path id="string" d="M50 130 Q48 160 52 190" stroke="url(#stringGrad)" stroke-width="2.4" stroke-linecap="round" fill="none" />
 </svg>
 
 </body>
