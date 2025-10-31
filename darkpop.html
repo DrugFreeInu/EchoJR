@@ -9,28 +9,34 @@ html,body{
   margin:0;
   height:100%;
   width:100%;
-  background:transparent;
+  background:transparent; /* allows blending with dark.html */
   overflow:hidden;
 }
 
-/* balloon */
+/* balloon core */
 svg{
   position:absolute;
   width:160px;
   height:420px;
-  filter:drop-shadow(0 0 20px rgba(255,47,137,0.9));
+  filter:
+    drop-shadow(0 0 10px rgba(255,47,137,0.6))
+    drop-shadow(0 0 25px rgba(255,47,137,0.8))
+    drop-shadow(0 0 45px rgba(255,47,137,0.4));
   animation:float 14s ease-in-out infinite;
+  opacity:0.95;
+  mix-blend-mode:screen; /* adds light-blend glow on dark bg */
 }
 
+/* smooth floating motion */
 @keyframes float{
-  0%{transform:translate(0,0);}
-  25%{transform:translate(25px,-20px);}
-  50%{transform:translate(-25px,-10px);}
-  75%{transform:translate(15px,25px);}
-  100%{transform:translate(0,0);}
+  0%   {transform:translate(0,0) scale(1);}
+  25%  {transform:translate(25px,-25px) scale(1.02);}
+  50%  {transform:translate(-25px,-10px) scale(0.98);}
+  75%  {transform:translate(15px,25px) scale(1.01);}
+  100% {transform:translate(0,0) scale(1);}
 }
 
-/* string movement */
+/* gentle sway in the string */
 #string{
   transform-origin:top center;
   animation:sway 8s ease-in-out infinite;
@@ -48,19 +54,21 @@ svg{
 
 <svg viewBox="0 0 100 400">
   <defs>
-    <!-- darker gradient tones -->
+    <!-- dark luminous gradient for the heart -->
     <radialGradient id="grad" cx="35%" cy="25%" r="65%">
-      <stop offset="0%" stop-color="#ff2e88"/>
+      <stop offset="0%" stop-color="#ff5ca8"/>
       <stop offset="40%" stop-color="#c21875"/>
-      <stop offset="100%" stop-color="#4a0032"/>
+      <stop offset="100%" stop-color="#2b001a"/>
     </radialGradient>
+
+    <!-- neon pink fading string -->
     <linearGradient id="stringGrad" x1="0" y1="0" x2="0" y2="1">
       <stop offset="0%" stop-color="rgba(255,47,137,1)"/>
       <stop offset="100%" stop-color="rgba(255,47,137,0)" />
     </linearGradient>
   </defs>
 
-  <!-- rounded-bottom heart -->
+  <!-- glowing heart shape -->
   <path fill="url(#grad)" d="
     M50 20
     C35 0, 5 10, 5 40
@@ -70,7 +78,7 @@ svg{
     Q50 132, 50 134
   "/>
 
-  <!-- soft glowing string -->
+  <!-- soft illuminated string -->
   <path id="string" d="
     M50 134
     C50 150, 47 165, 55 195
@@ -79,11 +87,11 @@ svg{
     S45 345, 50 360
     S60 380, 50 395
   "
-  stroke="url(#stringGrad)" stroke-width="2.6" stroke-linecap="round" fill="none"/>
+  stroke="url(#stringGrad)" stroke-width="2.8" stroke-linecap="round" fill="none"/>
 </svg>
 
 <script>
-/* randomize starting position */
+/* randomize starting position and float speed */
 const balloon=document.querySelector("svg");
 function randomPosition(){
   const vw=window.innerWidth;
