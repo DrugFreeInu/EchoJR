@@ -3,35 +3,35 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1.0" />
-<title>Heart Balloon · Rounded Base</title>
+<title>Heart Balloon · Floating Freely</title>
 <style>
 html,body{
   margin:0;
   height:100%;
+  width:100%;
   background:transparent;
   overflow:hidden;
 }
 
+/* main balloon styling */
 svg{
   position:absolute;
-  left:50%;
-  top:50%;
-  transform:translate(-50%,-50%);
   width:160px;
   height:420px;
   filter:drop-shadow(0 0 18px rgba(255,80,150,0.6));
-  animation:float 12s ease-in-out infinite;
+  animation:float 14s ease-in-out infinite;
 }
 
+/* random floating animation */
 @keyframes float{
-  0%{transform:translate(-50%,-50%) translate(0,0);}
-  25%{transform:translate(-50%,-50%) translate(12px,-25px);}
-  50%{transform:translate(-50%,-50%) translate(-15px,-10px);}
-  75%{transform:translate(-50%,-50%) translate(10px,20px);}
-  100%{transform:translate(-50%,-50%) translate(0,0);}
+  0%{transform:translate(0,0);}
+  25%{transform:translate(30px,-25px);}
+  50%{transform:translate(-20px,-15px);}
+  75%{transform:translate(15px,20px);}
+  100%{transform:translate(0,0);}
 }
 
-/* slight sway of the lower string only */
+/* soft sway for lower string */
 #string{
   transform-origin:top center;
   animation:sway 8s ease-in-out infinite;
@@ -60,7 +60,7 @@ svg{
     </linearGradient>
   </defs>
 
-  <!-- Heart with softly rounded bottom -->
+  <!-- Heart with soft rounded base -->
   <path fill="url(#grad)" d="
     M50 20
     C35 0, 5 10, 5 40
@@ -70,7 +70,7 @@ svg{
     Q50 132, 50 134
   "/>
 
-  <!-- String begins from that rounded curve -->
+  <!-- String connected to heart -->
   <path id="string" d="
     M50 134
     C50 150, 47 165, 55 195
@@ -81,6 +81,21 @@ svg{
   "
   stroke="url(#stringGrad)" stroke-width="2.6" stroke-linecap="round" fill="none"/>
 </svg>
+
+<script>
+/* randomize starting position and speed */
+const balloon = document.querySelector("svg");
+function randomPosition(){
+  const vw = window.innerWidth;
+  const vh = window.innerHeight;
+  const x = Math.random() * (vw - 160);
+  const y = Math.random() * (vh - 420);
+  balloon.style.left = `${x}px`;
+  balloon.style.top = `${y}px`;
+  balloon.style.animationDuration = `${12 + Math.random()*6}s`;
+}
+randomPosition();
+</script>
 
 </body>
 </html>
