@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1.0" />
-<title>Heart Balloon · Soft LUHV Base</title>
+<title>Heart Balloon · Bound by LUHV</title>
 <style>
 html,body{
   margin:0;
@@ -12,14 +12,14 @@ html,body{
   overflow:hidden;
 }
 
-/* smooth floating motion */
-svg{
+/* The entire balloon floats together as one unit */
+#balloon{
   position:absolute;
   left:50%;
   top:50%;
   transform:translate(-50%,-50%);
   width:160px;
-  height:420px;
+  height:500px;
   filter:drop-shadow(0 0 18px rgba(255,80,150,0.6));
   animation:float 12s ease-in-out infinite;
 }
@@ -32,23 +32,23 @@ svg{
   100%{transform:translate(-50%,-50%) translate(0,0);}
 }
 
-/* gentle sway only lower string */
+/* soft wave for string only, within same group */
 #string{
   transform-origin:top center;
   animation:sway 8s ease-in-out infinite;
 }
 @keyframes sway{
   0%{transform:rotate(0deg);}
-  25%{transform:rotate(1.2deg);}
+  25%{transform:rotate(1deg);}
   50%{transform:rotate(0deg);}
-  75%{transform:rotate(-1.2deg);}
+  75%{transform:rotate(-1deg);}
   100%{transform:rotate(0deg);}
 }
 </style>
 </head>
 <body>
 
-<svg viewBox="0 0 100 400">
+<svg id="balloon" viewBox="0 0 100 500">
   <defs>
     <radialGradient id="grad" cx="35%" cy="25%" r="65%">
       <stop offset="0%" stop-color="#ffb7df"/>
@@ -61,25 +61,26 @@ svg{
     </linearGradient>
   </defs>
 
-  <!-- Heart with smooth rounded base -->
+  <!-- Heart with rounded bottom -->
   <path fill="url(#grad)" d="
-    M50 20
-    C35 0, 5 10, 5 40
-    C5 70, 40 100, 50 130
-    C60 100, 95 70, 95 40
-    C95 10, 65 0, 50 20
-    C47 132, 43 142, 50 146
-    C57 142, 53 132, 50 20Z
+    M50 40
+    C35 10, 5 20, 5 55
+    C5 90, 40 120, 50 160
+    C60 120, 95 90, 95 55
+    C95 20, 65 10, 50 40
+    Q50 172, 48 178
+    Q50 182, 52 178
+    Q50 172, 50 40Z
   "/>
 
-  <!-- String attaches directly to rounded underside -->
+  <!-- Perfectly aligned string that never detaches -->
   <path id="string" d="
-    M50 146
-    C50 160, 47 175, 55 200
-    S60 240, 45 270
-    S55 305, 65 320
-    S45 340, 50 355
-    S60 370, 50 385
+    M50 178
+    C50 190, 47 210, 55 240
+    S60 280, 45 315
+    S55 350, 65 370
+    S45 395, 50 415
+    S60 435, 50 455
   " stroke="url(#stringGrad)" stroke-width="2.6" stroke-linecap="round" fill="none"/>
 </svg>
 
