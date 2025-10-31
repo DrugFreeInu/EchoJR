@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1.0" />
-<title>Heart Pop</title>
+<title>Single Heart Pop</title>
 <style>
 html,body{
   margin:0;
@@ -12,6 +12,7 @@ html,body{
   overflow:hidden;
 }
 
+/* single centered heart */
 svg{
   position:absolute;
   left:50%;
@@ -23,7 +24,7 @@ svg{
   animation: gentleFloat 10s ease-in-out infinite;
 }
 
-/* gentle floating motion */
+/* gentle float motion */
 @keyframes gentleFloat{
   0%{ transform:translate(-50%,-50%) translate(0,0) scale(1); }
   25%{ transform:translate(-50%,-50%) translate(20px,-25px) scale(1.03); }
@@ -32,7 +33,7 @@ svg{
   100%{ transform:translate(-50%,-50%) translate(0,0) scale(1); }
 }
 
-/* pop animation trigger */
+/* pop animation */
 .pop{
   animation: pop 1.2s ease-in forwards;
 }
@@ -54,10 +55,11 @@ svg{
   }
 }
 
-/* small fading drops */
+/* pop drops */
 .drop{
   position:absolute;
-  width:10px;height:10px;
+  width:10px;
+  height:10px;
   border-radius:50%;
   background:radial-gradient(circle,#ff7ac0 0%,#ff2e88 80%);
   opacity:0.8;
@@ -71,6 +73,7 @@ svg{
 </head>
 <body>
 
+<!-- only one heart -->
 <svg id="heart" viewBox="0 0 100 90">
   <defs>
     <radialGradient id="grad" cx="30%" cy="30%" r="70%">
