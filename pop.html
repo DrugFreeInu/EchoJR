@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1.0" />
-<title>Perfect Heart Balloon</title>
+<title>Heart Balloon · Fine-Art String</title>
 <style>
 html,body{
   margin:0;
@@ -12,31 +12,29 @@ html,body{
   overflow:hidden;
 }
 
-/* centered heart balloon */
 svg{
   position:absolute;
   left:50%;
   top:50%;
   transform:translate(-50%,-50%);
-  width:120px;
-  height:220px;
+  width:140px;
+  height:320px;
   filter:drop-shadow(0 0 18px rgba(255,80,150,0.6));
-  animation: float 10s ease-in-out infinite;
+  animation:float 12s ease-in-out infinite;
 }
 
-/* soft float */
 @keyframes float{
   0%{transform:translate(-50%,-50%) translate(0,0);}
-  25%{transform:translate(-50%,-50%) translate(10px,-20px);}
+  25%{transform:translate(-50%,-50%) translate(12px,-25px);}
   50%{transform:translate(-50%,-50%) translate(-15px,-10px);}
   75%{transform:translate(-50%,-50%) translate(10px,20px);}
   100%{transform:translate(-50%,-50%) translate(0,0);}
 }
 
-/* slow sway of string */
+/* gentle sway of the string as a whole */
 #string{
   transform-origin:top center;
-  animation:sway 6s ease-in-out infinite;
+  animation:sway 8s ease-in-out infinite;
 }
 @keyframes sway{
   0%{transform:rotate(0deg);}
@@ -49,7 +47,7 @@ svg{
 </head>
 <body>
 
-<svg viewBox="0 0 100 200">
+<svg viewBox="0 0 100 300">
   <defs>
     <radialGradient id="grad" cx="35%" cy="25%" r="65%">
       <stop offset="0%" stop-color="#ffb7df"/>
@@ -62,7 +60,7 @@ svg{
     </linearGradient>
   </defs>
 
-  <!-- refined heart taper -->
+  <!-- Heart -->
   <path id="heart" fill="url(#grad)" d="
     M50 20
     C35 0, 5 10, 5 40
@@ -71,8 +69,14 @@ svg{
     C95 10, 65 0, 50 20Z
   "/>
 
-  <!-- seamlessly blended string -->
-  <path id="string" d="M50 130 Q48 160 52 190" stroke="url(#stringGrad)" stroke-width="2.4" stroke-linecap="round" fill="none" />
+  <!-- Extended elegant string with fine art swirls -->
+  <path id="string" d="
+    M50 130
+    C48 160, 40 190, 55 220
+    S60 260, 45 280
+    S55 320, 50 340
+  "
+  stroke="url(#stringGrad)" stroke-width="2.4" stroke-linecap="round" fill="none"/>
 </svg>
 
 </body>
