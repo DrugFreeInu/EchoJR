@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1.0" />
-<title>Heart with Silky String</title>
+<title>Heart Balloon</title>
 <style>
 html,body{
   margin:0;
@@ -12,31 +12,31 @@ html,body{
   overflow:hidden;
 }
 
-/* heart + string together */
+/* heart and string group */
 svg{
   position:absolute;
   left:50%;
   top:50%;
   transform:translate(-50%,-50%);
-  width:100px;
-  height:160px;
+  width:120px;
+  height:200px;
   filter:drop-shadow(0 0 15px rgba(255,80,150,0.6));
-  animation: gentleFloat 10s ease-in-out infinite;
+  animation:gently 10s ease-in-out infinite;
 }
 
-/* gentle float */
-@keyframes gentleFloat{
-  0%{ transform:translate(-50%,-50%) translate(0,0) scale(1); }
-  25%{ transform:translate(-50%,-50%) translate(20px,-25px) scale(1.03); }
-  50%{ transform:translate(-50%,-50%) translate(-15px,-15px) scale(1); }
-  75%{ transform:translate(-50%,-50%) translate(10px,20px) scale(1.02); }
-  100%{ transform:translate(-50%,-50%) translate(0,0) scale(1); }
+/* floating motion */
+@keyframes gently{
+  0%{ transform:translate(-50%,-50%) translate(0,0); }
+  25%{ transform:translate(-50%,-50%) translate(15px,-20px); }
+  50%{ transform:translate(-50%,-50%) translate(-10px,-10px); }
+  75%{ transform:translate(-50%,-50%) translate(10px,15px); }
+  100%{ transform:translate(-50%,-50%) translate(0,0); }
 }
 
 /* string sway */
 #string{
-  transform-origin: top center;
-  animation: sway 6s ease-in-out infinite;
+  transform-origin:top center;
+  animation:sway 6s ease-in-out infinite;
 }
 @keyframes sway{
   0%{ transform:rotate(0deg); }
@@ -45,38 +45,15 @@ svg{
   75%{ transform:rotate(-2deg); }
   100%{ transform:rotate(0deg); }
 }
-
-/* pop animation */
-.pop{
-  animation: pop 1.2s ease-in forwards;
-}
-@keyframes pop{
-  0%{ transform:translate(-50%,-50%) scale(1);opacity:1;filter:drop-shadow(0 0 15px rgba(255,80,150,0.6)); }
-  60%{ transform:translate(-50%,-50%) scale(1.3);filter:drop-shadow(0 0 25px rgba(255,120,180,0.8)); }
-  100%{ transform:translate(-50%,-50%) scale(0);opacity:0;filter:drop-shadow(0 0 0 rgba(255,80,150,0)); }
-}
-
-/* pop drops */
-.drop{
-  position:absolute;
-  width:10px;height:10px;border-radius:50%;
-  background:radial-gradient(circle,#ff7ac0 0%,#ff2e88 80%);
-  opacity:0.8;
-  animation: drift 1.2s ease-out forwards;
-}
-@keyframes drift{
-  0%{transform:translate(0,0) scale(1);opacity:1;}
-  100%{transform:translate(var(--x),var(--y)) scale(0.4);opacity:0;}
-}
 </style>
 </head>
 <body>
 
-<svg id="heartString" viewBox="0 0 100 180">
+<svg viewBox="0 0 100 200">
   <defs>
-    <radialGradient id="grad" cx="30%" cy="30%" r="70%">
-      <stop offset="0%" stop-color="#ff9ed0"/>
-      <stop offset="40%" stop-color="#ff52a8"/>
+    <radialGradient id="grad" cx="35%" cy="25%" r="65%">
+      <stop offset="0%" stop-color="#ffb7df"/>
+      <stop offset="40%" stop-color="#ff4fa5"/>
       <stop offset="100%" stop-color="#ff007b"/>
     </radialGradient>
     <linearGradient id="stringGrad" x1="0" y1="0" x2="0" y2="1">
@@ -85,38 +62,18 @@ svg{
     </linearGradient>
   </defs>
 
-  <!-- heart -->
-  <path id="heart" fill="url(#grad)" d="M50 84s-30-18-30-44c0-12 9-22 22-22 5 0 10 2 14 5
-           4-3 9-5 14-5 13 0 22 10 22 22 0 26-30 44-30 44z"/>
+  <!-- heart with slight bottom taper -->
+  <path id="heart" fill="url(#grad)" d="
+    M50 20
+    C35 0, 5 10, 5 40
+    C5 65, 50 100, 50 115
+    C50 100, 95 65, 95 40
+    C95 10, 65 0, 50 20Z
+  "/>
 
-  <!-- string -->
-  <path id="string" d="M50 84 Q48 120 54 160" stroke="url(#stringGrad)" stroke-width="2" fill="none" />
+  <!-- seamlessly attached string -->
+  <path id="string" d="M50 115 Q48 145 52 180" stroke="url(#stringGrad)" stroke-width="2.2" fill="none" />
 </svg>
 
-<script>
-const heart=document.getElementById('heart');
-
-function createDrop(x,y){
-  const drop=document.createElement('div');
-  drop.className='drop';
-  drop.style.left=x+'px';
-  drop.style.top=y+'px';
-  drop.style.setProperty('--x',(Math.random()*120-60)+'px');
-  drop.style.setProperty('--y',(Math.random()*120-60)+'px');
-  document.body.appendChild(drop);
-  setTimeout(()=>drop.remove(),1200);
-}
-
-heart.addEventListener('click',()=>{
-  const rect=heart.getBoundingClientRect();
-  heart.classList.add('pop');
-  for(let i=0;i<10;i++){
-    createDrop(rect.left+rect.width/2,rect.top+rect.height/2);
-  }
-  setTimeout(()=>{
-    heart.classList.remove('pop');
-  },1200);
-});
-</script>
 </body>
 </html>
