@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1.0" />
-<title>Pure LUHV Balloon · Locked String</title>
+<title>Pure LUHV Balloon · One-Piece Path</title>
 <style>
 html,body{
   margin:0;
@@ -18,12 +18,11 @@ svg{
   top:50%;
   transform:translate(-50%,-50%);
   width:160px;
-  height:380px;
+  height:420px;
   filter:drop-shadow(0 0 18px rgba(255,80,150,0.6));
   animation:float 12s ease-in-out infinite;
 }
 
-/* The entire balloon (heart + string) floats together */
 @keyframes float{
   0%{transform:translate(-50%,-50%) translate(0,0);}
   25%{transform:translate(-50%,-50%) translate(12px,-25px);}
@@ -32,8 +31,8 @@ svg{
   100%{transform:translate(-50%,-50%) translate(0,0);}
 }
 
-/* soft sway of lower string only */
-#string{
+/* gentle ribbon motion */
+#stringPart{
   transform-origin:top center;
   animation:sway 8s ease-in-out infinite;
 }
@@ -61,28 +60,40 @@ svg{
     </linearGradient>
   </defs>
 
-  <!-- One group: heart + string move as one -->
-  <g id="balloon">
-    <!-- Heart -->
-    <path id="heart" fill="url(#grad)" d="
-      M50 20
-      C35 0, 5 10, 5 40
-      C5 70, 40 100, 50 130
-      C60 100, 95 70, 95 40
-      C95 10, 65 0, 50 20Z
-    "/>
+  <!-- ONE continuous shape -->
+  <path id="balloonPath" fill="none" stroke="none" d="
+    M50 20
+    C35 0, 5 10, 5 40
+    C5 70, 40 100, 50 130
+    C60 100, 95 70, 95 40
+    C95 10, 65 0, 50 20
+    L50 130
+    C50 145, 47 160, 55 190
+    S60 230, 45 265
+    S55 305, 65 320
+    S45 340, 50 355
+    S60 370, 50 385
+  " />
 
-    <!-- String perfectly attached -->
-    <path id="string" d="
-      M50 130
-      C50 145, 47 160, 55 190
-      S60 230, 45 265
-      S55 305, 65 320
-      S45 340, 50 355
-      S60 370, 50 385
-    "
-    stroke="url(#stringGrad)" stroke-width="2.6" stroke-linecap="round" fill="none"/>
-  </g>
+  <!-- Heart shape filled -->
+  <path fill="url(#grad)" d="
+    M50 20
+    C35 0, 5 10, 5 40
+    C5 70, 40 100, 50 130
+    C60 100, 95 70, 95 40
+    C95 10, 65 0, 50 20Z
+  "/>
+
+  <!-- String using same continuous point -->
+  <path id="stringPart" d="
+    M50 130
+    C50 145, 47 160, 55 190
+    S60 230, 45 265
+    S55 305, 65 320
+    S45 340, 50 355
+    S60 370, 50 385
+  "
+  stroke="url(#stringGrad)" stroke-width="2.6" stroke-linecap="round" fill="none"/>
 </svg>
 
 </body>
