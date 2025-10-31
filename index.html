@@ -66,7 +66,28 @@ footer{
 /* bottom button row */
 .bottom-row{
   display:flex;justify-content:center;align-items:center;
-  margin-top:6px;
+  margin-top:6px;position:relative;
+}
+
+/* rounded floating heart */
+#heart{
+  position:absolute;
+  left:50%;
+  top:50%;
+  transform:translate(-50%,-50%);
+  width:80px;height:80px;
+  filter:drop-shadow(0 0 15px rgba(255,80,150,0.6));
+  animation:gently 12s ease-in-out infinite;
+  z-index:-1;
+}
+
+/* heart floating motion */
+@keyframes gently{
+  0%{ transform:translate(-50%,-50%) translate(0,0) scale(1); }
+  25%{ transform:translate(-50%,-50%) translate(20px,-25px) scale(1.05); }
+  50%{ transform:translate(-50%,-50%) translate(-15px,-15px) scale(1); }
+  75%{ transform:translate(-50%,-50%) translate(10px,20px) scale(1.03); }
+  100%{ transform:translate(-50%,-50%) translate(0,0) scale(1); }
 }
 
 /* github search input */
@@ -134,6 +155,21 @@ iframe.bg, iframe.front, .jr-btn, #githubSearch {transition:opacity .5s ease;}
 
   <div class="bottom-row">
     <button class="circle-btn" id="darkBtn">Dark</button>
+
+    <!-- Rounded heart directly between buttons -->
+    <svg id="heart" viewBox="0 0 100 90">
+      <defs>
+        <radialGradient id="grad" cx="30%" cy="30%" r="70%">
+          <stop offset="0%" stop-color="#ff9ed0"/>
+          <stop offset="40%" stop-color="#ff52a8"/>
+          <stop offset="100%" stop-color="#ff007b"/>
+        </radialGradient>
+      </defs>
+      <path fill="url(#grad)"
+        d="M50 84s-30-18-30-44c0-12 9-22 22-22 5 0 10 2 14 5
+           4-3 9-5 14-5 13 0 22 10 22 22 0 26-30 44-30 44z"/>
+    </svg>
+
     <button class="circle-btn" id="helpBtn">Help</button>
   </div>
 </div>
