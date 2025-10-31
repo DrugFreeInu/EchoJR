@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1.0" />
-<title>Heart Balloon · Pure LUHV</title>
+<title>Heart Balloon · Perfect Connection</title>
 <style>
 html,body{
   margin:0;
@@ -18,7 +18,7 @@ svg{
   top:50%;
   transform:translate(-50%,-50%);
   width:160px;
-  height:360px;
+  height:380px;
   filter:drop-shadow(0 0 18px rgba(255,80,150,0.6));
   animation:float 12s ease-in-out infinite;
 }
@@ -31,7 +31,6 @@ svg{
   100%{transform:translate(-50%,-50%) translate(0,0);}
 }
 
-/* soft sway */
 #string{
   transform-origin:top center;
   animation:sway 8s ease-in-out infinite;
@@ -47,7 +46,7 @@ svg{
 </head>
 <body>
 
-<svg viewBox="0 0 100 380">
+<svg viewBox="0 0 100 400">
   <defs>
     <radialGradient id="grad" cx="35%" cy="25%" r="65%">
       <stop offset="0%" stop-color="#ffb7df"/>
@@ -69,16 +68,16 @@ svg{
     C95 10, 65 0, 50 20Z
   "/>
 
-  <!-- Smoothly connected string -->
+  <!-- Seamlessly connected string -->
   <path id="string" d="
     M50 130
-    C50 145, 47 160, 55 190
-    S60 240, 45 270
-    S55 310, 65 320
-    S45 335, 50 350
-    S60 360, 50 370
+    C50 140, 48 155, 54 185
+    S60 230, 45 265
+    S55 305, 65 320
+    S45 340, 50 355
+    S60 370, 50 385
   "
-  stroke="url(#stringGrad)" stroke-width="2.4" stroke-linecap="round" fill="none"/>
+  stroke="url(#stringGrad)" stroke-width="2.6" stroke-linecap="round" fill="none"/>
 </svg>
 
 </body>
