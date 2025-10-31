@@ -41,14 +41,6 @@ iframe.bg,iframe.front{
   pointer-events:none;
   transition:opacity .6s ease;
 }
-iframe.bg{
-  z-index:-2;
-  opacity:0.85;
-}
-iframe.front{
-  z-index:0;
-  opacity:.35;
-}
 
 /* layout */
 .container{
@@ -156,10 +148,11 @@ footer{
 </head>
 <body>
 
-<!-- dark mode glowing balloon -->
-<iframe src="darkpop.html" class="bg"></iframe>
-<!-- floating hearts front blur -->
-<iframe src="darkfront.html" class="front"></iframe>
+<!-- Dark mode glowing balloon -->
+<iframe src="darkpop.html" class="bg" style="z-index:-3;opacity:1;"></iframe>
+
+<!-- Floating hearts front blur -->
+<iframe src="darkfront.html" class="front" style="z-index:-2;opacity:.35;"></iframe>
 
 <div class="container">
   <footer>ECHO JR · DARK MODE</footer>
