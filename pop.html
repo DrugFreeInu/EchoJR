@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1.0" />
-<title>Heart Balloon · Fine-Art Swirl</title>
+<title>Heart Balloon · Pure LUHV</title>
 <style>
 html,body{
   margin:0;
@@ -11,6 +11,7 @@ html,body{
   background:transparent;
   overflow:hidden;
 }
+
 svg{
   position:absolute;
   left:50%;
@@ -21,6 +22,7 @@ svg{
   filter:drop-shadow(0 0 18px rgba(255,80,150,0.6));
   animation:float 12s ease-in-out infinite;
 }
+
 @keyframes float{
   0%{transform:translate(-50%,-50%) translate(0,0);}
   25%{transform:translate(-50%,-50%) translate(12px,-25px);}
@@ -29,8 +31,8 @@ svg{
   100%{transform:translate(-50%,-50%) translate(0,0);}
 }
 
-/* side sway for string and glyphs */
-#stringGroup{
+/* soft sway */
+#string{
   transform-origin:top center;
   animation:sway 8s ease-in-out infinite;
 }
@@ -40,22 +42,6 @@ svg{
   50%{transform:rotate(0deg);}
   75%{transform:rotate(-1.5deg);}
   100%{transform:rotate(0deg);}
-}
-
-/* glowing glyphs along string */
-.glyph{
-  fill:none;
-  stroke:#00e5ff;
-  stroke-width:1.6;
-  stroke-linecap:round;
-  stroke-linejoin:round;
-  opacity:0.55;
-  filter:drop-shadow(0 0 5px #00e5ff);
-  animation:glow 4s ease-in-out infinite;
-}
-@keyframes glow{
-  0%,100%{opacity:0.4;}
-  50%{opacity:0.8;}
 }
 </style>
 </head>
@@ -83,26 +69,16 @@ svg{
     C95 10, 65 0, 50 20Z
   "/>
 
-  <!-- String + glyphs group -->
-  <g id="stringGroup">
-    <!-- String -->
-    <path id="string" d="
-      M50 130
-      C47 160, 42 190, 55 220
-      S60 260, 45 280
-      S55 310, 65 320
-      S45 335, 50 350
-      S60 360, 50 370
-    "
-    stroke="url(#stringGrad)" stroke-width="2.4" stroke-linecap="round" fill="none"/>
-
-    <!-- Light-blue hand-drawn-style glyphs -->
-    <path class="glyph" d="M48 175 q2 -4 5 0 q-2 5 -5 0z" />     <!-- small heart -->
-    <path class="glyph" d="M47 210 q4 -4 8 0 q-4 4 -8 0z" />      <!-- wave -->
-    <path class="glyph" d="M52 245 q2 -5 6 0 q-2 5 -6 0z" />      <!-- swirl -->
-    <path class="glyph" d="M50 280 q3 -6 7 0 q-3 6 -7 0z" />      <!-- energy curve -->
-    <path class="glyph" d="M54 315 q2 -4 5 0 q-2 4 -5 0z" />      <!-- pulse -->
-  </g>
+  <!-- Smoothly connected string -->
+  <path id="string" d="
+    M50 130
+    C50 145, 47 160, 55 190
+    S60 240, 45 270
+    S55 310, 65 320
+    S45 335, 50 350
+    S60 360, 50 370
+  "
+  stroke="url(#stringGrad)" stroke-width="2.4" stroke-linecap="round" fill="none"/>
 </svg>
 
 </body>
