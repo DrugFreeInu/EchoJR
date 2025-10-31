@@ -16,104 +16,117 @@
 
 /* base */
 html,body{
-  margin:0;
-  height:100%;
-  width:100%;
+  margin:0;height:100%;width:100%;
   overflow:hidden;
   background:#000;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
   font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  color:var(--pink2);
+}
+
+/* background */
+iframe.bg,iframe.front{
+  position:fixed;top:0;left:0;width:100%;height:100%;
+  border:none;background:transparent;pointer-events:none;
+  transition:opacity .5s ease;
+}
+iframe.bg{z-index:-2;}
+iframe.front{z-index:0;opacity:.35;}
+
+/* layout */
+.container{
+  position:relative;z-index:2;
+  display:flex;flex-direction:column;align-items:center;
+}
+footer{
+  margin-bottom:25px;
+  font-size:18px;font-weight:900;letter-spacing:2px;
+  text-transform:uppercase;
   color:var(--pink2);
 }
 
 /* buttons */
 .jr-btn{
-  width:200px;
-  margin:10px;
-  padding:12px 0;
-  border-radius:30px;
-  font-size:18px;
-  font-weight:600;
-  text-align:center;
+  width:200px;margin:8px;padding:12px 0;border-radius:30px;
+  font-size:18px;font-weight:600;text-align:center;
   background:rgba(255,255,255,0.05);
   border:2px solid rgba(255,255,255,0.2);
-  color:var(--pink2);
-  cursor:pointer;
-  box-shadow:0 0 30px rgba(255,47,137,0.3);
-  backdrop-filter:blur(10px) saturate(160%);
-  -webkit-backdrop-filter:blur(10px) saturate(160%);
-  transition:box-shadow .3s ease,transform .1s ease,opacity .4s ease;
-  z-index:10;
-}
-.jr-btn:hover{
-  box-shadow:0 0 45px rgba(255,47,137,0.7);
-  transform:scale(1.05);
-}
-
-/* layout */
-.container{
-  position:relative;
-  z-index:10;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-}
-footer{
-  margin-bottom:25px;
-  font-size:18px;
-  font-weight:900;
-  letter-spacing:2px;
-  color:var(--pink2);
-  text-transform:uppercase;
-}
-
-/* light mode button (under Replace) */
-#lightBtn{
-  margin-top:15px;
-  width:200px;
-  background:rgba(255,255,255,0.08);
-  border:2px solid rgba(255,255,255,0.25);
-  color:var(--pink2);
-  box-shadow:0 0 25px rgba(255,47,137,0.4);
-  border-radius:30px;
-  padding:12px 0;
-  font-size:18px;
-  font-weight:600;
-  text-align:center;
-  cursor:pointer;
+  color:var(--pink2);cursor:pointer;
+  box-shadow:0 4px 20px rgba(255,47,137,0.5);
   backdrop-filter:blur(12px) saturate(160%);
   -webkit-backdrop-filter:blur(12px) saturate(160%);
-  transition:box-shadow .25s ease,transform .1s ease,opacity .5s ease;
+  transition:box-shadow .25s ease,transform .1s ease,opacity .3s ease;
 }
-#lightBtn:hover{
-  box-shadow:0 0 40px rgba(255,47,137,0.9);
-  transform:scale(1.05);
+.jr-btn:hover{box-shadow:0 6px 24px rgba(255,47,137,0.8);transform:scale(1.03);}
+
+/* circle buttons */
+.circle-btn{
+  width:70px;height:70px;margin:12px;
+  border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:13px;font-weight:700;text-transform:uppercase;
+  background:rgba(255,255,255,0.05);
+  border:2px solid rgba(255,255,255,0.25);
+  color:var(--pink2);cursor:pointer;
+  box-shadow:0 4px 20px rgba(255,47,137,0.4);
+  backdrop-filter:blur(12px) saturate(160%);
+  -webkit-backdrop-filter:blur(12px) saturate(160%);
+  transition:box-shadow .25s ease,transform .1s ease,opacity .3s ease;
+}
+.circle-btn:hover{box-shadow:0 6px 24px rgba(255,47,137,0.9);transform:scale(1.07);}
+
+/* bottom button row */
+.bottom-row{
+  display:flex;justify-content:center;align-items:center;
+  margin-top:6px;
+}
+
+/* github search input */
+#githubSearch{
+  position:fixed;bottom:40px;left:50%;transform:translateX(-50%);
+  width:260px;padding:12px 24px;border-radius:30px;font-size:18px;font-weight:600;text-align:center;
+  background:transparent;border:2px solid rgba(255,255,255,0.25);color:var(--pink2);
+  box-shadow:0 0 20px rgba(255,47,137,0.4);z-index:200;
+  transition:all .3s ease, opacity .3s ease;
+}
+#githubSearch::placeholder{color:var(--pink2);}
+#githubSearch:focus{
+  outline:none;box-shadow:0 0 26px rgba(255,47,137,0.8);border-color:rgba(255,47,137,0.9);
 }
 </style>
 </head>
 <body>
 
-<!-- LUHV front background layer -->
-<iframe src="darkfront.html?v=${Date.now()}" style="position:fixed;top:0;left:0;width:100%;height:100%;border:none;z-index:0;opacity:.4;"></iframe>
+<iframe src="dark.html" class="bg"></iframe>
+<iframe src="darkfront.html" class="front"></iframe>
 
-<!-- main layout -->
 <div class="container">
   <footer>ECHO JR · DARK MODE</footer>
   <button class="jr-btn">Add</button>
   <button class="jr-btn">Remove</button>
   <button class="jr-btn">Replace</button>
-  <button id="lightBtn">Light</button>
+
+  <div class="bottom-row">
+    <button class="circle-btn" id="lightBtn">Light</button>
+    <button class="circle-btn" id="helpBtn">Help</button>
+  </div>
 </div>
 
+<input type="text" id="githubSearch" placeholder="GitHub Username" autocomplete="off" />
+
 <script>
-/* transition back to light mode */
+/* Return to light mode */
 const lightBtn=document.getElementById("lightBtn");
 lightBtn.addEventListener("click",()=>{
   document.body.style.opacity="0";
   setTimeout(()=>window.location.href="index.html",500);
+});
+
+/* Help popup */
+const helpBtn=document.getElementById("helpBtn");
+helpBtn.addEventListener("click",()=>{
+  alert("Echo Jr Help:\nAdd → Insert code\nRemove → Delete parts\nReplace → Swap code\nLight → Return to light mode\nPure LUHV forever 💗");
 });
 </script>
 
