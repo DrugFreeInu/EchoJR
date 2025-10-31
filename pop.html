@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1.0" />
-<title>Pure LUHV Balloon · Tethered</title>
+<title>Pure LUHV Balloon · Locked String</title>
 <style>
 html,body{
   margin:0;
@@ -23,7 +23,7 @@ svg{
   animation:float 12s ease-in-out infinite;
 }
 
-/* gentle floating motion */
+/* The entire balloon (heart + string) floats together */
 @keyframes float{
   0%{transform:translate(-50%,-50%) translate(0,0);}
   25%{transform:translate(-50%,-50%) translate(12px,-25px);}
@@ -32,8 +32,8 @@ svg{
   100%{transform:translate(-50%,-50%) translate(0,0);}
 }
 
-/* soft sway of the string */
-#stringGroup{
+/* soft sway of lower string only */
+#string{
   transform-origin:top center;
   animation:sway 8s ease-in-out infinite;
 }
@@ -48,7 +48,7 @@ svg{
 </head>
 <body>
 
-<svg id="balloon" viewBox="0 0 100 400">
+<svg viewBox="0 0 100 400">
   <defs>
     <radialGradient id="grad" cx="35%" cy="25%" r="65%">
       <stop offset="0%" stop-color="#ffb7df"/>
@@ -61,46 +61,29 @@ svg{
     </linearGradient>
   </defs>
 
-  <!-- Heart -->
-  <path id="heart" fill="url(#grad)" d="
-    M50 20
-    C35 0, 5 10, 5 40
-    C5 70, 40 100, 50 130
-    C60 100, 95 70, 95 40
-    C95 10, 65 0, 50 20Z
-  "/>
+  <!-- One group: heart + string move as one -->
+  <g id="balloon">
+    <!-- Heart -->
+    <path id="heart" fill="url(#grad)" d="
+      M50 20
+      C35 0, 5 10, 5 40
+      C5 70, 40 100, 50 130
+      C60 100, 95 70, 95 40
+      C95 10, 65 0, 50 20Z
+    "/>
 
-  <!-- Group for dynamic string -->
-  <g id="stringGroup">
-    <path id="string" 
-      d="M50 130
-         C50 140, 48 155, 54 185
-         S60 230, 45 265
-         S55 305, 65 320
-         S45 340, 50 355
-         S60 370, 50 385"
-      stroke="url(#stringGrad)" 
-      stroke-width="2.6" 
-      stroke-linecap="round" 
-      fill="none"/>
+    <!-- String perfectly attached -->
+    <path id="string" d="
+      M50 130
+      C50 145, 47 160, 55 190
+      S60 230, 45 265
+      S55 305, 65 320
+      S45 340, 50 355
+      S60 370, 50 385
+    "
+    stroke="url(#stringGrad)" stroke-width="2.6" stroke-linecap="round" fill="none"/>
   </g>
 </svg>
-
-<script>
-const heart = document.getElementById('heart');
-const stringGroup = document.getElementById('stringGroup');
-
-function attachString(){
-  const heartBox = heart.getBBox();
-  const baseX = heartBox.x + heartBox.width/2;
-  const baseY = heartBox.y + heartBox.height;
-  // keep string anchored to heart base
-  stringGroup.setAttribute('transform', `translate(${baseX - 50},${baseY - 130})`);
-}
-
-attachString();
-window.addEventListener('resize', attachString);
-</script>
 
 </body>
 </html>
