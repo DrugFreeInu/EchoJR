@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1.0" />
-<title>Heart Pop</title>
+<title>Heart Balloon Float</title>
 <style>
 html,body{
   margin:0;
@@ -12,40 +12,35 @@ html,body{
   overflow:hidden;
 }
 
+/* style for the heart */
 .heart{
   position:absolute;
   left:50%;
-  bottom:-60px;
-  transform:translateX(-50%) scale(1);
+  top:50%;
+  transform:translate(-50%,-50%) scale(1);
   width:60px;
   height:60px;
   background:radial-gradient(circle at 30% 30%, #ff7abf 0%, #ff2e88 40%, #ff006e 100%);
   clip-path:polygon(50% 0%, 61% 10%, 75% 0%, 100% 25%, 50% 100%, 0 25%, 25% 0%, 39% 10%);
-  animation: floatUp 4s ease-in-out infinite;
+  animation: gentleFloat 12s ease-in-out infinite;
 }
 
-@keyframes floatUp{
+/* floating motion */
+@keyframes gentleFloat{
   0%{
-    bottom:-60px;
-    opacity:0;
-    transform:translateX(-50%) scale(0.8);
+    transform:translate(-50%,-50%) translate(0px,0px) rotate(0deg) scale(1);
   }
-  20%{
-    opacity:1;
-    transform:translateX(-50%) scale(1);
+  25%{
+    transform:translate(-50%,-50%) translate(25px,-30px) rotate(3deg) scale(1.05);
   }
-  70%{
-    bottom:50%;
-    transform:translateX(-50%) scale(1.05);
+  50%{
+    transform:translate(-50%,-50%) translate(-20px,-15px) rotate(-3deg) scale(1);
   }
-  90%{
-    opacity:1;
-    transform:translateX(-50%) scale(1.1);
+  75%{
+    transform:translate(-50%,-50%) translate(15px,25px) rotate(2deg) scale(1.03);
   }
   100%{
-    bottom:100%;
-    opacity:0;
-    transform:translateX(-50%) scale(1.6);
+    transform:translate(-50%,-50%) translate(0px,0px) rotate(0deg) scale(1);
   }
 }
 </style>
