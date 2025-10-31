@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1.0" />
-<title>Heart Balloon · Rounded Perfection</title>
+<title>Heart Balloon · Rounded Base</title>
 <style>
 html,body{
   margin:0;
@@ -12,7 +12,6 @@ html,body{
   overflow:hidden;
 }
 
-/* Only the heart floats now */
 svg{
   position:absolute;
   left:50%;
@@ -31,6 +30,19 @@ svg{
   75%{transform:translate(-50%,-50%) translate(10px,20px);}
   100%{transform:translate(-50%,-50%) translate(0,0);}
 }
+
+/* slight sway of the lower string only */
+#string{
+  transform-origin:top center;
+  animation:sway 8s ease-in-out infinite;
+}
+@keyframes sway{
+  0%{transform:rotate(0deg);}
+  25%{transform:rotate(1.2deg);}
+  50%{transform:rotate(0deg);}
+  75%{transform:rotate(-1.2deg);}
+  100%{transform:rotate(0deg);}
+}
 </style>
 </head>
 <body>
@@ -42,18 +54,32 @@ svg{
       <stop offset="40%" stop-color="#ff4fa5"/>
       <stop offset="100%" stop-color="#ff007b"/>
     </radialGradient>
+    <linearGradient id="stringGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="rgba(255,47,137,0.9)"/>
+      <stop offset="100%" stop-color="rgba(255,47,137,0)" />
+    </linearGradient>
   </defs>
 
-  <!-- Heart with rounded, natural balloon-like base -->
+  <!-- Heart with softly rounded bottom -->
   <path fill="url(#grad)" d="
-    M50 40
-    C35 10, 5 25, 5 60
-    C5 100, 40 130, 50 165
-    C60 130, 95 100, 95 60
-    C95 25, 65 10, 50 40
-    C46 165, 42 180, 50 190
-    C58 180, 54 165, 50 40Z
+    M50 20
+    C35 0, 5 10, 5 40
+    C5 70, 40 100, 50 130
+    C60 100, 95 70, 95 40
+    C95 10, 65 0, 50 20
+    Q50 132, 50 134
   "/>
+
+  <!-- String begins from that rounded curve -->
+  <path id="string" d="
+    M50 134
+    C50 150, 47 165, 55 195
+    S60 235, 45 270
+    S55 310, 65 325
+    S45 345, 50 360
+    S60 380, 50 395
+  "
+  stroke="url(#stringGrad)" stroke-width="2.6" stroke-linecap="round" fill="none"/>
 </svg>
 
 </body>
