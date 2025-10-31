@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1.0" />
-<title>Pure LUHV Balloon · One-Piece Path</title>
+<title>Heart Balloon · Permanently Attached</title>
 <style>
 html,body{
   margin:0;
@@ -12,6 +12,7 @@ html,body{
   overflow:hidden;
 }
 
+/* balloon floats as one solid piece */
 svg{
   position:absolute;
   left:50%;
@@ -31,16 +32,16 @@ svg{
   100%{transform:translate(-50%,-50%) translate(0,0);}
 }
 
-/* gentle ribbon motion */
-#stringPart{
+/* subtle ribbon wave only lower half */
+#lower{
   transform-origin:top center;
   animation:sway 8s ease-in-out infinite;
 }
 @keyframes sway{
   0%{transform:rotate(0deg);}
-  25%{transform:rotate(1.5deg);}
+  25%{transform:rotate(1deg);}
   50%{transform:rotate(0deg);}
-  75%{transform:rotate(-1.5deg);}
+  75%{transform:rotate(-1deg);}
   100%{transform:rotate(0deg);}
 }
 </style>
@@ -60,8 +61,23 @@ svg{
     </linearGradient>
   </defs>
 
-  <!-- ONE continuous shape -->
-  <path id="balloonPath" fill="none" stroke="none" d="
+  <!-- Entire heart + string as one piece -->
+  <path id="heartString" fill="none" stroke="none" d="
+    M50 20
+    C35 0, 5 10, 5 40
+    C5 70, 40 100, 50 130
+    C60 100, 95 70, 95 40
+    C95 10, 65 0, 50 20
+    C50 130, 50 130, 50 130
+    C50 145, 47 160, 55 190
+    S60 230, 45 265
+    S55 305, 65 320
+    S45 340, 50 355
+    S60 370, 50 385
+  " />
+
+  <!-- Fill heart + string continuously -->
+  <path fill="url(#grad)" d="
     M50 20
     C35 0, 5 10, 5 40
     C5 70, 40 100, 50 130
@@ -73,27 +89,18 @@ svg{
     S55 305, 65 320
     S45 340, 50 355
     S60 370, 50 385
-  " />
-
-  <!-- Heart shape filled -->
-  <path fill="url(#grad)" d="
-    M50 20
-    C35 0, 5 10, 5 40
-    C5 70, 40 100, 50 130
-    C60 100, 95 70, 95 40
-    C95 10, 65 0, 50 20Z
+    Z
   "/>
 
-  <!-- String using same continuous point -->
-  <path id="stringPart" d="
+  <!-- Gradient overlay for the string section -->
+  <path id="lower" d="
     M50 130
     C50 145, 47 160, 55 190
     S60 230, 45 265
     S55 305, 65 320
     S45 340, 50 355
     S60 370, 50 385
-  "
-  stroke="url(#stringGrad)" stroke-width="2.6" stroke-linecap="round" fill="none"/>
+  " stroke="url(#stringGrad)" stroke-width="2.6" stroke-linecap="round" fill="none"/>
 </svg>
 
 </body>
