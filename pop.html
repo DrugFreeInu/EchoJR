@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1.0" />
-<title>Heart Balloon · True Attachment</title>
+<title>Heart Balloon · Soft LUHV Base</title>
 <style>
 html,body{
   margin:0;
@@ -12,6 +12,7 @@ html,body{
   overflow:hidden;
 }
 
+/* smooth floating motion */
 svg{
   position:absolute;
   left:50%;
@@ -31,15 +32,16 @@ svg{
   100%{transform:translate(-50%,-50%) translate(0,0);}
 }
 
-#lower{
+/* gentle sway only lower string */
+#string{
   transform-origin:top center;
   animation:sway 8s ease-in-out infinite;
 }
 @keyframes sway{
   0%{transform:rotate(0deg);}
-  25%{transform:rotate(1deg);}
+  25%{transform:rotate(1.2deg);}
   50%{transform:rotate(0deg);}
-  75%{transform:rotate(-1deg);}
+  75%{transform:rotate(-1.2deg);}
   100%{transform:rotate(0deg);}
 }
 </style>
@@ -59,22 +61,22 @@ svg{
     </linearGradient>
   </defs>
 
-  <!-- Heart with rounded base for string -->
+  <!-- Heart with smooth rounded base -->
   <path fill="url(#grad)" d="
     M50 20
     C35 0, 5 10, 5 40
     C5 70, 40 100, 50 130
     C60 100, 95 70, 95 40
     C95 10, 65 0, 50 20
-    C46 127, 44 133, 50 138
-    C56 133, 54 127, 50 20Z
+    C47 132, 43 142, 50 146
+    C57 142, 53 132, 50 20Z
   "/>
 
-  <!-- String joins smoothly into rounded base -->
-  <path id="lower" d="
-    M50 138
-    C50 150, 47 165, 55 190
-    S60 230, 45 265
+  <!-- String attaches directly to rounded underside -->
+  <path id="string" d="
+    M50 146
+    C50 160, 47 175, 55 200
+    S60 240, 45 270
     S55 305, 65 320
     S45 340, 50 355
     S60 370, 50 385
