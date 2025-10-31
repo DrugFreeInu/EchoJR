@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1.0" />
-<title>Heart Balloon · Fine-Art String</title>
+<title>Heart Balloon · Fine-Art Swirl</title>
 <style>
 html,body{
   margin:0;
@@ -17,8 +17,8 @@ svg{
   left:50%;
   top:50%;
   transform:translate(-50%,-50%);
-  width:140px;
-  height:320px;
+  width:160px;
+  height:360px;
   filter:drop-shadow(0 0 18px rgba(255,80,150,0.6));
   animation:float 12s ease-in-out infinite;
 }
@@ -31,7 +31,7 @@ svg{
   100%{transform:translate(-50%,-50%) translate(0,0);}
 }
 
-/* gentle sway of the string as a whole */
+/* soft side sway of entire string */
 #string{
   transform-origin:top center;
   animation:sway 8s ease-in-out infinite;
@@ -47,7 +47,7 @@ svg{
 </head>
 <body>
 
-<svg viewBox="0 0 100 300">
+<svg viewBox="0 0 100 360">
   <defs>
     <radialGradient id="grad" cx="35%" cy="25%" r="65%">
       <stop offset="0%" stop-color="#ffb7df"/>
@@ -69,12 +69,14 @@ svg{
     C95 10, 65 0, 50 20Z
   "/>
 
-  <!-- Extended elegant string with fine art swirls -->
+  <!-- Long, swirling fine-art string -->
   <path id="string" d="
     M50 130
-    C48 160, 40 190, 55 220
+    C47 160, 42 190, 55 220
     S60 260, 45 280
-    S55 320, 50 340
+    S55 310, 65 320
+    S45 335, 50 350
+    S60 360, 50 370
   "
   stroke="url(#stringGrad)" stroke-width="2.4" stroke-linecap="round" fill="none"/>
 </svg>
