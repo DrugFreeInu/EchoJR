@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1.0" />
-<title>Heart Balloon · Perfect Connection</title>
+<title>Pure LUHV Balloon · Tethered</title>
 <style>
 html,body{
   margin:0;
@@ -23,6 +23,7 @@ svg{
   animation:float 12s ease-in-out infinite;
 }
 
+/* gentle floating motion */
 @keyframes float{
   0%{transform:translate(-50%,-50%) translate(0,0);}
   25%{transform:translate(-50%,-50%) translate(12px,-25px);}
@@ -31,7 +32,8 @@ svg{
   100%{transform:translate(-50%,-50%) translate(0,0);}
 }
 
-#string{
+/* soft sway of the string */
+#stringGroup{
   transform-origin:top center;
   animation:sway 8s ease-in-out infinite;
 }
@@ -46,7 +48,7 @@ svg{
 </head>
 <body>
 
-<svg viewBox="0 0 100 400">
+<svg id="balloon" viewBox="0 0 100 400">
   <defs>
     <radialGradient id="grad" cx="35%" cy="25%" r="65%">
       <stop offset="0%" stop-color="#ffb7df"/>
@@ -68,17 +70,37 @@ svg{
     C95 10, 65 0, 50 20Z
   "/>
 
-  <!-- Seamlessly connected string -->
-  <path id="string" d="
-    M50 130
-    C50 140, 48 155, 54 185
-    S60 230, 45 265
-    S55 305, 65 320
-    S45 340, 50 355
-    S60 370, 50 385
-  "
-  stroke="url(#stringGrad)" stroke-width="2.6" stroke-linecap="round" fill="none"/>
+  <!-- Group for dynamic string -->
+  <g id="stringGroup">
+    <path id="string" 
+      d="M50 130
+         C50 140, 48 155, 54 185
+         S60 230, 45 265
+         S55 305, 65 320
+         S45 340, 50 355
+         S60 370, 50 385"
+      stroke="url(#stringGrad)" 
+      stroke-width="2.6" 
+      stroke-linecap="round" 
+      fill="none"/>
+  </g>
 </svg>
+
+<script>
+const heart = document.getElementById('heart');
+const stringGroup = document.getElementById('stringGroup');
+
+function attachString(){
+  const heartBox = heart.getBBox();
+  const baseX = heartBox.x + heartBox.width/2;
+  const baseY = heartBox.y + heartBox.height;
+  // keep string anchored to heart base
+  stringGroup.setAttribute('transform', `translate(${baseX - 50},${baseY - 130})`);
+}
+
+attachString();
+window.addEventListener('resize', attachString);
+</script>
 
 </body>
 </html>
