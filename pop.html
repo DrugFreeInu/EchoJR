@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1.0" />
+<title>Heart Pop</title>
+<style>
+html,body{
+  margin:0;
+  height:100%;
+  background:transparent;
+  overflow:hidden;
+}
+
+.heart{
+  position:absolute;
+  left:50%;
+  bottom:-60px;
+  transform:translateX(-50%) scale(1);
+  width:60px;
+  height:60px;
+  background:radial-gradient(circle at 30% 30%, #ff7abf 0%, #ff2e88 40%, #ff006e 100%);
+  clip-path:polygon(50% 0%, 61% 10%, 75% 0%, 100% 25%, 50% 100%, 0 25%, 25% 0%, 39% 10%);
+  animation: floatUp 4s ease-in-out infinite;
+}
+
+@keyframes floatUp{
+  0%{
+    bottom:-60px;
+    opacity:0;
+    transform:translateX(-50%) scale(0.8);
+  }
+  20%{
+    opacity:1;
+    transform:translateX(-50%) scale(1);
+  }
+  70%{
+    bottom:50%;
+    transform:translateX(-50%) scale(1.05);
+  }
+  90%{
+    opacity:1;
+    transform:translateX(-50%) scale(1.1);
+  }
+  100%{
+    bottom:100%;
+    opacity:0;
+    transform:translateX(-50%) scale(1.6);
+  }
+}
+</style>
+</head>
+<body>
+<div class="heart"></div>
+</body>
+</html>
