@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1.0" />
-<title>Heart Balloon · Bound by LUHV</title>
+<title>Heart Balloon · Rounded Perfection</title>
 <style>
 html,body{
   margin:0;
@@ -12,14 +12,14 @@ html,body{
   overflow:hidden;
 }
 
-/* The entire balloon floats together as one unit */
-#balloon{
+/* Only the heart floats now */
+svg{
   position:absolute;
   left:50%;
   top:50%;
   transform:translate(-50%,-50%);
   width:160px;
-  height:500px;
+  height:420px;
   filter:drop-shadow(0 0 18px rgba(255,80,150,0.6));
   animation:float 12s ease-in-out infinite;
 }
@@ -31,57 +31,29 @@ html,body{
   75%{transform:translate(-50%,-50%) translate(10px,20px);}
   100%{transform:translate(-50%,-50%) translate(0,0);}
 }
-
-/* soft wave for string only, within same group */
-#string{
-  transform-origin:top center;
-  animation:sway 8s ease-in-out infinite;
-}
-@keyframes sway{
-  0%{transform:rotate(0deg);}
-  25%{transform:rotate(1deg);}
-  50%{transform:rotate(0deg);}
-  75%{transform:rotate(-1deg);}
-  100%{transform:rotate(0deg);}
-}
 </style>
 </head>
 <body>
 
-<svg id="balloon" viewBox="0 0 100 500">
+<svg viewBox="0 0 100 400">
   <defs>
     <radialGradient id="grad" cx="35%" cy="25%" r="65%">
       <stop offset="0%" stop-color="#ffb7df"/>
       <stop offset="40%" stop-color="#ff4fa5"/>
       <stop offset="100%" stop-color="#ff007b"/>
     </radialGradient>
-    <linearGradient id="stringGrad" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%" stop-color="rgba(255,47,137,0.9)"/>
-      <stop offset="100%" stop-color="rgba(255,47,137,0)" />
-    </linearGradient>
   </defs>
 
-  <!-- Heart with rounded bottom -->
+  <!-- Heart with rounded, natural balloon-like base -->
   <path fill="url(#grad)" d="
     M50 40
-    C35 10, 5 20, 5 55
-    C5 90, 40 120, 50 160
-    C60 120, 95 90, 95 55
-    C95 20, 65 10, 50 40
-    Q50 172, 48 178
-    Q50 182, 52 178
-    Q50 172, 50 40Z
+    C35 10, 5 25, 5 60
+    C5 100, 40 130, 50 165
+    C60 130, 95 100, 95 60
+    C95 25, 65 10, 50 40
+    C46 165, 42 180, 50 190
+    C58 180, 54 165, 50 40Z
   "/>
-
-  <!-- Perfectly aligned string that never detaches -->
-  <path id="string" d="
-    M50 178
-    C50 190, 47 210, 55 240
-    S60 280, 45 315
-    S55 350, 65 370
-    S45 395, 50 415
-    S60 435, 50 455
-  " stroke="url(#stringGrad)" stroke-width="2.6" stroke-linecap="round" fill="none"/>
 </svg>
 
 </body>
