@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1.0" />
-<title>Single Heart Pop</title>
+<title>Heart with Silky String</title>
 <style>
 html,body{
   margin:0;
@@ -12,19 +12,19 @@ html,body{
   overflow:hidden;
 }
 
-/* single centered heart */
+/* heart + string together */
 svg{
   position:absolute;
   left:50%;
   top:50%;
   transform:translate(-50%,-50%);
-  width:80px;
-  height:80px;
+  width:100px;
+  height:160px;
   filter:drop-shadow(0 0 15px rgba(255,80,150,0.6));
   animation: gentleFloat 10s ease-in-out infinite;
 }
 
-/* gentle float motion */
+/* gentle float */
 @keyframes gentleFloat{
   0%{ transform:translate(-50%,-50%) translate(0,0) scale(1); }
   25%{ transform:translate(-50%,-50%) translate(20px,-25px) scale(1.03); }
@@ -33,34 +33,33 @@ svg{
   100%{ transform:translate(-50%,-50%) translate(0,0) scale(1); }
 }
 
+/* string sway */
+#string{
+  transform-origin: top center;
+  animation: sway 6s ease-in-out infinite;
+}
+@keyframes sway{
+  0%{ transform:rotate(0deg); }
+  25%{ transform:rotate(2deg); }
+  50%{ transform:rotate(0deg); }
+  75%{ transform:rotate(-2deg); }
+  100%{ transform:rotate(0deg); }
+}
+
 /* pop animation */
 .pop{
   animation: pop 1.2s ease-in forwards;
 }
-
 @keyframes pop{
-  0%{
-    transform:translate(-50%,-50%) scale(1);
-    opacity:1;
-    filter:drop-shadow(0 0 15px rgba(255,80,150,0.6));
-  }
-  60%{
-    transform:translate(-50%,-50%) scale(1.3);
-    filter:drop-shadow(0 0 25px rgba(255,120,180,0.8));
-  }
-  100%{
-    transform:translate(-50%,-50%) scale(0);
-    opacity:0;
-    filter:drop-shadow(0 0 0 rgba(255,80,150,0));
-  }
+  0%{ transform:translate(-50%,-50%) scale(1);opacity:1;filter:drop-shadow(0 0 15px rgba(255,80,150,0.6)); }
+  60%{ transform:translate(-50%,-50%) scale(1.3);filter:drop-shadow(0 0 25px rgba(255,120,180,0.8)); }
+  100%{ transform:translate(-50%,-50%) scale(0);opacity:0;filter:drop-shadow(0 0 0 rgba(255,80,150,0)); }
 }
 
 /* pop drops */
 .drop{
   position:absolute;
-  width:10px;
-  height:10px;
-  border-radius:50%;
+  width:10px;height:10px;border-radius:50%;
   background:radial-gradient(circle,#ff7ac0 0%,#ff2e88 80%);
   opacity:0.8;
   animation: drift 1.2s ease-out forwards;
@@ -73,17 +72,25 @@ svg{
 </head>
 <body>
 
-<!-- only one heart -->
-<svg id="heart" viewBox="0 0 100 90">
+<svg id="heartString" viewBox="0 0 100 180">
   <defs>
     <radialGradient id="grad" cx="30%" cy="30%" r="70%">
       <stop offset="0%" stop-color="#ff9ed0"/>
       <stop offset="40%" stop-color="#ff52a8"/>
       <stop offset="100%" stop-color="#ff007b"/>
     </radialGradient>
+    <linearGradient id="stringGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="rgba(255,47,137,0.9)"/>
+      <stop offset="100%" stop-color="rgba(255,47,137,0)" />
+    </linearGradient>
   </defs>
-  <path fill="url(#grad)" d="M50 84s-30-18-30-44c0-12 9-22 22-22 5 0 10 2 14 5
+
+  <!-- heart -->
+  <path id="heart" fill="url(#grad)" d="M50 84s-30-18-30-44c0-12 9-22 22-22 5 0 10 2 14 5
            4-3 9-5 14-5 13 0 22 10 22 22 0 26-30 44-30 44z"/>
+
+  <!-- string -->
+  <path id="string" d="M50 84 Q48 120 54 160" stroke="url(#stringGrad)" stroke-width="2" fill="none" />
 </svg>
 
 <script>
