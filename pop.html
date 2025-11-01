@@ -152,27 +152,34 @@ function moveDrag(e){
   bendString(newX,newY);
 }
 
-/* string bending logic */
+/* improved string bending logic */
 function bendString(bx,by){
-  let cx1=50, cy1=150, cx2=47, cy2=165; // base
   const bxCenter = bx + 50;
   const byAnchor = by + 134;
 
-  const rects = [...buttons].map(b=>b.getBoundingClientRect());
-  for(const r of rects){
+  let cx1 = 50, cy1 = 150, cx2 = 47, cy2 = 165; // base
+  let pushX = 0, pushY = 0;
+
+  buttons.forEach(btn=>{
+    const r = btn.getBoundingClientRect();
     const midX = (r.left+r.right)/2;
     const midY = (r.top+r.bottom)/2;
-    const distX = bxCenter - midX;
-    const distY = byAnchor - midY;
-    const withinX = bxCenter>r.left-40 && bxCenter<r.right+40;
-    const withinY = byAnchor>r.top-40 && byAnchor<r.bottom+40;
-    if(withinX && withinY){
-      cx1 += distX*0.03;
-      cy1 += distY*0.03;
-      cx2 += distX*0.02;
-      cy2 += distY*0.02;
+    const dx = bxCenter - midX;
+    const dy = byAnchor - midY;
+    const dist = Math.hypot(dx,dy);
+    const radius = 120; // proximity distance
+    if(dist < radius){
+      const strength = (radius - dist)/radius;
+      pushX += dx * strength * 0.3;
+      pushY += dy * strength * 0.3;
     }
-  }
+  });
+
+  cx1 += pushX*0.3;
+  cy1 += pushY*0.3;
+  cx2 += pushX*0.2;
+  cy2 += pushY*0.2;
+
   const d = `
     M50 134
     C${cx1} ${cy1}, ${cx2} ${cy2}, 55 195
@@ -181,7 +188,7 @@ function bendString(bx,by){
     S45 345, 50 360
     S60 380, 50 395
   `;
-  string.setAttribute("d",d);
+  string.setAttribute("d", d);
 }
 
 balloon.addEventListener("mousedown",startDrag);
