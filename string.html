@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1.0" />
+<title>Heart Balloon · Physics String</title>
+<style>
+html,body{
+  margin:0;
+  height:100%;
+  width:100%;
+  background:transparent;
+  overflow:hidden;
+}
+canvas{
+  position:fixed;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  pointer-events:none;
+}
+
+/* balloon */
+svg{
+  position:absolute;
+  width:160px;
+  height:420px;
+  filter:drop-shadow(0 0 18px rgba(255,80,150,0.6));
+  cursor:grab;
+  user-select:none;
+  touch-action:none;
+}
+
+/* demo buttons */
+button{
+  position:absolute;
+  padding:10px 20px;
+  border:none;
+  border-radius:8px;
+  background:#ff4fa5;
+  color:#fff;
+  font-weight:bold;
+  cursor:pointer;
+  font-family:sans-serif;
+}
+#btn1{top:40%;left:40%;}
+#btn2{top:70%;left:60%;}
+</style>
+</head>
+<body>
+
+<canvas id="rope"></canvas>
+<button id="btn1">Add</button>
+<button id="btn2">Replace</button>
+
+<svg id="balloon" viewBox="0 0 100 400">
+  <defs>
+    <radialGradient id="grad" cx="35%" cy="25%" r="65%">
+      <stop offset="0%" stop-color="#ffb7df"/>
+      <stop offset="40%" stop-color="#ff4fa5"/>
+      <stop offset="100%" stop-color="#ff007b"/>
+    </radialGradient>
+  </defs>
+  <path fill="url(#grad)" d="
+    M50 20
+    C35 0, 5 10, 5 40
+    C5 70, 40 100, 50 130
+    C60 100, 95 70, 95 40
+    C95 10, 65 0, 50 20
+    Q50 132, 50 134
+  "/>
+</svg>
+
+<script>
+const balloon=document.getElementById("balloon");
+const canvas=document.getElementById("rope");
+const ctx=canvas.getContext("2d");
+const buttons=[...document.querySelectorAll("button")];
+let W,H; function resize(){W=canvas.width=innerWidth;H=canvas.height=innerHeight;} resize(); addEventListener("resize",resize);
+
+// random start
+balloon.style.left=innerWidth/2-80+"px";
+balloon.style.top=innerHeight/3+"px";
+
+// rope nodes
+const N=10;                     // number of segments
+const seg=25;                   // length of each
+const nodes=Array.from({length:N},(_,i)=>({x:0,y:i*seg,vx:0,vy:0}));
+
+let dragging=false,offX=0,offY=0;
+balloon.onmousedown=e=>start(e);
+balloon.ontouchstart=e=>start(e.touches[0]);
+document.onmouseup=()=>dragging=false;
+document.ontouchend=()=>dragging=false;
+document.onmousemove=e=>move(e);
+document.ontouchmove=e=>move(e.touches[0]);
+
+function start(p){
+ dragging=true;
+ const r=balloon.getBoundingClientRect();
+ offX=p.clientX-r.left; offY=p.clientY-r.top;
+}
+
+function move(p){
+ if(!dragging)return;
+ balloon.style.left=p.clientX-offX+"px";
+ balloon.style.top=p.clientY-offY+"px";
+}
+
+function loop(){
+ requestAnimationFrame(loop);
+ ctx.clearRect(0,0,W,H);
+
+ // anchor to balloon bottom
+ const r=balloon.getBoundingClientRect();
+ nodes[0].x=r.left+r.width/2;
+ nodes[0].y=r.top+r.height-60;
+
+ // simple physics
+ for(let i=1;i<N;i++){
+   let n=nodes[i],prev=nodes[i-1];
+   n.vy+=0.4; // gravity
+   n.x+=n.vx; n.y+=n.vy;
+   // pull toward previous
+   let dx=n.x-prev.x, dy=n.y-prev.y;
+   let dist=Math.hypot(dx,dy);
+   let diff=(dist-seg)/dist;
+   n.x-=dx*diff*0.5;
+   n.y-=dy*diff*0.5;
+   prev.x+=dx*diff*0.5;
+   prev.y+=dy*diff*0.5;
+
+   // collision with buttons
+   for(const b of buttons){
+     const br=b.getBoundingClientRect();
+     if(n.x>br.left && n.x<br.right && n.y>br.top && n.y<br.bottom){
+       // push outside vertically (simpler)
+       n.y=br.top-1;
+       n.vy*=-0.3;
+     }
+   }
+ }
+
+ // draw rope
+ ctx.beginPath();
+ ctx.moveTo(nodes[0].x,nodes[0].y);
+ for(let i=1;i<N;i++) ctx.lineTo(nodes[i].x,nodes[i].y);
+ ctx.strokeStyle="rgba(255,47,137,0.8)";
+ ctx.lineWidth=2.4;
+ ctx.lineCap="round";
+ ctx.shadowColor="rgba(255,47,137,0.5)";
+ ctx.shadowBlur=6;
+ ctx.stroke();
+ ctx.shadowBlur=0;
+}
+loop();
+</script>
+</body>
+</html>
