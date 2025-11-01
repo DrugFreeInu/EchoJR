@@ -4,6 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover" />
 <title>ECHO JR · UPDATE GOD</title>
+
 <style>
 :root { --pink1:#ff2e88; --pink2:#ff6b9d; --white:#ffffff; }
 
@@ -126,8 +127,23 @@ iframe.bg, iframe.front, .jr-btn, #githubSearch {transition:opacity .5s ease;}
 <iframe src="luhve.html" class="bg"></iframe>
 <iframe src="luhvefront.html" class="front"></iframe>
 
-<!-- draggable balloon -->
-<iframe src="pop.html" id="balloon" style="position:absolute;top:40%;left:50%;width:200px;height:200px;border:none;z-index:50;cursor:grab;background:transparent;"></iframe>
+<!-- draggable balloon (always on top) -->
+<iframe
+  src="pop.html"
+  id="balloon"
+  style="
+    position:absolute;
+    top:40%;
+    left:50%;
+    width:200px;
+    height:200px;
+    border:none;
+    background:transparent;
+    z-index:1000;         /* ensures balloon above everything */
+    cursor:grab;
+    pointer-events:auto;  /* restores touch/mouse control */
+  ">
+</iframe>
 
 <div class="container">
   <footer>ECHO JR · UPDATE GOD</footer>
@@ -169,7 +185,7 @@ helpBtn.addEventListener("click",()=>{
   alert("Echo Jr Help:\\nAdd → Insert code\\nRemove → Delete parts\\nReplace → Swap code\\nDark → Toggle dark mode\\nDrag the balloon freely 💗");
 });
 
-/* make balloon draggable */
+/* draggable balloon logic */
 function makeDraggable(el){
   let offsetX=0, offsetY=0, isDown=false;
 
