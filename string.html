@@ -112,10 +112,9 @@ function loop(){
  requestAnimationFrame(loop);
  ctx.clearRect(0,0,W,H);
 
- // anchor to balloon bottom
- const r=balloon.getBoundingClientRect();
- nodes[0].x=r.left+r.width/2;
- nodes[0].y=r.top+r.height-60;
+const r = balloon.getBoundingClientRect();
+nodes[0].x = r.left + r.width / 2;
+nodes[0].y = r.top + r.height / 1.8;
 
  // simple physics
  for(let i=1;i<N;i++){
