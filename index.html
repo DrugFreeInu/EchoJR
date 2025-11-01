@@ -122,10 +122,12 @@ iframe.bg, iframe.front, .jr-btn, #githubSearch {transition:opacity .5s ease;}
 </head>
 <body>
 
-<!-- single heart source -->
+<!-- background hearts -->
 <iframe src="luhve.html" class="bg"></iframe>
 <iframe src="luhvefront.html" class="front"></iframe>
-<iframe src="pop.html" style="position:fixed;top:0;left:0;width:100%;height:100%;border:none;pointer-events:none;z-index:-1;"></iframe>
+
+<!-- draggable balloon -->
+<iframe src="pop.html" id="balloon" style="position:absolute;top:40%;left:50%;width:200px;height:200px;border:none;z-index:50;cursor:grab;background:transparent;"></iframe>
 
 <div class="container">
   <footer>ECHO JR · UPDATE GOD</footer>
@@ -141,10 +143,11 @@ iframe.bg, iframe.front, .jr-btn, #githubSearch {transition:opacity .5s ease;}
 
 <input type="text" id="githubSearch" placeholder="GitHub Username" autocomplete="off" />
 
-<!-- Dark mode iframe -->
+<!-- dark mode iframe -->
 <iframe id="darkFrame" src="" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;border:none;z-index:999;"></iframe>
 
 <script>
+/* Dark mode toggle */
 const darkBtn=document.getElementById("darkBtn");
 const darkFrame=document.getElementById("darkFrame");
 
@@ -160,10 +163,45 @@ darkBtn.addEventListener("click",()=>{
   }
 });
 
+/* Help message */
 const helpBtn=document.getElementById("helpBtn");
 helpBtn.addEventListener("click",()=>{
-  alert("Echo Jr Help:\nAdd → Insert code\nRemove → Delete parts\nReplace → Swap code\nDark → Toggle dark mode\nPure LUHV forever 💗");
+  alert("Echo Jr Help:\\nAdd → Insert code\\nRemove → Delete parts\\nReplace → Swap code\\nDark → Toggle dark mode\\nDrag the balloon freely 💗");
 });
+
+/* make balloon draggable */
+function makeDraggable(el){
+  let offsetX=0, offsetY=0, isDown=false;
+
+  el.addEventListener("mousedown",e=>{
+    isDown=true;
+    offsetX=e.clientX - el.offsetLeft;
+    offsetY=e.clientY - el.offsetTop;
+    el.style.cursor="grabbing";
+  });
+  document.addEventListener("mouseup",()=>{isDown=false;el.style.cursor="grab";});
+  document.addEventListener("mousemove",e=>{
+    if(!isDown) return;
+    el.style.left=(e.clientX-offsetX)+"px";
+    el.style.top=(e.clientY-offsetY)+"px";
+  });
+
+  el.addEventListener("touchstart",e=>{
+    isDown=true;
+    const t=e.touches[0];
+    offsetX=t.clientX - el.offsetLeft;
+    offsetY=t.clientY - el.offsetTop;
+  });
+  document.addEventListener("touchend",()=>isDown=false);
+  document.addEventListener("touchmove",e=>{
+    if(!isDown) return;
+    const t=e.touches[0];
+    el.style.left=(t.clientX-offsetX)+"px";
+    el.style.top=(t.clientY-offsetY)+"px";
+  });
+}
+
+makeDraggable(document.getElementById("balloon"));
 </script>
 
 </body>
