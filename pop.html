@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1.0" />
-<title>Heart Balloon · Floating Freely</title>
+<title>Heart Balloon · Interactive String</title>
 <style>
 html,body{
   margin:0;
@@ -23,7 +23,7 @@ svg{
   cursor:grab;
   transition:transform 0.1s ease;
   user-select:none;
-  touch-action:none; /* ensures touch drag works clean */
+  touch-action:none;
 }
 
 /* floating animation */
@@ -47,10 +47,30 @@ svg{
   75%{transform:rotate(-1.2deg);}
   100%{transform:rotate(0deg);}
 }
+
+/* demo buttons to collide with */
+button{
+  position:absolute;
+  padding:10px 20px;
+  border:none;
+  border-radius:8px;
+  background:#ff4fa5;
+  color:#fff;
+  font-weight:bold;
+  cursor:pointer;
+  font-family:sans-serif;
+}
+#btn1{top:40%;left:40%;}
+#btn2{top:70%;left:60%;}
 </style>
 </head>
 <body>
 
+<!-- demo buttons -->
+<button id="btn1">Add</button>
+<button id="btn2">Replace</button>
+
+<!-- Heart balloon -->
 <svg id="balloon" viewBox="0 0 100 400">
   <defs>
     <radialGradient id="grad" cx="35%" cy="25%" r="65%">
@@ -64,7 +84,6 @@ svg{
     </linearGradient>
   </defs>
 
-  <!-- Heart balloon -->
   <path fill="url(#grad)" d="
     M50 20
     C35 0, 5 10, 5 40
@@ -74,7 +93,6 @@ svg{
     Q50 132, 50 134
   "/>
 
-  <!-- String -->
   <path id="string" d="
     M50 134
     C50 150, 47 165, 55 195
@@ -87,9 +105,11 @@ svg{
 </svg>
 
 <script>
-const balloon=document.getElementById("balloon");
+const balloon = document.getElementById("balloon");
+const string = document.getElementById("string");
+const buttons = document.querySelectorAll("button");
 
-/* random start position */
+/* random start */
 function randomPosition(){
   const vw=window.innerWidth;
   const vh=window.innerHeight;
@@ -101,14 +121,15 @@ function randomPosition(){
 }
 randomPosition();
 
-/* drag logic fix */
+/* drag logic */
 let isDown=false, offsetX=0, offsetY=0;
 
 function startDrag(e){
   isDown=true;
   const point = e.touches ? e.touches[0] : e;
-  offsetX = point.clientX - balloon.getBoundingClientRect().left;
-  offsetY = point.clientY - balloon.getBoundingClientRect().top;
+  const rect = balloon.getBoundingClientRect();
+  offsetX = point.clientX - rect.left;
+  offsetY = point.clientY - rect.top;
   balloon.style.cursor="grabbing";
   balloon.style.animationPlayState="paused";
 }
@@ -122,9 +143,45 @@ function stopDrag(){
 function moveDrag(e){
   if(!isDown)return;
   const point = e.touches ? e.touches[0] : e;
-  balloon.style.left = (point.clientX - offsetX) + "px";
-  balloon.style.top  = (point.clientY - offsetY) + "px";
+  const newX = point.clientX - offsetX;
+  const newY = point.clientY - offsetY;
+  balloon.style.left = newX + "px";
+  balloon.style.top  = newY + "px";
   e.preventDefault();
+
+  bendString(newX,newY);
+}
+
+/* string bending logic */
+function bendString(bx,by){
+  let cx1=50, cy1=150, cx2=47, cy2=165; // base
+  const bxCenter = bx + 50;
+  const byAnchor = by + 134;
+
+  const rects = [...buttons].map(b=>b.getBoundingClientRect());
+  for(const r of rects){
+    const midX = (r.left+r.right)/2;
+    const midY = (r.top+r.bottom)/2;
+    const distX = bxCenter - midX;
+    const distY = byAnchor - midY;
+    const withinX = bxCenter>r.left-40 && bxCenter<r.right+40;
+    const withinY = byAnchor>r.top-40 && byAnchor<r.bottom+40;
+    if(withinX && withinY){
+      cx1 += distX*0.03;
+      cy1 += distY*0.03;
+      cx2 += distX*0.02;
+      cy2 += distY*0.02;
+    }
+  }
+  const d = `
+    M50 134
+    C${cx1} ${cy1}, ${cx2} ${cy2}, 55 195
+    S60 235, 45 270
+    S55 310, 65 325
+    S45 345, 50 360
+    S60 380, 50 395
+  `;
+  string.setAttribute("d",d);
 }
 
 balloon.addEventListener("mousedown",startDrag);
