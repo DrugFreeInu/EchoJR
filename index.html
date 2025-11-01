@@ -89,21 +89,32 @@ iframe.bg, iframe.front, .jr-btn, #githubSearch {transition:opacity .5s ease;}
 </head>
 <body>
 
-<!-- hearts -->
+<!-- background hearts -->
 <iframe src="luhve.html" class="bg"></iframe>
 <iframe src="luhvefront.html" class="front"></iframe>
 
-<!-- balloon (draggable) -->
-<svg id="balloon" viewBox="0 0 200 400" width="150" style="position:absolute;top:45%;left:55%;z-index:999;cursor:grab;">
-  <ellipse cx="100" cy="100" rx="60" ry="80" fill="#ff2e88"/>
-  <path d="M100 180 Q95 250 105 320 T100 400" stroke="#ff2e88" stroke-width="4" fill="none" stroke-linecap="round"/>
-</svg>
+<!-- pop balloon (full-screen iframe, draggable logic added) -->
+<iframe id="balloonFrame"
+  src="pop.html"
+  style="
+    position:absolute;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    border:none;
+    background:transparent;
+    z-index:999;
+    cursor:grab;
+  ">
+</iframe>
 
 <div class="container">
   <footer>ECHO JR · UPDATE GOD</footer>
   <button class="jr-btn" id="addBtn">Add</button>
   <button class="jr-btn" id="removeBtn">Remove</button>
   <button class="jr-btn" id="replaceBtn">Replace</button>
+
   <div class="bottom-row">
     <button class="circle-btn" id="darkBtn">Dark</button>
     <button class="circle-btn" id="helpBtn">Help</button>
@@ -112,44 +123,64 @@ iframe.bg, iframe.front, .jr-btn, #githubSearch {transition:opacity .5s ease;}
 
 <input type="text" id="githubSearch" placeholder="GitHub Username" autocomplete="off" />
 
+<!-- Dark mode iframe -->
+<iframe id="darkFrame" src="" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;border:none;z-index:1000;"></iframe>
+
 <script>
-/* drag balloon by its string */
-const balloon=document.getElementById("balloon");
-let offsetX=0,offsetY=0,isDown=false;
-
-balloon.addEventListener("mousedown",e=>{
-  isDown=true;
-  offsetX=e.clientX - balloon.getBoundingClientRect().left;
-  offsetY=e.clientY - balloon.getBoundingClientRect().top;
-  balloon.style.cursor="grabbing";
-});
-document.addEventListener("mouseup",()=>{isDown=false;balloon.style.cursor="grab";});
-document.addEventListener("mousemove",e=>{
-  if(!isDown)return;
-  balloon.style.left=(e.clientX-offsetX)+"px";
-  balloon.style.top=(e.clientY-offsetY)+"px";
-});
-
-/* touch for mobile */
-balloon.addEventListener("touchstart",e=>{
-  isDown=true;
-  const t=e.touches[0];
-  offsetX=t.clientX - balloon.getBoundingClientRect().left;
-  offsetY=t.clientY - balloon.getBoundingClientRect().top;
-});
-document.addEventListener("touchend",()=>isDown=false);
-document.addEventListener("touchmove",e=>{
-  if(!isDown)return;
-  const t=e.touches[0];
-  balloon.style.left=(t.clientX-offsetX)+"px";
-  balloon.style.top=(t.clientY-offsetY)+"px";
-});
-
-/* dark/help same logic */
 const darkBtn=document.getElementById("darkBtn");
-darkBtn.addEventListener("click",()=>alert("Dark Mode toggle (coming soon)"));
+const darkFrame=document.getElementById("darkFrame");
+
+darkBtn.addEventListener("click",()=>{
+  if(darkFrame.style.display==="none"){
+    darkFrame.src="dark.html";
+    darkFrame.style.display="block";
+    darkBtn.textContent="Exit";
+  }else{
+    darkFrame.style.display="none";
+    darkFrame.src="";
+    darkBtn.textContent="Dark";
+  }
+});
+
 const helpBtn=document.getElementById("helpBtn");
-helpBtn.addEventListener("click",()=>alert("Drag the balloon by its string 💗"));
+helpBtn.addEventListener("click",()=>{
+  alert("Echo Jr Help:\\nAdd → Insert code\\nRemove → Delete parts\\nReplace → Swap code\\nDark → Toggle dark mode\\nDrag the balloon by its string 💗");
+});
+
+/* LUHVgistics — Dragging logic for balloon inside iframe */
+function makeBalloonDraggable(frame){
+  let offsetX=0, offsetY=0, isDown=false;
+
+  // create overlay listener
+  frame.addEventListener("mousedown",e=>{
+    isDown=true;
+    offsetX=e.clientX - frame.offsetLeft;
+    offsetY=e.clientY - frame.offsetTop;
+    frame.style.cursor="grabbing";
+  });
+  document.addEventListener("mouseup",()=>{isDown=false;frame.style.cursor="grab";});
+  document.addEventListener("mousemove",e=>{
+    if(!isDown)return;
+    frame.style.left=(e.clientX-offsetX)+"px";
+    frame.style.top=(e.clientY-offsetY)+"px";
+  });
+
+  frame.addEventListener("touchstart",e=>{
+    isDown=true;
+    const t=e.touches[0];
+    offsetX=t.clientX - frame.offsetLeft;
+    offsetY=t.clientY - frame.offsetTop;
+  });
+  document.addEventListener("touchend",()=>isDown=false);
+  document.addEventListener("touchmove",e=>{
+    if(!isDown)return;
+    const t=e.touches[0];
+    frame.style.left=(t.clientX-offsetX)+"px";
+    frame.style.top=(t.clientY-offsetY)+"px";
+  });
+}
+
+makeBalloonDraggable(document.getElementById("balloonFrame"));
 </script>
 
 </body>
