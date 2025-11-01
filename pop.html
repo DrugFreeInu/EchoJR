@@ -20,6 +20,8 @@ svg{
   height:420px;
   filter:drop-shadow(0 0 18px rgba(255,80,150,0.6));
   animation:float 14s ease-in-out infinite;
+  cursor:grab;
+  transition:transform 0.1s ease;
 }
 
 /* random floating animation */
@@ -47,7 +49,7 @@ svg{
 </head>
 <body>
 
-<svg viewBox="0 0 100 400">
+<svg id="balloon" viewBox="0 0 100 400">
   <defs>
     <radialGradient id="grad" cx="35%" cy="25%" r="65%">
       <stop offset="0%" stop-color="#ffb7df"/>
@@ -83,8 +85,9 @@ svg{
 </svg>
 
 <script>
-/* randomize starting position and speed */
-const balloon = document.querySelector("svg");
+const balloon=document.getElementById("balloon");
+
+/* randomize starting position and float speed */
 function randomPosition(){
   const vw = window.innerWidth;
   const vh = window.innerHeight;
@@ -95,6 +98,45 @@ function randomPosition(){
   balloon.style.animationDuration = `${12 + Math.random()*6}s`;
 }
 randomPosition();
+
+/* drag logic */
+let isDown=false, offsetX=0, offsetY=0;
+balloon.addEventListener("mousedown",e=>{
+  isDown=true;
+  offsetX=e.clientX - balloon.getBoundingClientRect().left;
+  offsetY=e.clientY - balloon.getBoundingClientRect().top;
+  balloon.style.cursor="grabbing";
+  balloon.style.animationPlayState="paused";
+});
+document.addEventListener("mouseup",()=>{
+  isDown=false;
+  balloon.style.cursor="grab";
+  balloon.style.animationPlayState="running";
+});
+document.addEventListener("mousemove",e=>{
+  if(!isDown)return;
+  balloon.style.left=(e.clientX-offsetX)+"px";
+  balloon.style.top=(e.clientY-offsetY)+"px";
+});
+
+/* touch support */
+balloon.addEventListener("touchstart",e=>{
+  isDown=true;
+  const t=e.touches[0];
+  offsetX=t.clientX - balloon.getBoundingClientRect().left;
+  offsetY=t.clientY - balloon.getBoundingClientRect().top;
+  balloon.style.animationPlayState="paused";
+});
+document.addEventListener("touchend",()=>{
+  isDown=false;
+  balloon.style.animationPlayState="running";
+});
+document.addEventListener("touchmove",e=>{
+  if(!isDown)return;
+  const t=e.touches[0];
+  balloon.style.left=(t.clientX-offsetX)+"px";
+  balloon.style.top=(t.clientY-offsetY)+"px";
+});
 </script>
 
 </body>
