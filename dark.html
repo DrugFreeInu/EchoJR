@@ -41,6 +41,8 @@ iframe.bg,iframe.front{
   pointer-events:none;
   transition:opacity .6s ease;
 }
+iframe.bg{z-index:-3;opacity:1;}
+iframe.front{z-index:-2;opacity:.35;}
 
 /* layout */
 .container{
@@ -148,11 +150,11 @@ footer{
 </head>
 <body>
 
-<!-- Dark mode glowing balloon -->
-<iframe src="darkpop.html" class="bg" style="z-index:-3;opacity:1;"></iframe>
+<!-- glowing balloon background -->
+<iframe src="darkpop.html?v=1" class="bg"></iframe>
 
-<!-- Floating hearts front blur -->
-<iframe src="darkfront.html" class="front" style="z-index:-2;opacity:.35;"></iframe>
+<!-- floating hearts layer -->
+<iframe src="luhvfront.html?v=1" class="front"></iframe>
 
 <div class="container">
   <footer>ECHO JR · DARK MODE</footer>
@@ -171,16 +173,14 @@ footer{
 
 <script>
 /* Light mode transition */
-const lightBtn=document.getElementById("lightBtn");
-lightBtn.addEventListener("click",()=>{
+document.getElementById("lightBtn").addEventListener("click",()=>{
   document.body.style.transition="opacity .5s ease";
   document.body.style.opacity="0";
   setTimeout(()=>window.location.href="index.html",500);
 });
 
 /* Help popup */
-const helpBtn=document.getElementById("helpBtn");
-helpBtn.addEventListener("click",()=>{
+document.getElementById("helpBtn").addEventListener("click",()=>{
   alert("Echo Jr Help:\\nAdd → Insert code\\nRemove → Delete parts\\nReplace → Swap code\\nLight → Return to light mode\\nPure LUHV forever 💗");
 });
 </script>
