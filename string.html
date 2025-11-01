@@ -120,12 +120,22 @@ function loop(){
  // simple physics
  for(let i=1;i<N;i++){
    let n=nodes[i],prev=nodes[i-1];
-   n.vy+=0.4; // gravity
-   n.x+=n.vx; n.y+=n.vy;
-   // pull toward previous
+   n.vy+=0.15; // gravity
+   n.x+=n.vx; 
+   n.y+=n.vy;
+
+   // air resistance for smooth motion
+   n.vx*=0.9;
+   n.vy*=0.9;
+
+   // pull toward previous segment
    let dx=n.x-prev.x, dy=n.y-prev.y;
    let dist=Math.hypot(dx,dy);
    let diff=(dist-seg)/dist;
+
+   // clamp stretch factor for stability
+   diff = Math.min(Math.max(diff, -0.5), 0.5);
+
    n.x-=dx*diff*0.5;
    n.y-=dy*diff*0.5;
    prev.x+=dx*diff*0.5;
@@ -135,7 +145,6 @@ function loop(){
    for(const b of buttons){
      const br=b.getBoundingClientRect();
      if(n.x>br.left && n.x<br.right && n.y>br.top && n.y<br.bottom){
-       // push outside vertically (simpler)
        n.y=br.top-1;
        n.vy*=-0.3;
      }
