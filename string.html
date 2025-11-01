@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1.0" />
-<title>Heart Balloon · Loose String</title>
+<title>Heart Balloon · Loose Full String</title>
 <style>
 html,body{
   margin:0;
@@ -77,18 +77,17 @@ const balloon=document.getElementById("balloon");
 const canvas=document.getElementById("rope");
 const ctx=canvas.getContext("2d");
 const buttons=[...document.querySelectorAll("button")];
-let W,H; 
-function resize(){W=canvas.width=innerWidth;H=canvas.height=innerHeight;} 
-resize(); 
-addEventListener("resize",resize);
+let W,H;
+function resize(){W=canvas.width=innerWidth;H=canvas.height=innerHeight;}
+resize(); addEventListener("resize",resize);
 
 // start position
 balloon.style.left=innerWidth/2-80+"px";
 balloon.style.top=innerHeight/3+"px";
 
 // rope setup
-const N=12;      // number of segments
-const seg=26;    // length per segment
+const N=12;     // segments
+const seg=26;   // length
 const nodes=Array.from({length:N},(_,i)=>({x:0,y:i*seg,vx:0,vy:0}));
 
 let dragging=false,offX=0,offY=0;
@@ -100,71 +99,74 @@ document.onmousemove=e=>move(e);
 document.ontouchmove=e=>move(e.touches[0]);
 
 function start(p){
- dragging=true;
- const r=balloon.getBoundingClientRect();
- offX=p.clientX-r.left; 
- offY=p.clientY-r.top;
+  dragging=true;
+  const r=balloon.getBoundingClientRect();
+  offX=p.clientX-r.left;
+  offY=p.clientY-r.top;
 }
 
 function move(p){
- if(!dragging)return;
- balloon.style.left=p.clientX-offX+"px";
- balloon.style.top=p.clientY-offY+"px";
+  if(!dragging)return;
+  balloon.style.left=p.clientX-offX+"px";
+  balloon.style.top=p.clientY-offY+"px";
 }
 
 function loop(){
- requestAnimationFrame(loop);
- ctx.clearRect(0,0,W,H);
+  requestAnimationFrame(loop);
+  ctx.clearRect(0,0,W,H);
 
- const r=balloon.getBoundingClientRect();
- nodes[0].x=r.left+r.width/2;
- nodes[0].y=r.top+r.height/2.8;
+  const r=balloon.getBoundingClientRect();
+  nodes[0].x=r.left+r.width/2;
+  nodes[0].y=r.top+r.height/2.8;
 
- // soft physics
- for(let i=1;i<N;i++){
-   let n=nodes[i],prev=nodes[i-1];
-   n.vy+=0.05; // gentle gravity
-   n.x+=n.vx; 
-   n.y+=n.vy;
+  for(let i=1;i<N;i++){
+    let n=nodes[i],prev=nodes[i-1];
 
-   // smoother air damping
-   n.vx*=0.95;
-   n.vy*=0.95;
+    // soft gravity
+    n.vy+=0.05;
+    n.x+=n.vx;
+    n.y+=n.vy;
 
-   // softer string tension
-   let dx=n.x-prev.x, dy=n.y-prev.y;
-   let dist=Math.hypot(dx,dy);
-   let diff=(dist-seg)/dist;
+    // smoother air damping
+    n.vx*=0.94;
+    n.vy*=0.94;
 
-   // lighter constraint
-   diff=Math.min(Math.max(diff,-0.3),0.3);
+    // gentle follow assist (makes full string smoother)
+    n.vx += (nodes[0].x - n.x) * 0.002;
+    n.vy += (nodes[0].y - n.y) * 0.002;
 
-   n.x-=dx*diff*0.5;
-   n.y-=dy*diff*0.5;
-   prev.x+=dx*diff*0.5;
-   prev.y+=dy*diff*0.5;
+    // soft string constraint
+    let dx=n.x-prev.x, dy=n.y-prev.y;
+    let dist=Math.hypot(dx,dy);
+    let diff=(dist-seg)/dist;
+    diff=Math.min(Math.max(diff,-0.3),0.3);
 
-   // light button bounce
-   for(const b of buttons){
-     const br=b.getBoundingClientRect();
-     if(n.x>br.left && n.x<br.right && n.y>br.top && n.y<br.bottom){
-       n.y=br.top-1;
-       n.vy*=-0.2;
-     }
-   }
- }
+    n.x-=dx*diff*0.5;
+    n.y-=dy*diff*0.5;
+    prev.x+=dx*diff*0.5;
+    prev.y+=dy*diff*0.5;
 
- // draw rope
- ctx.beginPath();
- ctx.moveTo(nodes[0].x,nodes[0].y);
- for(let i=1;i<N;i++) ctx.lineTo(nodes[i].x,nodes[i].y);
- ctx.strokeStyle="rgba(255,47,137,0.85)";
- ctx.lineWidth=2;
- ctx.lineCap="round";
- ctx.shadowColor="rgba(255,47,137,0.4)";
- ctx.shadowBlur=8;
- ctx.stroke();
- ctx.shadowBlur=0;
+    // light button bounce
+    for(const b of buttons){
+      const br=b.getBoundingClientRect();
+      if(n.x>br.left && n.x<br.right && n.y>br.top && n.y<br.bottom){
+        n.y=br.top-1;
+        n.vy*=-0.2;
+      }
+    }
+  }
+
+  // draw rope
+  ctx.beginPath();
+  ctx.moveTo(nodes[0].x,nodes[0].y);
+  for(let i=1;i<N;i++) ctx.lineTo(nodes[i].x,nodes[i].y);
+  ctx.strokeStyle="rgba(255,47,137,0.85)";
+  ctx.lineWidth=2;
+  ctx.lineCap="round";
+  ctx.shadowColor="rgba(255,47,137,0.4)";
+  ctx.shadowBlur=8;
+  ctx.stroke();
+  ctx.shadowBlur=0;
 }
 loop();
 </script>
