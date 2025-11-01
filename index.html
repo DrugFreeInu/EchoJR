@@ -23,17 +23,18 @@ iframe.bg,iframe.front{
 iframe.bg{z-index:-2;}
 iframe.front{z-index:0;opacity:.65;}
 
-/* draggable balloon iframe */
+/* draggable balloon */
 #balloonFrame{
   position:absolute;
-  top:0;
-  left:0;
-  width:100%;
-  height:100%;
+  top:50%;
+  left:50%;
+  width:200px;
+  height:420px;
   border:none;
   background:transparent;
   z-index:2;
-  pointer-events:none; /* prevents blocking clicks */
+  cursor:grab;
+  transform:translate(-50%,-50%);
 }
 
 /* layout */
@@ -102,7 +103,7 @@ footer{
 <iframe src="luhve.html" class="bg"></iframe>
 <iframe src="luhvefront.html" class="front"></iframe>
 
-<!-- balloon -->
+<!-- balloon iframe (draggable, non-blocking) -->
 <iframe id="balloonFrame" src="pop.html"></iframe>
 
 <div class="container">
@@ -119,17 +120,14 @@ footer{
 
 <input type="text" id="githubSearch" placeholder="GitHub Username" autocomplete="off" />
 
-<!-- dark mode iframe -->
+<!-- dark mode -->
 <iframe id="darkFrame" src="" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;border:none;z-index:1000;"></iframe>
 
 <script>
-/* make buttons work again */
+/* dark toggle */
 const darkBtn=document.getElementById("darkBtn");
 const darkFrame=document.getElementById("darkFrame");
-const helpBtn=document.getElementById("helpBtn");
-const balloonFrame=document.getElementById("balloonFrame");
 
-/* Dark toggle */
 darkBtn.addEventListener("click",()=>{
   if(darkFrame.style.display==="none"){
     darkFrame.src="dark.html";
@@ -142,39 +140,44 @@ darkBtn.addEventListener("click",()=>{
   }
 });
 
-/* Help message */
-helpBtn.addEventListener("click",()=>{
-  alert("Echo Jr Help:\nAdd → Insert code\nRemove → Delete parts\nReplace → Swap code\nDark → Toggle dark mode\nDrag balloon freely 💗");
+/* help message */
+document.getElementById("helpBtn").addEventListener("click",()=>{
+  alert("Echo Jr Help:\\nAdd → Insert code\\nRemove → Delete parts\\nReplace → Swap code\\nDark → Toggle dark mode\\nDrag the balloon freely 💗");
 });
 
-/* Drag balloon iframe manually with overlay logic */
-let isDown=false, offsetX=0, offsetY=0;
+/* DRAG + BUTTONS FIX COMBINED */
+const frame=document.getElementById("balloonFrame");
+let isDown=false,offsetX=0,offsetY=0;
 
-balloonFrame.addEventListener("mousedown",(e)=>{
+frame.addEventListener("mousedown",(e)=>{
   isDown=true;
-  offsetX=e.clientX - balloonFrame.offsetLeft;
-  offsetY=e.clientY - balloonFrame.offsetTop;
+  offsetX=e.clientX - frame.getBoundingClientRect().left;
+  offsetY=e.clientY - frame.getBoundingClientRect().top;
+  frame.style.cursor="grabbing";
 });
-document.addEventListener("mouseup",()=>isDown=false);
+document.addEventListener("mouseup",()=>{
+  isDown=false;
+  frame.style.cursor="grab";
+});
 document.addEventListener("mousemove",(e)=>{
   if(!isDown)return;
-  balloonFrame.style.left=(e.clientX-offsetX)+"px";
-  balloonFrame.style.top=(e.clientY-offsetY)+"px";
+  frame.style.left=(e.clientX-offsetX)+"px";
+  frame.style.top=(e.clientY-offsetY)+"px";
 });
 
-/* touch support */
-balloonFrame.addEventListener("touchstart",(e)=>{
+/* touch */
+frame.addEventListener("touchstart",(e)=>{
   isDown=true;
   const t=e.touches[0];
-  offsetX=t.clientX - balloonFrame.offsetLeft;
-  offsetY=t.clientY - balloonFrame.offsetTop;
+  offsetX=t.clientX - frame.getBoundingClientRect().left;
+  offsetY=t.clientY - frame.getBoundingClientRect().top;
 });
 document.addEventListener("touchend",()=>isDown=false);
 document.addEventListener("touchmove",(e)=>{
   if(!isDown)return;
   const t=e.touches[0];
-  balloonFrame.style.left=(t.clientX-offsetX)+"px";
-  balloonFrame.style.top=(t.clientY-offsetY)+"px";
+  frame.style.left=(t.clientX-offsetX)+"px";
+  frame.style.top=(t.clientY-offsetY)+"px";
 });
 </script>
 
