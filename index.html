@@ -23,23 +23,9 @@ iframe.bg,iframe.front{
 iframe.bg{z-index:-2;}
 iframe.front{z-index:0;opacity:.65;}
 
-/* draggable balloon */
-#balloonFrame{
-  position:absolute;
-  top:50%;
-  left:50%;
-  width:200px;
-  height:420px;
-  border:none;
-  background:transparent;
-  z-index:2;
-  cursor:grab;
-  transform:translate(-50%,-50%);
-}
-
 /* layout */
 .container{
-  position:relative;z-index:5;
+  position:relative;z-index:2;
   display:flex;flex-direction:column;align-items:center;
 }
 footer{
@@ -88,13 +74,17 @@ footer{
   position:fixed;bottom:40px;left:50%;transform:translateX(-50%);
   width:260px;padding:12px 24px;border-radius:30px;font-size:18px;font-weight:600;text-align:center;
   background:transparent;border:2px solid rgba(255,255,255,0.25);color:var(--pink2);
-  box-shadow:0 0 20px rgba(255,47,137,0.4);z-index:10;
+  box-shadow:0 0 20px rgba(255,47,137,0.4);z-index:200;
   transition:all .3s ease, opacity .3s ease;
 }
 #githubSearch::placeholder{color:var(--pink2);}
 #githubSearch:focus{
   outline:none;box-shadow:0 0 26px rgba(255,47,137,0.8);border-color:rgba(255,47,137,0.9);
 }
+
+/* fade logic */
+iframe.bg, iframe.front, .jr-btn, #githubSearch {transition:opacity .5s ease;}
+.faded{opacity:0!important;}
 </style>
 </head>
 <body>
@@ -103,8 +93,21 @@ footer{
 <iframe src="luhve.html" class="bg"></iframe>
 <iframe src="luhvefront.html" class="front"></iframe>
 
-<!-- balloon iframe (draggable, non-blocking) -->
-<iframe id="balloonFrame" src="pop.html"></iframe>
+<!-- pop balloon (full-screen iframe, draggable logic added) -->
+<iframe id="balloonFrame"
+  src="pop.html"
+  style="
+    position:absolute;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    border:none;
+    background:transparent;
+    z-index:999;
+    cursor:grab;
+  ">
+</iframe>
 
 <div class="container">
   <footer>ECHO JR · UPDATE GOD</footer>
@@ -120,11 +123,10 @@ footer{
 
 <input type="text" id="githubSearch" placeholder="GitHub Username" autocomplete="off" />
 
-<!-- dark mode -->
+<!-- Dark mode iframe -->
 <iframe id="darkFrame" src="" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;border:none;z-index:1000;"></iframe>
 
 <script>
-/* dark toggle */
 const darkBtn=document.getElementById("darkBtn");
 const darkFrame=document.getElementById("darkFrame");
 
@@ -140,45 +142,45 @@ darkBtn.addEventListener("click",()=>{
   }
 });
 
-/* help message */
-document.getElementById("helpBtn").addEventListener("click",()=>{
-  alert("Echo Jr Help:\\nAdd → Insert code\\nRemove → Delete parts\\nReplace → Swap code\\nDark → Toggle dark mode\\nDrag the balloon freely 💗");
+const helpBtn=document.getElementById("helpBtn");
+helpBtn.addEventListener("click",()=>{
+  alert("Echo Jr Help:\\nAdd → Insert code\\nRemove → Delete parts\\nReplace → Swap code\\nDark → Toggle dark mode\\nDrag the balloon by its string 💗");
 });
 
-/* DRAG + BUTTONS FIX COMBINED */
-const frame=document.getElementById("balloonFrame");
-let isDown=false,offsetX=0,offsetY=0;
+/* LUHVgistics — Dragging logic for balloon inside iframe */
+function makeBalloonDraggable(frame){
+  let offsetX=0, offsetY=0, isDown=false;
 
-frame.addEventListener("mousedown",(e)=>{
-  isDown=true;
-  offsetX=e.clientX - frame.getBoundingClientRect().left;
-  offsetY=e.clientY - frame.getBoundingClientRect().top;
-  frame.style.cursor="grabbing";
-});
-document.addEventListener("mouseup",()=>{
-  isDown=false;
-  frame.style.cursor="grab";
-});
-document.addEventListener("mousemove",(e)=>{
-  if(!isDown)return;
-  frame.style.left=(e.clientX-offsetX)+"px";
-  frame.style.top=(e.clientY-offsetY)+"px";
-});
+  // create overlay listener
+  frame.addEventListener("mousedown",e=>{
+    isDown=true;
+    offsetX=e.clientX - frame.offsetLeft;
+    offsetY=e.clientY - frame.offsetTop;
+    frame.style.cursor="grabbing";
+  });
+  document.addEventListener("mouseup",()=>{isDown=false;frame.style.cursor="grab";});
+  document.addEventListener("mousemove",e=>{
+    if(!isDown)return;
+    frame.style.left=(e.clientX-offsetX)+"px";
+    frame.style.top=(e.clientY-offsetY)+"px";
+  });
 
-/* touch */
-frame.addEventListener("touchstart",(e)=>{
-  isDown=true;
-  const t=e.touches[0];
-  offsetX=t.clientX - frame.getBoundingClientRect().left;
-  offsetY=t.clientY - frame.getBoundingClientRect().top;
-});
-document.addEventListener("touchend",()=>isDown=false);
-document.addEventListener("touchmove",(e)=>{
-  if(!isDown)return;
-  const t=e.touches[0];
-  frame.style.left=(t.clientX-offsetX)+"px";
-  frame.style.top=(t.clientY-offsetY)+"px";
-});
+  frame.addEventListener("touchstart",e=>{
+    isDown=true;
+    const t=e.touches[0];
+    offsetX=t.clientX - frame.offsetLeft;
+    offsetY=t.clientY - frame.offsetTop;
+  });
+  document.addEventListener("touchend",()=>isDown=false);
+  document.addEventListener("touchmove",e=>{
+    if(!isDown)return;
+    const t=e.touches[0];
+    frame.style.left=(t.clientX-offsetX)+"px";
+    frame.style.top=(t.clientY-offsetY)+"px";
+  });
+}
+
+makeBalloonDraggable(document.getElementById("balloonFrame"));
 </script>
 
 </body>
