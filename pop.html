@@ -22,9 +22,11 @@ svg{
   animation:float 14s ease-in-out infinite;
   cursor:grab;
   transition:transform 0.1s ease;
+  user-select:none;
+  touch-action:none; /* ensures touch drag works clean */
 }
 
-/* random floating animation */
+/* floating animation */
 @keyframes float{
   0%{transform:translate(0,0);}
   25%{transform:translate(30px,-25px);}
@@ -33,7 +35,7 @@ svg{
   100%{transform:translate(0,0);}
 }
 
-/* soft sway for lower string */
+/* soft sway for string */
 #string{
   transform-origin:top center;
   animation:sway 8s ease-in-out infinite;
@@ -62,7 +64,7 @@ svg{
     </linearGradient>
   </defs>
 
-  <!-- Heart with soft rounded base -->
+  <!-- Heart balloon -->
   <path fill="url(#grad)" d="
     M50 20
     C35 0, 5 10, 5 40
@@ -72,7 +74,7 @@ svg{
     Q50 132, 50 134
   "/>
 
-  <!-- String connected to heart -->
+  <!-- String -->
   <path id="string" d="
     M50 134
     C50 150, 47 165, 55 195
@@ -87,56 +89,50 @@ svg{
 <script>
 const balloon=document.getElementById("balloon");
 
-/* randomize starting position and float speed */
+/* random start position */
 function randomPosition(){
-  const vw = window.innerWidth;
-  const vh = window.innerHeight;
-  const x = Math.random() * (vw - 160);
-  const y = Math.random() * (vh - 420);
-  balloon.style.left = `${x}px`;
-  balloon.style.top = `${y}px`;
-  balloon.style.animationDuration = `${12 + Math.random()*6}s`;
+  const vw=window.innerWidth;
+  const vh=window.innerHeight;
+  const x=Math.random()*(vw-160);
+  const y=Math.random()*(vh-420);
+  balloon.style.left=`${x}px`;
+  balloon.style.top=`${y}px`;
+  balloon.style.animationDuration=`${12+Math.random()*6}s`;
 }
 randomPosition();
 
-/* drag logic */
+/* drag logic fix */
 let isDown=false, offsetX=0, offsetY=0;
-balloon.addEventListener("mousedown",e=>{
+
+function startDrag(e){
   isDown=true;
-  offsetX=e.clientX - balloon.getBoundingClientRect().left;
-  offsetY=e.clientY - balloon.getBoundingClientRect().top;
+  const point = e.touches ? e.touches[0] : e;
+  offsetX = point.clientX - balloon.getBoundingClientRect().left;
+  offsetY = point.clientY - balloon.getBoundingClientRect().top;
   balloon.style.cursor="grabbing";
   balloon.style.animationPlayState="paused";
-});
-document.addEventListener("mouseup",()=>{
+}
+
+function stopDrag(){
   isDown=false;
   balloon.style.cursor="grab";
   balloon.style.animationPlayState="running";
-});
-document.addEventListener("mousemove",e=>{
-  if(!isDown)return;
-  balloon.style.left=(e.clientX-offsetX)+"px";
-  balloon.style.top=(e.clientY-offsetY)+"px";
-});
+}
 
-/* touch support */
-balloon.addEventListener("touchstart",e=>{
-  isDown=true;
-  const t=e.touches[0];
-  offsetX=t.clientX - balloon.getBoundingClientRect().left;
-  offsetY=t.clientY - balloon.getBoundingClientRect().top;
-  balloon.style.animationPlayState="paused";
-});
-document.addEventListener("touchend",()=>{
-  isDown=false;
-  balloon.style.animationPlayState="running";
-});
-document.addEventListener("touchmove",e=>{
+function moveDrag(e){
   if(!isDown)return;
-  const t=e.touches[0];
-  balloon.style.left=(t.clientX-offsetX)+"px";
-  balloon.style.top=(t.clientY-offsetY)+"px";
-});
+  const point = e.touches ? e.touches[0] : e;
+  balloon.style.left = (point.clientX - offsetX) + "px";
+  balloon.style.top  = (point.clientY - offsetY) + "px";
+  e.preventDefault();
+}
+
+balloon.addEventListener("mousedown",startDrag);
+balloon.addEventListener("touchstart",startDrag);
+document.addEventListener("mouseup",stopDrag);
+document.addEventListener("touchend",stopDrag);
+document.addEventListener("mousemove",moveDrag);
+document.addEventListener("touchmove",moveDrag);
 </script>
 
 </body>
