@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1.0" />
-<title>Heart Balloon · Remote Drag</title>
+<title>Heart Balloon · Air Tug Physics</title>
 <style>
 html,body{
   margin:0;
@@ -21,8 +21,6 @@ canvas{
   height:100%;
   pointer-events:none;
 }
-
-/* balloon */
 svg{
   position:absolute;
   width:160px;
@@ -31,8 +29,6 @@ svg{
   user-select:none;
   pointer-events:none;
 }
-
-/* demo buttons */
 button{
   position:absolute;
   padding:10px 20px;
@@ -82,8 +78,8 @@ function resize(){W=canvas.width=innerWidth;H=canvas.height=innerHeight;}
 resize(); addEventListener("resize",resize);
 
 // random spawn
-let bx=Math.random()*innerWidth*0.7+100;
-let by=Math.random()*innerHeight*0.4+100;
+let bx=Math.random()*(innerWidth-200)+100;
+let by=Math.random()*(innerHeight*0.5)+100;
 balloon.style.left=bx-80+"px";
 balloon.style.top=by+"px";
 
@@ -91,81 +87,70 @@ balloon.style.top=by+"px";
 const N=12, seg=26;
 const nodes=Array.from({length:N},(_,i)=>({x:bx,y:by+i*seg,vx:0,vy:0}));
 
-// invisible remote drag vars
-let remoteActive=false;
-let remoteX=bx, remoteY=by;
-
-function setRemote(p){
-  // ignore if click on a button
-  const t=p.target;
-  if(t.tagName==="BUTTON") return;
-  remoteActive=true;
-  remoteX=p.clientX;
-  remoteY=p.clientY;
-}
-function moveRemote(p){
-  if(!remoteActive) return;
-  remoteX=p.clientX;
-  remoteY=p.clientY;
-}
-function clearRemote(){
-  remoteActive=false;
-}
-
-document.addEventListener("mousedown",setRemote);
-document.addEventListener("mousemove",moveRemote);
-document.addEventListener("mouseup",clearRemote);
-document.addEventListener("touchstart",e=>setRemote(e.touches[0]));
-document.addEventListener("touchmove",e=>moveRemote(e.touches[0]));
-document.addEventListener("touchend",clearRemote);
-
+// velocity for balloon
 let vx=0, vy=0;
+
+// input handling
+let tugActive=false, mx=0, my=0;
+function startTug(e){
+  if(e.target.tagName==="BUTTON") return;
+  tugActive=true;
+  mx=e.clientX; my=e.clientY;
+}
+function moveTug(e){
+  if(!tugActive) return;
+  mx=e.clientX; my=e.clientY;
+}
+function endTug(){ tugActive=false; }
+
+document.addEventListener("mousedown",startTug);
+document.addEventListener("mousemove",moveTug);
+document.addEventListener("mouseup",endTug);
+document.addEventListener("touchstart",e=>startTug(e.touches[0]));
+document.addEventListener("touchmove",e=>moveTug(e.touches[0]));
+document.addEventListener("touchend",endTug);
 
 function loop(){
   requestAnimationFrame(loop);
   ctx.clearRect(0,0,W,H);
 
-  // free float
-  by += Math.sin(Date.now()/800)*0.25;
-  bx += Math.cos(Date.now()/1000)*0.1;
+  // soft idle float
+  by += Math.sin(Date.now()/900)*0.25;
+  bx += Math.cos(Date.now()/1200)*0.1;
 
-  // when remote active, balloon eases toward pointer
-  if(remoteActive){
-    vx += (remoteX - bx) * 0.02;
-    vy += (remoteY - by) * 0.02;
+  // air tug: apply directional force, not teleport
+  if(tugActive){
+    const dx=mx-bx, dy=my-by;
+    vx += dx*0.0015;
+    vy += dy*0.0015;
   }
 
-  // friction
-  vx *= 0.94;
-  vy *= 0.94;
-  bx += vx;
-  by += vy;
+  // natural air damping
+  vx*=0.97;
+  vy*=0.97;
 
-  // keep inside screen
+  bx+=vx;
+  by+=vy;
+
+  // keep inside window
   bx=Math.max(80,Math.min(innerWidth-80,bx));
-  by=Math.max(60,Math.min(innerHeight-160,by));
+  by=Math.max(80,Math.min(innerHeight-160,by));
 
-  // update balloon position
+  // balloon position
   balloon.style.left=bx-80+"px";
   balloon.style.top=by+"px";
 
-  // rope physics
+  // rope follow physics
   nodes[0].x=bx;
   nodes[0].y=by+140;
 
   for(let i=1;i<N;i++){
     let n=nodes[i],prev=nodes[i-1];
-
-    // light gravity
-    n.vy+=0.04;
+    n.vy+=0.04; // gravity
     n.x+=n.vx;
     n.y+=n.vy;
-
-    // air resistance
     n.vx*=0.94;
     n.vy*=0.94;
-
-    // tension constraint
     let dx=n.x-prev.x, dy=n.y-prev.y;
     let dist=Math.hypot(dx,dy);
     let diff=(dist-seg)/dist;
@@ -174,15 +159,6 @@ function loop(){
     n.y-=dy*diff*0.5;
     prev.x+=dx*diff*0.5;
     prev.y+=dy*diff*0.5;
-
-    // button collision
-    for(const b of buttons){
-      const br=b.getBoundingClientRect();
-      if(n.x>br.left && n.x<br.right && n.y>br.top && n.y<br.bottom){
-        n.y=br.top-1;
-        n.vy*=-0.3;
-      }
-    }
   }
 
   // draw rope
