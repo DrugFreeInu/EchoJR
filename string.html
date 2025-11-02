@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1.0" />
-<title>Heart Balloon · Wind Motion Control</title>
+<title>Heart Balloon · Button-Safe Avoidance</title>
 <style>
 html,body{
   margin:0;
@@ -72,6 +72,7 @@ button{
 const balloon=document.getElementById("balloon");
 const canvas=document.getElementById("rope");
 const ctx=canvas.getContext("2d");
+const buttons=[...document.querySelectorAll("button")];
 let W,H;
 function resize(){W=canvas.width=innerWidth;H=canvas.height=innerHeight;}
 resize(); addEventListener("resize",resize);
@@ -86,36 +87,25 @@ balloon.style.top=by+"px";
 const N=12, seg=26;
 const nodes=Array.from({length:N},(_,i)=>({x:bx,y:by+i*seg,vx:0,vy:0}));
 
-// velocity for balloon
 let vx=0, vy=0;
-
-// input tracking
 let held=false, prevX=0, prevY=0, mx=0, my=0;
 
 function startHold(e){
   if(e.target.tagName==="BUTTON") return;
   held=true;
-  prevX=e.clientX;
-  prevY=e.clientY;
-  mx=e.clientX;
-  my=e.clientY;
+  prevX=e.clientX; prevY=e.clientY;
+  mx=e.clientX; my=e.clientY;
 }
 function moveHold(e){
   if(!held) return;
-  mx=e.clientX;
-  my=e.clientY;
-
-  // detect motion delta as "wind force"
+  mx=e.clientX; my=e.clientY;
   const dx=mx-prevX;
   const dy=my-prevY;
-  vx += dx*0.03;
-  vy += dy*0.03;
-  prevX=mx;
-  prevY=my;
+  vx+=dx*0.03;
+  vy+=dy*0.03;
+  prevX=mx; prevY=my;
 }
-function endHold(){
-  held=false;
-}
+function endHold(){held=false;}
 
 document.addEventListener("mousedown",startHold);
 document.addEventListener("mousemove",moveHold);
@@ -124,47 +114,73 @@ document.addEventListener("touchstart",e=>startHold(e.touches[0]));
 document.addEventListener("touchmove",e=>moveHold(e.touches[0]));
 document.addEventListener("touchend",endHold);
 
+function repel(x,y,cx,cy,radius,strength){
+  const dx=x-cx, dy=y-cy;
+  const dist=Math.hypot(dx,dy);
+  if(dist===0 || dist>radius) return {x,y,vx:0,vy:0};
+  const f=(radius-dist)*strength;
+  const nx=dx/dist, ny=dy/dist;
+  return {x:x+nx*f, y:y+ny*f, vx:nx*f*0.3, vy:ny*f*0.3};
+}
+
 function loop(){
   requestAnimationFrame(loop);
   ctx.clearRect(0,0,W,H);
 
   // idle float
-  by += Math.sin(Date.now()/900)*0.2;
-  bx += Math.cos(Date.now()/1300)*0.1;
+  by+=Math.sin(Date.now()/900)*0.2;
+  bx+=Math.cos(Date.now()/1300)*0.1;
 
-  // apply damping
   vx*=0.96;
   vy*=0.96;
   bx+=vx;
   by+=vy;
 
-  // keep inside window
   bx=Math.max(80,Math.min(innerWidth-80,bx));
   by=Math.max(80,Math.min(innerHeight-160,by));
 
-  // update balloon position
+  // avoidance for balloon
+  for(const b of buttons){
+    const br=b.getBoundingClientRect();
+    const cx=br.left+br.width/2;
+    const cy=br.top+br.height/2;
+    const radius=Math.max(br.width,br.height)/1.4;
+    const r=repel(bx,by,cx,cy,radius,0.06);
+    bx=r.x; by=r.y; vx+=r.vx; vy+=r.vy;
+  }
+
+  // balloon pos
   balloon.style.left=bx-80+"px";
   balloon.style.top=by+"px";
 
-  // rope physics
+  // rope
   nodes[0].x=bx;
   nodes[0].y=by+140;
 
   for(let i=1;i<N;i++){
     let n=nodes[i],prev=nodes[i-1];
     n.vy+=0.04;
-    n.x+=n.vx;
-    n.y+=n.vy;
-    n.vx*=0.94;
-    n.vy*=0.94;
+    n.x+=n.vx; n.y+=n.vy;
+    n.vx*=0.94; n.vy*=0.94;
+
+    // avoid buttons safely
+    for(const b of buttons){
+      const br=b.getBoundingClientRect();
+      const cx=br.left+br.width/2;
+      const cy=br.top+br.height/2;
+      const radius=Math.max(br.width,br.height)/1.3;
+      const r=repel(n.x,n.y,cx,cy,radius,0.25);
+      n.x=r.x; n.y=r.y; n.vx+=r.vx; n.vy+=r.vy;
+    }
+
+    // rope constraint
     let dx=n.x-prev.x, dy=n.y-prev.y;
     let dist=Math.hypot(dx,dy);
+    if(dist===0) dist=0.001;
     let diff=(dist-seg)/dist;
     diff=Math.min(Math.max(diff,-0.25),0.25);
-    n.x-=dx*diff*0.5;
-    n.y-=dy*diff*0.5;
-    prev.x+=dx*diff*0.5;
-    prev.y+=dy*diff*0.5;
+    n.x-=dx*diff*0.5; n.y-=dy*diff*0.5;
+    prev.x+=dx*diff*0.5; prev.y+=dy*diff*0.5;
   }
 
   // draw rope
