@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1.0" />
-<title>Heart Balloon · Slide Physics</title>
+<title>Heart Balloon · Full Range String Physics</title>
 <style>
 html,body{
   margin:0;
@@ -68,7 +68,7 @@ const ctx=canvas.getContext("2d");
 const buttons=[...document.querySelectorAll("button")];
 let W,H;
 function resize(){W=canvas.width=innerWidth;H=canvas.height=innerHeight;}
-resize(); addEventListener("resize",resize);
+resize();addEventListener("resize",resize);
 
 // random spawn
 let bx=Math.random()*(innerWidth-200)+100;
@@ -77,21 +77,21 @@ balloon.style.left=bx-80+"px";
 balloon.style.top=by+"px";
 
 // rope setup
-const N=25, seg=18;
+const N=30, seg=18;
 const nodes=Array.from({length:N},(_,i)=>({x:bx,y:by+i*seg,vx:0,vy:0}));
 
-let vx=0, vy=0;
-let held=false, prevX=0, prevY=0;
+let vx=0,vy=0;
+let held=false,prevX=0,prevY=0;
 
 function startHold(e){
   if(e.target.tagName==="BUTTON") return;
-  held=true; prevX=e.clientX; prevY=e.clientY;
+  held=true;prevX=e.clientX;prevY=e.clientY;
 }
 function moveHold(e){
-  if(!held) return;
-  const dx=e.clientX-prevX, dy=e.clientY-prevY;
-  vx+=dx*0.03; vy+=dy*0.03;
-  prevX=e.clientX; prevY=e.clientY;
+  if(!held)return;
+  const dx=e.clientX-prevX,dy=e.clientY-prevY;
+  vx+=dx*0.03;vy+=dy*0.03;
+  prevX=e.clientX;prevY=e.clientY;
 }
 function endHold(){held=false;}
 
@@ -102,18 +102,16 @@ document.addEventListener("touchstart",e=>startHold(e.touches[0]));
 document.addEventListener("touchmove",e=>moveHold(e.touches[0]));
 document.addEventListener("touchend",endHold);
 
-// repel that includes slide motion
+// repel + slide
 function repelSlide(x,y,cx,cy,radius,strength){
   const dx=x-cx,dy=y-cy;
   const dist=Math.hypot(dx,dy);
   if(dist===0||dist>radius)return{x,y,vx:0,vy:0};
   const nx=dx/dist,ny=dy/dist;
   const overlap=(radius-dist)/radius;
-  const ease=overlap*overlap*(3-2*overlap); // smoothstep
-  // push outward
+  const ease=overlap*overlap*(3-2*overlap);
   let px=x+nx*ease*radius*strength;
   let py=y+ny*ease*radius*strength;
-  // tangent for sliding
   const tx=-ny,ty=nx;
   const slideMag=overlap*0.5;
   return{
@@ -128,54 +126,66 @@ function loop(){
   requestAnimationFrame(loop);
   ctx.clearRect(0,0,W,H);
 
-  // floaty idle motion
+  // balloon drift
   by+=Math.sin(Date.now()/900)*0.2;
   bx+=Math.cos(Date.now()/1300)*0.1;
-  vx*=0.96; vy*=0.96;
-  bx+=vx; by+=vy;
+  vx*=0.96;vy*=0.96;
+  bx+=vx;by+=vy;
   bx=Math.max(80,Math.min(innerWidth-80,bx));
   by=Math.max(80,Math.min(innerHeight-160,by));
 
-  // balloon collision with buttons
+  // balloon vs buttons
   for(const b of buttons){
     const br=b.getBoundingClientRect();
-    const cx=br.left+br.width/2, cy=br.top+br.height/2;
+    const cx=br.left+br.width/2,cy=br.top+br.height/2;
     const radius=Math.max(br.width,br.height)*1.6;
     const r=repelSlide(bx,by,cx,cy,radius,0.5);
-    bx=r.x; by=r.y; vx+=r.vx; vy+=r.vy;
+    bx=r.x;by=r.y;vx+=r.vx;vy+=r.vy;
   }
 
   balloon.style.left=bx-80+"px";
   balloon.style.top=by+"px";
 
+  // first node follows balloon
   nodes[0].x=bx;
   nodes[0].y=by+140;
 
+  // rope simulation
   for(let i=1;i<N;i++){
     const n=nodes[i],p=nodes[i-1];
-    n.vy+=0.04;
-    n.x+=n.vx; n.y+=n.vy;
-    n.vx*=0.94; n.vy*=0.94;
+    n.vy+=0.04; // gravity
+    n.x+=n.vx;n.y+=n.vy;
+    n.vx*=0.94;n.vy*=0.94;
 
-    // rope interaction with buttons
+    // rope vs buttons
     for(const b of buttons){
       const br=b.getBoundingClientRect();
-      const cx=br.left+br.width/2, cy=br.top+br.height/2;
+      const cx=br.left+br.width/2,cy=br.top+br.height/2;
       const radius=Math.max(br.width,br.height)*1.5;
       const r=repelSlide(n.x,n.y,cx,cy,radius,0.45);
-      n.x=r.x; n.y=r.y; n.vx+=r.vx; n.vy+=r.vy;
+      n.x=r.x;n.y=r.y;n.vx+=r.vx;n.vy+=r.vy;
     }
 
-    // rope constraint
+    // rope constraint (spread motion evenly both directions)
     const dx=n.x-p.x,dy=n.y-p.y;
     const dist=Math.hypot(dx,dy)||0.001;
-    let diff=(dist-seg)/dist;
-    diff=Math.min(Math.max(diff,-0.35),0.35);
-    n.x-=dx*diff*0.5; n.y-=dy*diff*0.5;
-    p.x+=dx*diff*0.5; p.y+=dy*diff*0.5;
+    const diff=(dist-seg)/dist;
+    const adjust=0.5;
+    n.x-=dx*diff*adjust;
+    n.y-=dy*diff*adjust;
+    p.x+=dx*diff*adjust;
+    p.y+=dy*diff*adjust;
   }
 
-  // draw smooth curved rope
+  // distribute top motion down rope (lets bottom pull)
+  for(let i=1;i<N;i++){
+    const prev=nodes[i-1];
+    const cur=nodes[i];
+    cur.vx+=prev.vx*0.4;
+    cur.vy+=prev.vy*0.4;
+  }
+
+  // draw rope
   ctx.beginPath();
   ctx.moveTo(nodes[0].x,nodes[0].y);
   for(let i=1;i<N-2;i++){
