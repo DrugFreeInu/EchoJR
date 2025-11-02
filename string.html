@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1.0" />
-<title>Heart Balloon · Stable Smooth Rope</title>
+<title>Heart Balloon · Ultra Smooth Motion</title>
 <style>
 html,body{
   margin:0;
@@ -70,27 +70,26 @@ let W,H;
 function resize(){W=canvas.width=innerWidth;H=canvas.height=innerHeight;}
 resize();addEventListener("resize",resize);
 
-// spawn
 let bx=Math.random()*(innerWidth-200)+100;
 let by=Math.random()*(innerHeight*0.5)+100;
 balloon.style.left=bx-80+"px";
 balloon.style.top=by+"px";
 
-// rope setup
-const N=28, seg=18;
+// rope nodes
+const N=30, seg=18;
 const nodes=Array.from({length:N},(_,i)=>({x:bx,y:by+i*seg,vx:0,vy:0}));
 
 let vx=0,vy=0;
 let held=false,prevX=0,prevY=0;
 
 function startHold(e){
-  if(e.target.tagName==="BUTTON") return;
+  if(e.target.tagName==="BUTTON")return;
   held=true;prevX=e.clientX;prevY=e.clientY;
 }
 function moveHold(e){
   if(!held)return;
   const dx=e.clientX-prevX,dy=e.clientY-prevY;
-  vx+=dx*0.02;vy+=dy*0.02;
+  vx+=dx*0.03;vy+=dy*0.03;
   prevX=e.clientX;prevY=e.clientY;
 }
 function endHold(){held=false;}
@@ -102,7 +101,6 @@ document.addEventListener("touchstart",e=>startHold(e.touches[0]));
 document.addEventListener("touchmove",e=>moveHold(e.touches[0]));
 document.addEventListener("touchend",endHold);
 
-// repel + slide
 function repelSlide(x,y,cx,cy,radius,strength){
   const dx=x-cx,dy=y-cy;
   const dist=Math.hypot(dx,dy);
@@ -113,12 +111,12 @@ function repelSlide(x,y,cx,cy,radius,strength){
   let px=x+nx*ease*radius*strength;
   let py=y+ny*ease*radius*strength;
   const tx=-ny,ty=nx;
-  const slideMag=overlap*0.4;
+  const slideMag=overlap*0.3;
   return{
     x:px+tx*slideMag,
     y:py+ty*slideMag,
-    vx:tx*slideMag*0.4,
-    vy:ty*slideMag*0.4
+    vx:tx*slideMag*0.3,
+    vy:ty*slideMag*0.3
   };
 }
 
@@ -126,15 +124,16 @@ function loop(){
   requestAnimationFrame(loop);
   ctx.clearRect(0,0,W,H);
 
-  // smooth float motion
-  by+=Math.sin(Date.now()/900)*0.15;
-  bx+=Math.cos(Date.now()/1300)*0.08;
-  vx*=0.94;vy*=0.94;
+  // smoother float
+  by+=Math.sin(Date.now()/900)*0.12;
+  bx+=Math.cos(Date.now()/1300)*0.09;
+  vx*=0.95;vy*=0.95;
   bx+=vx;by+=vy;
+
   bx=Math.max(80,Math.min(innerWidth-80,bx));
   by=Math.max(80,Math.min(innerHeight-160,by));
 
-  // repel from buttons
+  // button repulsion
   for(const b of buttons){
     const br=b.getBoundingClientRect();
     const cx=br.left+br.width/2,cy=br.top+br.height/2;
@@ -146,40 +145,42 @@ function loop(){
   balloon.style.left=bx-80+"px";
   balloon.style.top=by+"px";
 
-  // rope simulation
+  // rope physics
   nodes[0].x=bx;
   nodes[0].y=by+140;
 
   for(let i=1;i<N;i++){
     const n=nodes[i],p=nodes[i-1];
-    n.vy+=0.03;
-    n.x+=n.vx;n.y+=n.vy;
-    n.vx*=0.9;n.vy*=0.9;
+    n.vy+=0.025;
+    n.x+=n.vx+(p.vx*0.2);
+    n.y+=n.vy+(p.vy*0.2);
+    n.vx*=0.92;n.vy*=0.92;
 
-    // repel from buttons
+    // avoid buttons
     for(const b of buttons){
       const br=b.getBoundingClientRect();
       const cx=br.left+br.width/2,cy=br.top+br.height/2;
-      const radius=Math.max(br.width,br.height)*1.4;
+      const radius=Math.max(br.width,br.height)*1.5;
       const r=repelSlide(n.x,n.y,cx,cy,radius,0.35);
       n.x=r.x;n.y=r.y;n.vx+=r.vx;n.vy+=r.vy;
     }
 
-    // rope constraint (stabilized)
+    // constraint — more elastic
     const dx=n.x-p.x,dy=n.y-p.y;
     const dist=Math.hypot(dx,dy)||0.001;
     const diff=(dist-seg)/dist;
-    n.x-=dx*diff*0.45;
-    n.y-=dy*diff*0.45;
-    p.x+=dx*diff*0.45;
-    p.y+=dy*diff*0.45;
+    const force=Math.min(Math.max(diff,-0.25),0.25);
+    n.x-=dx*force*0.6;
+    n.y-=dy*force*0.6;
+    p.x+=dx*force*0.4;
+    p.y+=dy*force*0.4;
   }
 
-  // gentle tension equalization
+  // subtle motion smoothing
   for(let i=1;i<N;i++){
     const prev=nodes[i-1],cur=nodes[i];
-    cur.vx+=(prev.x-cur.x)*0.002;
-    cur.vy+=(prev.y-cur.y)*0.002;
+    cur.vx+=(prev.x-cur.x)*0.004;
+    cur.vy+=(prev.y-cur.y)*0.004;
   }
 
   // draw rope
@@ -192,7 +193,7 @@ function loop(){
   }
   ctx.quadraticCurveTo(nodes[N-2].x,nodes[N-2].y,nodes[N-1].x,nodes[N-1].y);
   ctx.strokeStyle="rgba(255,47,137,0.9)";
-  ctx.lineWidth=2.4;
+  ctx.lineWidth=2.3;
   ctx.lineCap="round";
   ctx.shadowColor="rgba(255,47,137,0.5)";
   ctx.shadowBlur=8;
