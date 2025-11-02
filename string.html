@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1.0" />
-<title>Heart Balloon · Size Control</title>
+<title>Heart Balloon · Strong Button Physics</title>
 <style>
 html,body{
   margin:0;
@@ -28,7 +28,6 @@ svg{
   filter:drop-shadow(0 0 18px rgba(255,80,150,0.6));
   user-select:none;
   pointer-events:none;
-  transform-origin:center center;
 }
 button{
   position:absolute;
@@ -90,7 +89,6 @@ const nodes=Array.from({length:N},(_,i)=>({x:bx,y:by+i*seg,vx:0,vy:0}));
 
 let vx=0, vy=0;
 let held=false, prevX=0, prevY=0;
-let scale=1.0;
 
 function startHold(e){
   if(e.target.tagName==="BUTTON") return;
@@ -104,12 +102,6 @@ function moveHold(e){
   vx+=dx*0.03;
   vy+=dy*0.03;
   prevX=e.clientX; prevY=e.clientY;
-
-  // horizontal drag from screen center controls size
-  const distFromCenter = e.clientX - innerWidth/2;
-  const targetScale = 1 + Math.min(Math.abs(distFromCenter)/(innerWidth/2)*0.8,1.5); // up to 1.8x
-  scale = 0.9*scale + 0.1*targetScale; // smooth easing
-  balloon.style.transform=`scale(${scale})`;
 }
 function endHold(){held=false;}
 
@@ -119,6 +111,22 @@ document.addEventListener("mouseup",endHold);
 document.addEventListener("touchstart",e=>startHold(e.touches[0]));
 document.addEventListener("touchmove",e=>moveHold(e.touches[0]));
 document.addEventListener("touchend",endHold);
+
+// helper: strong repel force
+function repel(x,y,cx,cy,radius,strength){
+  const dx=x-cx, dy=y-cy;
+  const dist=Math.hypot(dx,dy);
+  if(dist===0 || dist>radius) return {x,y,vx:0,vy:0};
+  const force=(radius-dist)/radius;
+  const nx=dx/dist, ny=dy/dist;
+  const push=force*strength;
+  return {
+    x:x+nx*push*radius*0.6,
+    y:y+ny*push*radius*0.6,
+    vx:nx*push*4,
+    vy:ny*push*4
+  };
+}
 
 function loop(){
   requestAnimationFrame(loop);
@@ -131,6 +139,16 @@ function loop(){
   bx=Math.max(80,Math.min(innerWidth-80,bx));
   by=Math.max(80,Math.min(innerHeight-160,by));
 
+  // strong avoidance for balloon
+  for(const b of buttons){
+    const br=b.getBoundingClientRect();
+    const cx=br.left+br.width/2;
+    const cy=br.top+br.height/2;
+    const radius=Math.max(br.width,br.height)*1.6;
+    const r=repel(bx,by,cx,cy,radius,0.5);
+    bx=r.x; by=r.y; vx+=r.vx; vy+=r.vy;
+  }
+
   balloon.style.left=bx-80+"px";
   balloon.style.top=by+"px";
 
@@ -142,15 +160,27 @@ function loop(){
     n.vy+=0.04;
     n.x+=n.vx; n.y+=n.vy;
     n.vx*=0.94; n.vy*=0.94;
+
+    // strong rope-button interaction
+    for(const b of buttons){
+      const br=b.getBoundingClientRect();
+      const cx=br.left+br.width/2;
+      const cy=br.top+br.height/2;
+      const radius=Math.max(br.width,br.height)*1.5;
+      const r=repel(n.x,n.y,cx,cy,radius,0.4);
+      n.x=r.x; n.y=r.y; n.vx+=r.vx; n.vy+=r.vy;
+    }
+
+    // rope constraint
     let dx=n.x-p.x, dy=n.y-p.y;
     let dist=Math.hypot(dx,dy)||0.001;
     let diff=(dist-seg)/dist;
-    diff=Math.min(Math.max(diff,-0.25),0.25);
+    diff=Math.min(Math.max(diff,-0.35),0.35);
     n.x-=dx*diff*0.5; n.y-=dy*diff*0.5;
     p.x+=dx*diff*0.5; p.y+=dy*diff*0.5;
   }
 
-  // smooth rope drawing
+  // draw curved rope
   ctx.beginPath();
   ctx.moveTo(nodes[0].x,nodes[0].y);
   for(let i=1;i<N-2;i++){
@@ -159,10 +189,10 @@ function loop(){
     ctx.quadraticCurveTo(nodes[i].x,nodes[i].y,xc,yc);
   }
   ctx.quadraticCurveTo(nodes[N-2].x,nodes[N-2].y,nodes[N-1].x,nodes[N-1].y);
-  ctx.strokeStyle="rgba(255,47,137,0.85)";
-  ctx.lineWidth=2;
+  ctx.strokeStyle="rgba(255,47,137,0.9)";
+  ctx.lineWidth=2.4;
   ctx.lineCap="round";
-  ctx.shadowColor="rgba(255,47,137,0.4)";
+  ctx.shadowColor="rgba(255,47,137,0.5)";
   ctx.shadowBlur=8;
   ctx.stroke();
   ctx.shadowBlur=0;
