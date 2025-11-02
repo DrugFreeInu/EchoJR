@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1.0" />
-<title>Heart Balloon · Soft Tension Pull</title>
+<title>Heart Balloon · Smooth Curved Rope</title>
 <style>
 html,body{
   margin:0;
@@ -83,12 +83,12 @@ let by=Math.random()*(innerHeight*0.5)+100;
 balloon.style.left=bx-80+"px";
 balloon.style.top=by+"px";
 
-// rope setup
-const N=12, seg=26;
+// smoother rope: more nodes
+const N=25, seg=18;
 const nodes=Array.from({length:N},(_,i)=>({x:bx,y:by+i*seg,vx:0,vy:0}));
 
 let vx=0, vy=0;
-let held=false, prevX=0, prevY=0, mx=0, my=0;
+let held=false, prevX=0, prevY=0;
 
 function startHold(e){
   if(e.target.tagName==="BUTTON") return;
@@ -116,17 +116,14 @@ function loop(){
   requestAnimationFrame(loop);
   ctx.clearRect(0,0,W,H);
 
-  // idle float
+  // gentle float
   by+=Math.sin(Date.now()/900)*0.2;
   bx+=Math.cos(Date.now()/1300)*0.1;
-
-  // motion
   vx*=0.96; vy*=0.96;
   bx+=vx; by+=vy;
   bx=Math.max(80,Math.min(innerWidth-80,bx));
   by=Math.max(80,Math.min(innerHeight-160,by));
 
-  // balloon position
   balloon.style.left=bx-80+"px";
   balloon.style.top=by+"px";
 
@@ -140,38 +137,27 @@ function loop(){
     n.x+=n.vx; n.y+=n.vy;
     n.vx*=0.94; n.vy*=0.94;
 
-    // tension + avoidance
-    for(const b of buttons){
-      const br=b.getBoundingClientRect();
-      const cx=br.left+br.width/2;
-      const cy=br.top+br.height/2;
-      const r=Math.max(br.width,br.height)/1.3;
-      const dx=n.x-cx, dy=n.y-cy;
-      const dist=Math.hypot(dx,dy);
-      if(dist<r){
-        const pull=(r-dist)*0.1;       // sticky region
-        const tension=(r-dist)*0.02;   // adds stretch
-        n.x+=dx/dist*pull;
-        n.y+=dy/dist*pull;
-        n.vx-=dx/dist*tension;
-        n.vy-=dy/dist*tension;
-      }
-    }
-
     // rope constraint
     let dx=n.x-p.x, dy=n.y-p.y;
     let dist=Math.hypot(dx,dy)||0.001;
     let diff=(dist-seg)/dist;
-    // stronger constraint for realistic stretch
-    diff=Math.min(Math.max(diff,-0.35),0.35);
+    diff=Math.min(Math.max(diff,-0.25),0.25);
     n.x-=dx*diff*0.5; n.y-=dy*diff*0.5;
     p.x+=dx*diff*0.5; p.y+=dy*diff*0.5;
   }
 
-  // draw rope
+  // draw smoothed rope
   ctx.beginPath();
   ctx.moveTo(nodes[0].x,nodes[0].y);
-  for(let i=1;i<N;i++) ctx.lineTo(nodes[i].x,nodes[i].y);
+  for(let i=1;i<N-2;i++){
+    const xc=(nodes[i].x+nodes[i+1].x)/2;
+    const yc=(nodes[i].y+nodes[i+1].y)/2;
+    ctx.quadraticCurveTo(nodes[i].x,nodes[i].y,xc,yc);
+  }
+  ctx.quadraticCurveTo(
+    nodes[N-2].x,nodes[N-2].y,
+    nodes[N-1].x,nodes[N-1].y
+  );
   ctx.strokeStyle="rgba(255,47,137,0.85)";
   ctx.lineWidth=2;
   ctx.lineCap="round";
