@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1.0" />
-<title>Heart Balloon · Full Range String Physics</title>
+<title>Heart Balloon · Stable Smooth Rope</title>
 <style>
 html,body{
   margin:0;
@@ -70,14 +70,14 @@ let W,H;
 function resize(){W=canvas.width=innerWidth;H=canvas.height=innerHeight;}
 resize();addEventListener("resize",resize);
 
-// random spawn
+// spawn
 let bx=Math.random()*(innerWidth-200)+100;
 let by=Math.random()*(innerHeight*0.5)+100;
 balloon.style.left=bx-80+"px";
 balloon.style.top=by+"px";
 
 // rope setup
-const N=30, seg=18;
+const N=28, seg=18;
 const nodes=Array.from({length:N},(_,i)=>({x:bx,y:by+i*seg,vx:0,vy:0}));
 
 let vx=0,vy=0;
@@ -90,7 +90,7 @@ function startHold(e){
 function moveHold(e){
   if(!held)return;
   const dx=e.clientX-prevX,dy=e.clientY-prevY;
-  vx+=dx*0.03;vy+=dy*0.03;
+  vx+=dx*0.02;vy+=dy*0.02;
   prevX=e.clientX;prevY=e.clientY;
 }
 function endHold(){held=false;}
@@ -113,12 +113,12 @@ function repelSlide(x,y,cx,cy,radius,strength){
   let px=x+nx*ease*radius*strength;
   let py=y+ny*ease*radius*strength;
   const tx=-ny,ty=nx;
-  const slideMag=overlap*0.5;
+  const slideMag=overlap*0.4;
   return{
     x:px+tx*slideMag,
     y:py+ty*slideMag,
-    vx:tx*slideMag*0.6,
-    vy:ty*slideMag*0.6
+    vx:tx*slideMag*0.4,
+    vy:ty*slideMag*0.4
   };
 }
 
@@ -126,63 +126,60 @@ function loop(){
   requestAnimationFrame(loop);
   ctx.clearRect(0,0,W,H);
 
-  // balloon drift
-  by+=Math.sin(Date.now()/900)*0.2;
-  bx+=Math.cos(Date.now()/1300)*0.1;
-  vx*=0.96;vy*=0.96;
+  // smooth float motion
+  by+=Math.sin(Date.now()/900)*0.15;
+  bx+=Math.cos(Date.now()/1300)*0.08;
+  vx*=0.94;vy*=0.94;
   bx+=vx;by+=vy;
   bx=Math.max(80,Math.min(innerWidth-80,bx));
   by=Math.max(80,Math.min(innerHeight-160,by));
 
-  // balloon vs buttons
+  // repel from buttons
   for(const b of buttons){
     const br=b.getBoundingClientRect();
     const cx=br.left+br.width/2,cy=br.top+br.height/2;
     const radius=Math.max(br.width,br.height)*1.6;
-    const r=repelSlide(bx,by,cx,cy,radius,0.5);
+    const r=repelSlide(bx,by,cx,cy,radius,0.4);
     bx=r.x;by=r.y;vx+=r.vx;vy+=r.vy;
   }
 
   balloon.style.left=bx-80+"px";
   balloon.style.top=by+"px";
 
-  // first node follows balloon
+  // rope simulation
   nodes[0].x=bx;
   nodes[0].y=by+140;
 
-  // rope simulation
   for(let i=1;i<N;i++){
     const n=nodes[i],p=nodes[i-1];
-    n.vy+=0.04; // gravity
+    n.vy+=0.03;
     n.x+=n.vx;n.y+=n.vy;
-    n.vx*=0.94;n.vy*=0.94;
+    n.vx*=0.9;n.vy*=0.9;
 
-    // rope vs buttons
+    // repel from buttons
     for(const b of buttons){
       const br=b.getBoundingClientRect();
       const cx=br.left+br.width/2,cy=br.top+br.height/2;
-      const radius=Math.max(br.width,br.height)*1.5;
-      const r=repelSlide(n.x,n.y,cx,cy,radius,0.45);
+      const radius=Math.max(br.width,br.height)*1.4;
+      const r=repelSlide(n.x,n.y,cx,cy,radius,0.35);
       n.x=r.x;n.y=r.y;n.vx+=r.vx;n.vy+=r.vy;
     }
 
-    // rope constraint (spread motion evenly both directions)
+    // rope constraint (stabilized)
     const dx=n.x-p.x,dy=n.y-p.y;
     const dist=Math.hypot(dx,dy)||0.001;
     const diff=(dist-seg)/dist;
-    const adjust=0.5;
-    n.x-=dx*diff*adjust;
-    n.y-=dy*diff*adjust;
-    p.x+=dx*diff*adjust;
-    p.y+=dy*diff*adjust;
+    n.x-=dx*diff*0.45;
+    n.y-=dy*diff*0.45;
+    p.x+=dx*diff*0.45;
+    p.y+=dy*diff*0.45;
   }
 
-  // distribute top motion down rope (lets bottom pull)
+  // gentle tension equalization
   for(let i=1;i<N;i++){
-    const prev=nodes[i-1];
-    const cur=nodes[i];
-    cur.vx+=prev.vx*0.4;
-    cur.vy+=prev.vy*0.4;
+    const prev=nodes[i-1],cur=nodes[i];
+    cur.vx+=(prev.x-cur.x)*0.002;
+    cur.vy+=(prev.y-cur.y)*0.002;
   }
 
   // draw rope
