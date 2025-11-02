@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1.0" />
-<title>Heart Balloon · Air Tug Physics</title>
+<title>Heart Balloon · Wind Motion Control</title>
 <style>
 html,body{
   margin:0;
@@ -72,7 +72,6 @@ button{
 const balloon=document.getElementById("balloon");
 const canvas=document.getElementById("rope");
 const ctx=canvas.getContext("2d");
-const buttons=[...document.querySelectorAll("button")];
 let W,H;
 function resize(){W=canvas.width=innerWidth;H=canvas.height=innerHeight;}
 resize(); addEventListener("resize",resize);
@@ -90,45 +89,52 @@ const nodes=Array.from({length:N},(_,i)=>({x:bx,y:by+i*seg,vx:0,vy:0}));
 // velocity for balloon
 let vx=0, vy=0;
 
-// input handling
-let tugActive=false, mx=0, my=0;
-function startTug(e){
-  if(e.target.tagName==="BUTTON") return;
-  tugActive=true;
-  mx=e.clientX; my=e.clientY;
-}
-function moveTug(e){
-  if(!tugActive) return;
-  mx=e.clientX; my=e.clientY;
-}
-function endTug(){ tugActive=false; }
+// input tracking
+let held=false, prevX=0, prevY=0, mx=0, my=0;
 
-document.addEventListener("mousedown",startTug);
-document.addEventListener("mousemove",moveTug);
-document.addEventListener("mouseup",endTug);
-document.addEventListener("touchstart",e=>startTug(e.touches[0]));
-document.addEventListener("touchmove",e=>moveTug(e.touches[0]));
-document.addEventListener("touchend",endTug);
+function startHold(e){
+  if(e.target.tagName==="BUTTON") return;
+  held=true;
+  prevX=e.clientX;
+  prevY=e.clientY;
+  mx=e.clientX;
+  my=e.clientY;
+}
+function moveHold(e){
+  if(!held) return;
+  mx=e.clientX;
+  my=e.clientY;
+
+  // detect motion delta as "wind force"
+  const dx=mx-prevX;
+  const dy=my-prevY;
+  vx += dx*0.03;
+  vy += dy*0.03;
+  prevX=mx;
+  prevY=my;
+}
+function endHold(){
+  held=false;
+}
+
+document.addEventListener("mousedown",startHold);
+document.addEventListener("mousemove",moveHold);
+document.addEventListener("mouseup",endHold);
+document.addEventListener("touchstart",e=>startHold(e.touches[0]));
+document.addEventListener("touchmove",e=>moveHold(e.touches[0]));
+document.addEventListener("touchend",endHold);
 
 function loop(){
   requestAnimationFrame(loop);
   ctx.clearRect(0,0,W,H);
 
-  // soft idle float
-  by += Math.sin(Date.now()/900)*0.25;
-  bx += Math.cos(Date.now()/1200)*0.1;
+  // idle float
+  by += Math.sin(Date.now()/900)*0.2;
+  bx += Math.cos(Date.now()/1300)*0.1;
 
-  // air tug: apply directional force, not teleport
-  if(tugActive){
-    const dx=mx-bx, dy=my-by;
-    vx += dx*0.0015;
-    vy += dy*0.0015;
-  }
-
-  // natural air damping
-  vx*=0.97;
-  vy*=0.97;
-
+  // apply damping
+  vx*=0.96;
+  vy*=0.96;
   bx+=vx;
   by+=vy;
 
@@ -136,17 +142,17 @@ function loop(){
   bx=Math.max(80,Math.min(innerWidth-80,bx));
   by=Math.max(80,Math.min(innerHeight-160,by));
 
-  // balloon position
+  // update balloon position
   balloon.style.left=bx-80+"px";
   balloon.style.top=by+"px";
 
-  // rope follow physics
+  // rope physics
   nodes[0].x=bx;
   nodes[0].y=by+140;
 
   for(let i=1;i<N;i++){
     let n=nodes[i],prev=nodes[i-1];
-    n.vy+=0.04; // gravity
+    n.vy+=0.04;
     n.x+=n.vx;
     n.y+=n.vy;
     n.vx*=0.94;
