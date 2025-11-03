@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -148,7 +149,7 @@ function loop(){
     cur.vy+=(prev.y-cur.y)*0.004;
   }
 
-  // draw rope with lighter Echo J pink
+  // draw rope with Echo J pink
   ctx.beginPath();
   ctx.moveTo(nodes[0].x,nodes[0].y);
   for(let i=1;i<maxNodes-2;i++){
@@ -165,14 +166,20 @@ function loop(){
   ctx.shadowBlur=0;
 
   // random over/under illusion around buttons
+  ctx.globalCompositeOperation="source-over";
   for(const b of buttons){
     const br=b.getBoundingClientRect();
-    const cx=br.left+br.width/2,cy=br.top+br.height/2;
-    const radius=Math.max(br.width,br.height)*1.1;
-    const over=Math.random()<0.5;
+    const cx=br.left+br.width/2;
+    const cy=br.top+br.height/2;
+    const radius=Math.max(br.width,br.height)*1.2;
+
+    const over=Math.random()<0.5; // randomize each frame
+    ctx.save();
     ctx.beginPath();
     ctx.arc(cx,cy,radius,0,Math.PI*2);
+    ctx.clip();
     ctx.globalCompositeOperation=over?"destination-over":"source-over";
+    ctx.restore();
   }
   ctx.globalCompositeOperation="source-over";
 
