@@ -18,8 +18,9 @@ canvas{
   top:0;left:0;
   width:100%;height:100%;
   pointer-events:none;
-  z-index:1;
 }
+#under{z-index:1;}
+#over{z-index:5;}
 svg{
   position:absolute;
   width:160px;height:420px;
@@ -95,16 +96,13 @@ document.addEventListener("touchstart",e=>startHold(e.touches[0]));
 document.addEventListener("touchmove",e=>moveHold(e.touches[0]));
 document.addEventListener("touchend",endHold);
 
-const overSegments = new Set();
-for (let i = 3; i < maxNodes; i += 6) overSegments.add(i); // alternate over
-
 function drawRope(ctx, isOver){
   ctx.beginPath();
   ctx.moveTo(nodes[0].x,nodes[0].y);
   for(let i=1;i<maxNodes-2;i++){
     const xc=(nodes[i].x+nodes[i+1].x)/2;
     const yc=(nodes[i].y+nodes[i+1].y)/2;
-    if((overSegments.has(i) && isOver) || (!overSegments.has(i) && !isOver))
+    if((i%12<6 && !isOver) || (i%12>=6 && isOver))
       ctx.quadraticCurveTo(nodes[i].x,nodes[i].y,xc,yc);
   }
   ctx.strokeStyle="rgba(255,120,180,0.9)";
