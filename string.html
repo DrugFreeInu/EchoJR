@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1.0" />
-<title>Heart Balloon · Echo J Pink Infinite Illusion</title>
+<title>Heart Balloon · Echo J Pink Alternating Weave</title>
 <style>
 html,body{
   margin:0;
@@ -92,12 +92,6 @@ document.addEventListener("touchstart",e=>startHold(e.touches[0]));
 document.addEventListener("touchmove",e=>moveHold(e.touches[0]));
 document.addEventListener("touchend",endHold);
 
-// assign fixed random layering per button
-const layerStates = {};
-buttons.forEach(b => {
-  layerStates[b.id] = Math.random() < 0.5 ? "front" : "back";
-});
-
 function drawPile(baseX,baseY){
   ctx.beginPath();
   for(let i=0;i<8;i++){
@@ -112,83 +106,6 @@ function drawPile(baseX,baseY){
   ctx.shadowBlur=6;
   ctx.stroke();
   ctx.shadowBlur=0;
-}
-
-function loop(){
-  requestAnimationFrame(loop);
-  ctx.clearRect(0,0,W,H);
-
-  // gentle motion
-  by+=Math.sin(Date.now()/900)*0.12;
-  bx+=Math.cos(Date.now()/1300)*0.09;
-  vx*=0.95;vy*=0.95;
-  bx+=vx;by+=vy;
-  bx=Math.max(80,Math.min(innerWidth-80,bx));
-  by=Math.max(60,Math.min(innerHeight-230,by));
-
-  // physics
-  nodes[0].x=bx;
-  nodes[0].y=by+140;
-  for(let i=1;i<maxNodes;i++){
-    const n=nodes[i],p=nodes[i-1];
-    n.vy+=0.025;
-    n.x+=n.vx+(p.vx*0.2);
-    n.y+=n.vy+(p.vy*0.2);
-    n.vx*=0.92;n.vy*=0.92;
-
-    // constraint
-    const dx=n.x-p.x,dy=n.y-p.y;
-    const dist=Math.hypot(dx,dy)||0.001;
-    const diff=(dist-seg)/dist;
-    const f=Math.min(Math.max(diff,-0.25),0.25);
-    n.x-=dx*f*0.6;n.y-=dy*f*0.6;
-    p.x+=dx*f*0.4;p.y+=dy*f*0.4;
-
-    if(n.y>H-10){ n.y=H-10; n.vy*=-0.25; }
-  }
-
-  for(let i=1;i<maxNodes;i++){
-    const prev=nodes[i-1],cur=nodes[i];
-    cur.vx+=(prev.x-cur.x)*0.004;
-    cur.vy+=(prev.y-cur.y)*0.004;
-  }
-
-  // draw rope and buttons based on fixed layers
-  buttons.forEach(b=>{
-    const br=b.getBoundingClientRect();
-    const cx=br.left+br.width/2,cy=br.top+br.height/2;
-    const radius=Math.max(br.width,br.height)*1.2;
-    if(layerStates[b.id]==="back"){
-      ctx.save();
-      ctx.beginPath();
-      ctx.arc(cx,cy,radius,0,Math.PI*2);
-      ctx.clip();
-      ctx.globalCompositeOperation="destination-over";
-      drawRope();
-      ctx.restore();
-    }
-  });
-
-  drawRope();
-
-  buttons.forEach(b=>{
-    const br=b.getBoundingClientRect();
-    const cx=br.left+br.width/2,cy=br.top+br.height/2;
-    const radius=Math.max(br.width,br.height)*1.2;
-    if(layerStates[b.id]==="front"){
-      ctx.save();
-      ctx.beginPath();
-      ctx.arc(cx,cy,radius,0,Math.PI*2);
-      ctx.clip();
-      ctx.globalCompositeOperation="source-over";
-      drawRope();
-      ctx.restore();
-    }
-  });
-
-  drawPile(innerWidth*0.25,H-8);
-  balloon.style.left=bx-80+"px";
-  balloon.style.top=by+"px";
 }
 
 function drawRope(){
@@ -208,6 +125,62 @@ function drawRope(){
   ctx.shadowBlur=0;
 }
 
+function loop(){
+  requestAnimationFrame(loop);
+  ctx.clearRect(0,0,W,H);
+
+  // motion
+  by+=Math.sin(Date.now()/900)*0.12;
+  bx+=Math.cos(Date.now()/1300)*0.09;
+  vx*=0.95;vy*=0.95;
+  bx+=vx;by+=vy;
+  bx=Math.max(80,Math.min(innerWidth-80,bx));
+  by=Math.max(60,Math.min(innerHeight-230,by));
+
+  nodes[0].x=bx;
+  nodes[0].y=by+140;
+
+  for(let i=1;i<maxNodes;i++){
+    const n=nodes[i],p=nodes[i-1];
+    n.vy+=0.025;
+    n.x+=n.vx+(p.vx*0.2);
+    n.y+=n.vy+(p.vy*0.2);
+    n.vx*=0.92;n.vy*=0.92;
+
+    const dx=n.x-p.x,dy=n.y-p.y;
+    const dist=Math.hypot(dx,dy)||0.001;
+    const diff=(dist-seg)/dist;
+    const f=Math.min(Math.max(diff,-0.25),0.25);
+    n.x-=dx*f*0.6;n.y-=dy*f*0.6;
+    p.x+=dx*f*0.4;p.y+=dy*f*0.4;
+
+    if(n.y>H-10){ n.y=H-10; n.vy*=-0.25; }
+  }
+  for(let i=1;i<maxNodes;i++){
+    const prev=nodes[i-1],cur=nodes[i];
+    cur.vx+=(prev.x-cur.x)*0.004;
+    cur.vy+=(prev.y-cur.y)*0.004;
+  }
+
+  // alternating front/back illusion
+  buttons.forEach((b,i)=>{
+    const br=b.getBoundingClientRect();
+    const cx=br.left+br.width/2,cy=br.top+br.height/2;
+    const radius=Math.max(br.width,br.height)*1.2;
+
+    ctx.save();
+    ctx.beginPath();
+    ctx.arc(cx,cy,radius,0,Math.PI*2);
+    ctx.clip();
+    ctx.globalCompositeOperation=(i%2===0)?"destination-over":"source-over";
+    drawRope();
+    ctx.restore();
+  });
+
+  drawPile(innerWidth*0.25,H-8);
+  balloon.style.left=bx-80+"px";
+  balloon.style.top=by+"px";
+}
 loop();
 </script>
 </body>
