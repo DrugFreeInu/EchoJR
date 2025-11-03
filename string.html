@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1.0" />
-<title>Heart Balloon · Echo J Alternating Layer</title>
+<title>Heart Balloon · Echo J Layer Illusion</title>
 <style>
 html,body{
   margin:0;
@@ -18,12 +18,14 @@ canvas{
   top:0;left:0;
   width:100%;height:100%;
   pointer-events:none;
+  z-index:2; /* default middle */
 }
 svg{
   position:absolute;
   width:160px;height:420px;
   filter:drop-shadow(0 0 18px rgba(255,105,165,0.6));
   user-select:none;pointer-events:none;
+  z-index:3;
 }
 button{
   position:absolute;
@@ -32,6 +34,7 @@ button{
   background:#ffff00;color:#fff;
   font-weight:bold;cursor:pointer;
   font-family:sans-serif;
+  z-index:5;
 }
 #btn1{top:40%;left:40%;}
 #btn2{top:70%;left:60%;}
@@ -88,8 +91,6 @@ document.addEventListener("touchstart",e=>startHold(e.touches[0]));
 document.addEventListener("touchmove",e=>moveHold(e.touches[0]));
 document.addEventListener("touchend",endHold);
 
-let frontLayer=true; // alternates each frame
-
 function drawRope(){
   ctx.beginPath();
   ctx.moveTo(nodes[0].x,nodes[0].y);
@@ -127,7 +128,7 @@ function loop(){
   requestAnimationFrame(loop);
   ctx.clearRect(0,0,W,H);
 
-  // float motion
+  // smooth motion
   by+=Math.sin(Date.now()/900)*0.12;
   bx+=Math.cos(Date.now()/1300)*0.09;
   vx*=0.95;vy*=0.95;
@@ -152,15 +153,14 @@ function loop(){
     if(n.y>H-10){n.y=H-10;n.vy*=-0.25;}
   }
 
-  // Alternate layer each frame
-  if(frontLayer){
-    canvas.style.zIndex="3";
-  } else {
-    canvas.style.zIndex="0";
-  }
-  frontLayer=!frontLayer;
-
+  // draw rope behind lower button (Replace)
+  canvas.style.zIndex = "1";
   drawRope();
+
+  // draw rope again above top button (Add)
+  canvas.style.zIndex = "9999";
+  drawRope();
+
   drawPile(innerWidth*0.25,H-8);
 
   balloon.style.left=bx-80+"px";
