@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1.0" />
-<title>Heart Balloon · Interwoven String Logic</title>
+<title>Miss.Dr.Pur3 · Heart Balloon</title>
 <style>
 html,body{
   margin:0;
@@ -12,42 +12,85 @@ html,body{
   background:#fff;
   overflow:hidden;
   touch-action:none;
+  font-family: "Arial Rounded MT Bold","Helvetica Rounded",Arial,sans-serif;
 }
 canvas{
   position:fixed;
   top:0;left:0;
   width:100%;height:100%;
   pointer-events:none;
+  z-index:1;
 }
-#under{z-index:1;}
-#over{z-index:5;}
-svg{
+.container {
   position:absolute;
-  width:160px;height:420px;
-  user-select:none;pointer-events:none;
+  display:flex;
+  flex-direction:row;
+  align-items:flex-end;
+  gap:0.3em;
+  left:50%;
+  top:50%;
+  transform:translate(-50%,-50%);
   z-index:6;
 }
-button{
-  position:absolute;
-  padding:10px 20px;
-  border:none;border-radius:8px;
-  background:#ffff00;color:#fff;
-  font-weight:bold;cursor:pointer;
-  font-family:sans-serif;
-  z-index:3;
+.text-block {
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  line-height:0.9;
+  position:relative;
 }
-#btn1{top:40%;left:40%;}
-#btn2{top:70%;left:60%;}
+h1 {
+  margin:0.1em 0;
+  font-size:4rem;
+  text-shadow:0 0 10px rgba(0,0,0,0.2);
+  letter-spacing:1px;
+  -webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;
+}
+.sunset-gradient {
+  background:linear-gradient(90deg,#ff9a76,#ff6a95,#ffd56b);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+}
+.blue-gradient {
+  background:linear-gradient(90deg,#1e90ff,#ffffff);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+}
+.purple-gradient {
+  background:linear-gradient(90deg,#cfa0ff,#7f3fbf);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+}
+.heart {
+  position:absolute;
+  left:-1.2em;
+  top:-0.8em;
+  font-size:2.5rem;
+  color:#ff4d94;
+}
+svg#balloon{
+  position:absolute;
+  width:160px;
+  height:420px;
+  user-select:none;
+  pointer-events:none;
+  z-index:5;
+}
 </style>
 </head>
 <body>
 
 <canvas id="under"></canvas>
 
-<button id="btn1">Add</button>
-<button id="btn2">Replace</button>
-
-<canvas id="over"></canvas>
+<div class="container">
+  <h1 class="blue-gradient">Dr.</h1>
+  <div class="text-block">
+    <span class="heart">❤</span>
+    <h1 class="sunset-gradient">Miss</h1>
+    <h1 class="purple-gradient">Pur3</h1>
+  </div>
+</div>
 
 <svg id="balloon" viewBox="0 0 100 400">
   <defs>
@@ -70,11 +113,9 @@ button{
 <script>
 const balloon=document.getElementById("balloon");
 const canvasUnder=document.getElementById("under");
-const canvasOver=document.getElementById("over");
 const ctxU=canvasUnder.getContext("2d");
-const ctxO=canvasOver.getContext("2d");
 let W,H;
-function resize(){W=canvasUnder.width=canvasOver.width=innerWidth;H=canvasUnder.height=canvasOver.height=innerHeight;}
+function resize(){W=canvasUnder.width=innerWidth;H=canvasUnder.height=innerHeight;}
 resize();addEventListener("resize",resize);
 
 let bx=innerWidth*0.25, by=innerHeight-230;
@@ -86,7 +127,7 @@ const nodes=[];
 for(let i=0;i<maxNodes;i++)nodes.push({x:bx,y:by+i*seg,vx:0,vy:0});
 
 let vx=0,vy=0,held=false,prevX=0,prevY=0;
-function startHold(e){if(e.target.tagName==="BUTTON")return;held=true;prevX=e.clientX;prevY=e.clientY;}
+function startHold(e){held=true;prevX=e.clientX;prevY=e.clientY;}
 function moveHold(e){if(!held)return;const dx=e.clientX-prevX,dy=e.clientY-prevY;vx+=dx*0.03;vy+=dy*0.03;prevX=e.clientX;prevY=e.clientY;}
 function endHold(){held=false;}
 document.addEventListener("mousedown",startHold);
@@ -96,14 +137,13 @@ document.addEventListener("touchstart",e=>startHold(e.touches[0]));
 document.addEventListener("touchmove",e=>moveHold(e.touches[0]));
 document.addEventListener("touchend",endHold);
 
-function drawRope(ctx, isOver){
+function drawRope(ctx){
   ctx.beginPath();
   ctx.moveTo(nodes[0].x,nodes[0].y);
   for(let i=1;i<maxNodes-2;i++){
     const xc=(nodes[i].x+nodes[i+1].x)/2;
     const yc=(nodes[i].y+nodes[i+1].y)/2;
-    if((i%12<6 && !isOver) || (i%12>=6 && isOver))
-      ctx.quadraticCurveTo(nodes[i].x,nodes[i].y,xc,yc);
+    ctx.quadraticCurveTo(nodes[i].x,nodes[i].y,xc,yc);
   }
   ctx.strokeStyle="rgba(255,120,180,0.9)";
   ctx.lineWidth=2.2;
@@ -117,7 +157,6 @@ function drawRope(ctx, isOver){
 function loop(){
   requestAnimationFrame(loop);
   ctxU.clearRect(0,0,W,H);
-  ctxO.clearRect(0,0,W,H);
 
   by+=Math.sin(Date.now()/900)*0.12;
   bx+=Math.cos(Date.now()/1300)*0.09;
@@ -143,9 +182,7 @@ function loop(){
     if(n.y>H-10){n.y=H-10;n.vy*=-0.25;}
   }
 
-  drawRope(ctxU, false); // under
-  drawRope(ctxO, true);  // over
-
+  drawRope(ctxU);
   balloon.style.left=bx-80+"px";
   balloon.style.top=by+"px";
 }
