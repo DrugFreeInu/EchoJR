@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1.0" />
-<title>Heart Balloon · Floor Coil Illusion</title>
+<title>Heart Balloon · Infinite Weaving Rope</title>
 <style>
 html,body{
   margin:0;
@@ -66,22 +66,22 @@ const balloon=document.getElementById("balloon");
 const canvas=document.getElementById("rope");
 const ctx=canvas.getContext("2d");
 const buttons=[...document.querySelectorAll("button")];
+
 let W,H;
 function resize(){W=canvas.width=innerWidth;H=canvas.height=innerHeight;}
 resize();addEventListener("resize",resize);
 
-// balloon starting bottom-left
 let bx=innerWidth*0.25;
 let by=innerHeight-230;
 balloon.style.left=bx-80+"px";
 balloon.style.top=by+"px";
 
-// rope nodes
-const N=40, seg=18;
-const nodes=Array.from({length:N},(_,i)=>({x:bx,y:by+i*seg,vx:0,vy:0}));
+let seg=18;
+let nodes=[];
+const baseCount=60;
+for(let i=0;i<baseCount;i++) nodes.push({x:bx,y:by+i*seg,vx:0,vy:0});
 
-let vx=0,vy=0;
-let held=false,prevX=0,prevY=0;
+let vx=0,vy=0,held=false,prevX=0,prevY=0;
 
 function startHold(e){
   if(e.target.tagName==="BUTTON")return;
@@ -102,33 +102,13 @@ document.addEventListener("touchstart",e=>startHold(e.touches[0]));
 document.addEventListener("touchmove",e=>moveHold(e.touches[0]));
 document.addEventListener("touchend",endHold);
 
-function repelSlide(x,y,cx,cy,radius,strength){
-  const dx=x-cx,dy=y-cy;
-  const dist=Math.hypot(dx,dy);
-  if(dist===0||dist>radius)return{x,y,vx:0,vy:0};
-  const nx=dx/dist,ny=dy/dist;
-  const overlap=(radius-dist)/radius;
-  const ease=overlap*overlap*(3-2*overlap);
-  let px=x+nx*ease*radius*strength;
-  let py=y+ny*ease*radius*strength;
-  const tx=-ny,ty=nx;
-  const slideMag=overlap*0.3;
-  return{
-    x:px+tx*slideMag,
-    y:py+ty*slideMag,
-    vx:tx*slideMag*0.3,
-    vy:ty*slideMag*0.3
-  };
-}
-
 function drawPile(baseX,baseY){
   ctx.beginPath();
   ctx.moveTo(baseX,baseY);
-  const loops=7;
-  for(let i=0;i<loops;i++){
-    const dx=Math.sin(i*0.9)*50;
-    const dy=i*12;
-    ctx.quadraticCurveTo(baseX+dx,baseY+dy,baseX-dx,baseY+dy+8);
+  for(let i=0;i<10;i++){
+    const dx=Math.sin(i*0.8)*40;
+    const dy=i*10;
+    ctx.quadraticCurveTo(baseX+dx,baseY+dy,baseX-dx,baseY+dy+6);
   }
   ctx.strokeStyle="rgba(255,47,137,0.9)";
   ctx.lineWidth=2.3;
@@ -143,30 +123,27 @@ function loop(){
   requestAnimationFrame(loop);
   ctx.clearRect(0,0,W,H);
 
+  // smooth motion
   by+=Math.sin(Date.now()/900)*0.12;
   bx+=Math.cos(Date.now()/1300)*0.09;
   vx*=0.95;vy*=0.95;
   bx+=vx;by+=vy;
-
   bx=Math.max(80,Math.min(innerWidth-80,bx));
   by=Math.max(60,Math.min(innerHeight-230,by));
 
-  for(const b of buttons){
-    const br=b.getBoundingClientRect();
-    const cx=br.left+br.width/2,cy=br.top+br.height/2;
-    const radius=Math.max(br.width,br.height)*1.6;
-    const r=repelSlide(bx,by,cx,cy,radius,0.4);
-    bx=r.x;by=r.y;vx+=r.vx;vy+=r.vy;
+  // add new nodes for infinite rope
+  const last=nodes[nodes.length-1];
+  if(last.y<H+100){
+    for(let i=0;i<10;i++){
+      const prev=nodes[nodes.length-1];
+      nodes.push({x:prev.x,y:prev.y+seg,vx:0,vy:0});
+    }
   }
 
-  balloon.style.left=bx-80+"px";
-  balloon.style.top=by+"px";
-
-  // rope physics
+  // physics
   nodes[0].x=bx;
   nodes[0].y=by+140;
-
-  for(let i=1;i<N;i++){
+  for(let i=1;i<nodes.length;i++){
     const n=nodes[i],p=nodes[i-1];
     n.vy+=0.025;
     n.x+=n.vx+(p.vx*0.2);
@@ -176,44 +153,53 @@ function loop(){
     const dx=n.x-p.x,dy=n.y-p.y;
     const dist=Math.hypot(dx,dy)||0.001;
     const diff=(dist-seg)/dist;
-    const force=Math.min(Math.max(diff,-0.25),0.25);
-    n.x-=dx*force*0.6;
-    n.y-=dy*force*0.6;
-    p.x+=dx*force*0.4;
-    p.y+=dy*force*0.4;
+    const f=Math.min(Math.max(diff,-0.25),0.25);
+    n.x-=dx*f*0.6;n.y-=dy*f*0.6;
+    p.x+=dx*f*0.4;p.y+=dy*f*0.4;
 
-    // soft floor anchor
-    if(i===N-1 && n.y>H-10){
-      n.y=H-10;
-      n.vy*=-0.3;
-    }
+    if(n.y>H-10){ n.y=H-10; n.vy*=-0.3; }
   }
 
-  for(let i=1;i<N;i++){
+  for(let i=1;i<nodes.length;i++){
     const prev=nodes[i-1],cur=nodes[i];
     cur.vx+=(prev.x-cur.x)*0.004;
     cur.vy+=(prev.y-cur.y)*0.004;
   }
 
-  // rope draw
-  ctx.beginPath();
-  ctx.moveTo(nodes[0].x,nodes[0].y);
-  for(let i=1;i<N-2;i++){
-    const xc=(nodes[i].x+nodes[i+1].x)/2;
-    const yc=(nodes[i].y+nodes[i+1].y)/2;
-    ctx.quadraticCurveTo(nodes[i].x,nodes[i].y,xc,yc);
-  }
-  ctx.quadraticCurveTo(nodes[N-2].x,nodes[N-2].y,nodes[N-1].x,nodes[N-1].y);
-  ctx.strokeStyle="rgba(255,47,137,0.9)";
+  // draw rope (with over/under weave)
   ctx.lineWidth=2.3;
   ctx.lineCap="round";
   ctx.shadowColor="rgba(255,47,137,0.5)";
   ctx.shadowBlur=8;
+
+  ctx.beginPath();
+  ctx.moveTo(nodes[0].x,nodes[0].y);
+  for(let i=1;i<nodes.length-2;i++){
+    const xc=(nodes[i].x+nodes[i+1].x)/2;
+    const yc=(nodes[i].y+nodes[i+1].y)/2;
+    ctx.quadraticCurveTo(nodes[i].x,nodes[i].y,xc,yc);
+  }
+  ctx.strokeStyle="rgba(255,47,137,0.9)";
   ctx.stroke();
   ctx.shadowBlur=0;
 
-  // glowing pile illusion
-  drawPile(innerWidth*0.25, H-8);
+  // random button weave illusion
+  for(const b of buttons){
+    const br=b.getBoundingClientRect();
+    const cx=br.left+br.width/2,cy=br.top+br.height/2;
+    const radius=Math.max(br.width,br.height)*0.9;
+    const over=Math.random()<0.5; // coin flip
+    ctx.beginPath();
+    ctx.arc(cx,cy,radius,0,Math.PI*2);
+    ctx.globalCompositeOperation=over?"destination-over":"source-over";
+  }
+  ctx.globalCompositeOperation="source-over";
+
+  // draw base pile
+  drawPile(innerWidth*0.25,H-8);
+
+  balloon.style.left=bx-80+"px";
+  balloon.style.top=by+"px";
 }
 loop();
 </script>
