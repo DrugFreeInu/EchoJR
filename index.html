@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+<head> 
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover" />
 <title>ECHO JR · UPDATE GOD</title>
@@ -47,6 +47,28 @@ footer{
 }
 .jr-btn:hover{box-shadow:0 6px 24px rgba(255,47,137,0.8);transform:scale(1.03);}
 
+/* circle buttons */
+.circle-btn{
+  width:70px;height:70px;margin:12px;
+  border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:13px;font-weight:700;text-transform:uppercase;
+  background:rgba(255,255,255,0.08);
+  border:2px solid rgba(255,255,255,0.25);
+  color:var(--pink2);cursor:pointer;
+  box-shadow:0 4px 20px rgba(255,47,137,0.5);
+  backdrop-filter:blur(12px) saturate(160%);
+  -webkit-backdrop-filter:blur(12px) saturate(160%);
+  transition:box-shadow .25s ease,transform .1s ease,opacity .3s ease;
+}
+.circle-btn:hover{box-shadow:0 6px 24px rgba(255,47,137,0.8);transform:scale(1.07);}
+
+/* bottom button row */
+.bottom-row{
+  display:flex;justify-content:center;align-items:center;
+  margin-top:6px;position:relative;
+}
+
 /* github search input */
 #githubSearch{
   position:fixed;bottom:40px;left:50%;transform:translateX(-50%);
@@ -59,10 +81,6 @@ footer{
 #githubSearch:focus{
   outline:none;box-shadow:0 0 26px rgba(255,47,137,0.8);border-color:rgba(255,47,137,0.9);
 }
-
-/* fade logic */
-iframe.bg, iframe.front, .jr-btn, #githubSearch {transition:opacity .5s ease;}
-.faded{opacity:0!important;}
 
 /* repo box */
 #actionBox{
@@ -101,40 +119,13 @@ iframe.bg, iframe.front, .jr-btn, #githubSearch {transition:opacity .5s ease;}
   padding:12px 32px 20px 16px;
   overflow-y:auto;
   -webkit-overflow-scrolling:touch;
-  scroll-behavior:smooth; /* LUHV-smooth scrolling */
+  scroll-behavior:smooth;
   position:relative;
   text-align:center;
   color:var(--white);
   display:flex;
   flex-direction:column;
   justify-content:flex-start;
-}
-
-/* permanent LUHV scroll visuals */
-#scrollBarTrack {
-  position:absolute;
-  top:110px;
-  right:15px;
-  width:25px;
-  height:calc(100% - 140px);
-  background:rgba(255,47,137,0.14);
-  border-radius:10px;
-  box-shadow:inset 0 0 12px rgba(255,47,137,0.2);
-  z-index:8;
-}
-#scrollBar {
-  position:absolute;
-  top:110px;
-  right:22px;
-  width:10px;
-  height:80px;
-  background:rgba(255,47,137,0.65);
-  border-radius:10px;
-  box-shadow:0 0 10px rgba(255,47,137,0.5);
-  z-index:9;
-  opacity:1;
-  transform:scaleY(1)!important;
-  transition:top 0.35s cubic-bezier(0.25,0.1,0.25,1); /* LUHV-glide easing */
 }
 
 /* repo list items */
@@ -148,6 +139,7 @@ iframe.bg, iframe.front, .jr-btn, #githubSearch {transition:opacity .5s ease;}
 </head>
 <body>
 
+<!-- background hearts -->
 <iframe src="luhve.html" class="bg"></iframe>
 <iframe src="luhvefront.html" class="front"></iframe>
 
@@ -156,10 +148,19 @@ iframe.bg, iframe.front, .jr-btn, #githubSearch {transition:opacity .5s ease;}
   <button class="jr-btn" id="addBtn">Add</button>
   <button class="jr-btn" id="removeBtn">Remove</button>
   <button class="jr-btn" id="replaceBtn">Replace</button>
+
+  <div class="bottom-row">
+    <button class="circle-btn" id="darkBtn">Dark</button>
+    <button class="circle-btn" id="helpBtn">Help</button>
+  </div>
 </div>
 
 <input type="text" id="githubSearch" placeholder="GitHub Username" autocomplete="off" />
 
+<!-- Dark mode iframe -->
+<iframe id="darkFrame" src="" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;border:none;z-index:1000;"></iframe>
+
+<!-- Repo / File selection box -->
 <div id="actionBox">
   <div id="actionHeader">
     <h2 id="actionTitle">Action Mode</h2>
@@ -167,44 +168,50 @@ iframe.bg, iframe.front, .jr-btn, #githubSearch {transition:opacity .5s ease;}
   </div>
   <input type="text" id="repoFilter" placeholder="Filter Repos..." />
   <div id="repoList"></div>
-  <div id="scrollBarTrack"></div>
-  <div id="scrollBar"></div>
 </div>
 
 <script>
+const darkBtn=document.getElementById("darkBtn");
+const darkFrame=document.getElementById("darkFrame");
 const input=document.getElementById("githubSearch");
-const repoFilter=document.getElementById("repoFilter");
 const actionBox=document.getElementById("actionBox");
 const actionTitle=document.getElementById("actionTitle");
+const repoFilter=document.getElementById("repoFilter");
 const repoList=document.getElementById("repoList");
-const scrollBar=document.getElementById("scrollBar");
 const closeAction=document.getElementById("closeAction");
 
-/* open/close */
+// Dark mode
+darkBtn.addEventListener("click",()=>{
+  if(darkFrame.style.display==="none"){
+    darkFrame.src="dark.html";
+    darkFrame.style.display="block";
+    darkBtn.textContent="Exit";
+  }else{
+    darkFrame.style.display="none";
+    darkFrame.src="";
+    darkBtn.textContent="Dark";
+  }
+});
+
+// Help
+document.getElementById("helpBtn").addEventListener("click",()=>{
+  alert("Echo Jr Help:\\nAdd → Insert code\\nRemove → Delete parts\\nReplace → Swap code\\nDark → Toggle dark mode💗\\nType a GitHub username and press Enter to preview repos and files.");
+});
+
+// Open / close action box
 function openBox(title,content=""){
   actionTitle.textContent=title;
   if(content)repoList.innerHTML=content;
   actionBox.style.display="flex";
-  requestAnimationFrame(()=>{
-    actionBox.classList.add("active");
-    document.querySelectorAll("iframe.bg,iframe.front").forEach(f=>f.classList.add("faded"));
-    document.querySelectorAll(".jr-btn,#githubSearch").forEach(el=>el.classList.add("faded"));
-  });
-  scrollBar.style.height="120px";
-  scrollBar.style.top="110px";
-  scrollBar.style.opacity="1";
+  requestAnimationFrame(()=>actionBox.classList.add("active"));
 }
-
-/* close */
 function closeBox(){
   actionBox.classList.remove("active");
-  document.querySelectorAll("iframe.bg,iframe.front").forEach(f=>f.classList.remove("faded"));
-  document.querySelectorAll(".jr-btn,#githubSearch").forEach(el=>el.classList.remove("faded"));
   setTimeout(()=>actionBox.style.display="none",300);
 }
 closeAction.addEventListener("click",closeBox);
 
-/* filter */
+// Filter repos
 repoFilter.addEventListener("input",()=>{
   const term=repoFilter.value.toLowerCase();
   document.querySelectorAll(".repo").forEach(r=>{
@@ -212,17 +219,15 @@ repoFilter.addEventListener("input",()=>{
   });
 });
 
-/* GitHub repos */
+// GitHub search → repo → file → fill input
 input.addEventListener("keydown",async e=>{
   if(e.key!=="Enter")return;
   e.preventDefault();
   const user=input.value.trim();
-  if(!user)return;
+  if(!user) return;
 
-  actionTitle.textContent=`Repos · ${user}`;
-  repoList.innerHTML="<div class='meta'>Loading repositories…</div>";
-  openBox(actionTitle.textContent);
-  setTimeout(()=>input.blur(),0);
+  openBox(`Repos · ${user}`, "<div class='meta'>Loading repositories…</div>");
+  input.blur();
 
   try{
     const res=await fetch(`https://api.github.com/users/${encodeURIComponent(user)}/repos?per_page=100&sort=updated`);
@@ -235,17 +240,15 @@ input.addEventListener("keydown",async e=>{
       <div class="repo" data-user="${user}" data-repo="${repo.name}">
         <a href="#" class="repo-link">${repo.name}</a>
       </div>`).join("");
-    scrollBar.style.height="120px";
-    scrollBar.style.opacity="1";
   }catch(err){
     repoList.innerHTML=`<div class='meta'>Failed to load repos. ${err}</div>`;
   }
 });
 
-/* click to load repo contents */
+// Click repo → load files
 repoList.addEventListener("click",async e=>{
   const link=e.target.closest(".repo-link");
-  if(!link)return;
+  if(!link) return;
   e.preventDefault();
   const repoDiv=link.closest(".repo");
   const user=repoDiv.dataset.user;
@@ -269,7 +272,7 @@ repoList.addEventListener("click",async e=>{
   }
 });
 
-/* click file -> fill search bar (only file name) */
+// Click file → fill search bar
 repoList.addEventListener("click",e=>{
   const file=e.target.closest(".file-link");
   if(!file)return;
@@ -281,21 +284,12 @@ repoList.addEventListener("click",e=>{
   closeBox();
 });
 
-/* clear on focus if autofilled */
+// Clear input if autofilled
 input.addEventListener("focus",()=>{
   if(input.dataset.autofilled==="true"){
     input.value="";
     input.dataset.autofilled="false";
   }
-});
-
-/* fixed large scroll */
-repoList.addEventListener("scroll",()=>{
-  const {scrollTop,scrollHeight,clientHeight}=repoList;
-  const topRatio=scrollTop/(scrollHeight-clientHeight);
-  const barHeight=120;
-  scrollBar.style.height=barHeight+"px";
-  scrollBar.style.top=(110+topRatio*(clientHeight-barHeight))+"px";
 });
 </script>
 </body>
