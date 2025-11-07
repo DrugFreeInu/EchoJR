@@ -154,6 +154,23 @@ footer{
   border:none;
   background:#fafafa;
 }
+
+/* editable code area under preview */
+#codeEditor{
+  width:90%;
+  height:200px;
+  margin:12px auto 16px auto;
+  padding:12px;
+  border-radius:12px;
+  border:2px solid var(--pink2);
+  background:#111;
+  color:#fff;
+  font-family:monospace;
+  font-size:14px;
+  overflow:auto;
+  resize:vertical;
+  display:none; /* hidden by default */
+}
 </style>
 </head>
 <body>
@@ -191,6 +208,8 @@ footer{
   <div id="phonePreview">
     <iframe id="previewFrame" sandbox="allow-scripts allow-same-origin"></iframe>
   </div>
+  <!-- editable code area -->
+  <textarea id="codeEditor" placeholder="Code will appear here..." spellcheck="false"></textarea>
 </div>
 
 <script>
@@ -204,6 +223,7 @@ const repoList=document.getElementById("repoList");
 const closeAction=document.getElementById("closeAction");
 const previewFrame=document.getElementById("previewFrame");
 const phonePreview=document.getElementById("phonePreview");
+const codeEditor=document.getElementById("codeEditor");
 
 let selectedFileCode = "";
 
@@ -232,11 +252,13 @@ function openBox(title, content="") {
   actionBox.style.display = "flex";
   requestAnimationFrame(()=>actionBox.classList.add("active"));
 
-  // show phone preview only in Add, Remove, Replace
+  // show phone preview and code editor only in Add, Remove, Replace
   if (["Add","Remove","Replace"].includes(title)) {
     phonePreview.style.display = "block";
+    codeEditor.style.display = "block";
   } else {
     phonePreview.style.display = "none";
+    codeEditor.style.display = "none";
   }
 }
 function closeBox(){
@@ -316,11 +338,12 @@ repoList.addEventListener("click", async e=>{
     input.dataset.autofilled = "true";
     closeBox();
 
-    // Fetch file content and load into sandboxed iframe
+    // Fetch file content and load into sandboxed iframe & code editor
     try{
       const res = await fetch(fileUrl);
       selectedFileCode = await res.text();
       previewFrame.srcdoc = selectedFileCode;
+      codeEditor.value = selectedFileCode;
     }catch(err){
       console.error("Failed to load file:", err);
     }
