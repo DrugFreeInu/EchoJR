@@ -82,7 +82,7 @@ footer{
   outline:none;box-shadow:0 0 26px rgba(255,47,137,0.8);border-color:rgba(255,47,137,0.9);
 }
 
-/* repo box */
+/* repo / action box modal */
 #actionBox{
   position:fixed;top:50%;left:50%;
   width:360px;height:520px;
@@ -160,13 +160,13 @@ footer{
 <!-- Dark mode iframe -->
 <iframe id="darkFrame" src="" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;border:none;z-index:1000;"></iframe>
 
-<!-- Repo / File selection box -->
+<!-- Action Box Modal -->
 <div id="actionBox">
   <div id="actionHeader">
     <h2 id="actionTitle">Action Mode</h2>
     <button id="closeAction">Close</button>
   </div>
-  <input type="text" id="repoFilter" placeholder="Filter Repos..." />
+  <input type="text" id="repoFilter" placeholder="Filter..." />
   <div id="repoList"></div>
 </div>
 
@@ -180,13 +180,13 @@ const repoFilter=document.getElementById("repoFilter");
 const repoList=document.getElementById("repoList");
 const closeAction=document.getElementById("closeAction");
 
-// Dark mode
+// Dark mode toggle
 darkBtn.addEventListener("click",()=>{
   if(darkFrame.style.display==="none"){
     darkFrame.src="dark.html";
     darkFrame.style.display="block";
     darkBtn.textContent="Exit";
-  }else{
+  } else {
     darkFrame.style.display="none";
     darkFrame.src="";
     darkBtn.textContent="Dark";
@@ -198,11 +198,11 @@ document.getElementById("helpBtn").addEventListener("click",()=>{
   alert("Echo Jr Help:\\nAdd → Insert code\\nRemove → Delete parts\\nReplace → Swap code\\nDark → Toggle dark mode💗\\nType a GitHub username and press Enter to preview repos and files.");
 });
 
-// Open / close action box
-function openBox(title,content=""){
-  actionTitle.textContent=title;
-  if(content)repoList.innerHTML=content;
-  actionBox.style.display="flex";
+// Open and close modal
+function openBox(title, content="") {
+  actionTitle.textContent = title;
+  repoList.innerHTML = content; // Blank if not specified
+  actionBox.style.display = "flex";
   requestAnimationFrame(()=>actionBox.classList.add("active"));
 }
 function closeBox(){
@@ -213,13 +213,13 @@ closeAction.addEventListener("click",closeBox);
 
 // Filter repos
 repoFilter.addEventListener("input",()=>{
-  const term=repoFilter.value.toLowerCase();
+  const term = repoFilter.value.toLowerCase();
   document.querySelectorAll(".repo").forEach(r=>{
-    r.style.display=r.textContent.toLowerCase().includes(term)?"block":"none";
+    r.style.display = r.textContent.toLowerCase().includes(term)?"block":"none";
   });
 });
 
-// GitHub search → repo → file → fill input
+// GitHub search
 input.addEventListener("keydown",async e=>{
   if(e.key!=="Enter")return;
   e.preventDefault();
@@ -229,9 +229,9 @@ input.addEventListener("keydown",async e=>{
   openBox(`Repos · ${user}`, "<div class='meta'>Loading repositories…</div>");
   input.blur();
 
-  try{
-    const res=await fetch(`https://api.github.com/users/${encodeURIComponent(user)}/repos?per_page=100&sort=updated`);
-    const data=await res.json();
+  try {
+    const res = await fetch(`https://api.github.com/users/${encodeURIComponent(user)}/repos?per_page=100&sort=updated`);
+    const data = await res.json();
     if(!Array.isArray(data)||!data.length){
       repoList.innerHTML=`<div class='meta'>No repositories found for <strong>${user}</strong>.</div>`;
       return;
@@ -240,48 +240,47 @@ input.addEventListener("keydown",async e=>{
       <div class="repo" data-user="${user}" data-repo="${repo.name}">
         <a href="#" class="repo-link">${repo.name}</a>
       </div>`).join("");
-  }catch(err){
+  } catch(err) {
     repoList.innerHTML=`<div class='meta'>Failed to load repos. ${err}</div>`;
   }
 });
 
 // Click repo → load files
-repoList.addEventListener("click",async e=>{
-  const link=e.target.closest(".repo-link");
-  if(!link) return;
-  e.preventDefault();
-  const repoDiv=link.closest(".repo");
-  const user=repoDiv.dataset.user;
-  const repo=repoDiv.dataset.repo;
-  repoList.innerHTML=`<div class='meta'>Loading files for <strong>${repo}</strong>…</div>`;
-  try{
-    const res=await fetch(`https://api.github.com/repos/${encodeURIComponent(user)}/${encodeURIComponent(repo)}/contents`);
-    const data=await res.json();
-    if(!Array.isArray(data)||!data.length){
-      repoList.innerHTML=`<div class='meta'>No files found in <strong>${repo}</strong>.</div>`;
-      return;
+repoList.addEventListener("click", async e=>{
+  const link = e.target.closest(".repo-link");
+  if(link){
+    e.preventDefault();
+    const repoDiv = link.closest(".repo");
+    const user = repoDiv.dataset.user;
+    const repo = repoDiv.dataset.repo;
+    repoList.innerHTML = `<div class='meta'>Loading files for <strong>${repo}</strong>…</div>`;
+    try{
+      const res = await fetch(`https://api.github.com/repos/${encodeURIComponent(user)}/${encodeURIComponent(repo)}/contents`);
+      const data = await res.json();
+      if(!Array.isArray(data)||!data.length){
+        repoList.innerHTML=`<div class='meta'>No files found in <strong>${repo}</strong>.</div>`;
+        return;
+      }
+      repoList.innerHTML = data.map(file=>`
+        <div class="repo" data-user="${user}" data-repo="${repo}" data-file="${file.name}">
+          <a href="#" class="file-link">${file.name}</a>
+          <div class="meta">${file.type}</div>
+        </div>`).join("");
+      actionTitle.textContent=`Files · ${repo}`;
+    }catch(err){
+      repoList.innerHTML=`<div class='meta'>Failed to load files. ${err}</div>`;
     }
-    repoList.innerHTML=data.map(file=>`
-      <div class="repo" data-user="${user}" data-repo="${repo}" data-file="${file.name}">
-        <a href="#" class="file-link">${file.name}</a>
-        <div class="meta">${file.type}</div>
-      </div>`).join("");
-    actionTitle.textContent=`Files · ${repo}`;
-  }catch(err){
-    repoList.innerHTML=`<div class='meta'>Failed to load files. ${err}</div>`;
   }
-});
 
-// Click file → fill search bar
-repoList.addEventListener("click",e=>{
-  const file=e.target.closest(".file-link");
-  if(!file)return;
-  e.preventDefault();
-  const div=file.closest(".repo");
-  const filename=div.dataset.file;
-  input.value=filename;
-  input.dataset.autofilled="true";
-  closeBox();
+  const file = e.target.closest(".file-link");
+  if(file){
+    e.preventDefault();
+    const div = file.closest(".repo");
+    const filename = div.dataset.file;
+    input.value = filename;
+    input.dataset.autofilled = "true";
+    closeBox();
+  }
 });
 
 // Clear input if autofilled
@@ -291,6 +290,11 @@ input.addEventListener("focus",()=>{
     input.dataset.autofilled="false";
   }
 });
+
+// Blank action windows for Add, Remove, Replace
+document.getElementById("addBtn").addEventListener("click",()=>openBox("Add"));
+document.getElementById("removeBtn").addEventListener("click",()=>openBox("Remove"));
+document.getElementById("replaceBtn").addEventListener("click",()=>openBox("Replace"));
 </script>
 </body>
 </html>
