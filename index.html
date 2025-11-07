@@ -82,10 +82,10 @@ footer{
   outline:none;box-shadow:0 0 26px rgba(255,47,137,0.8);border-color:rgba(255,47,137,0.9);
 }
 
-/* repo / action box modal */
+/* action box modal */
 #actionBox{
   position:fixed;top:50%;left:50%;
-  width:360px;height:520px;
+  width:400px;height:560px;
   transform:translate(-50%,-50%) scale(.9);
   background:#fff;border:3px solid var(--pink2);
   display:none;flex-direction:column;z-index:500;
@@ -116,7 +116,7 @@ footer{
 /* scrollable repo list */
 #repoList{
   flex:1;
-  padding:12px 32px 20px 16px;
+  padding:12px 16px 20px 16px;
   overflow-y:auto;
   -webkit-overflow-scrolling:touch;
   scroll-behavior:smooth;
@@ -135,6 +135,11 @@ footer{
   color:var(--pink2);text-decoration:none;font-weight:700;word-break:break-word;cursor:pointer;
 }
 .meta{font-size:12px;opacity:.85;margin-top:4px;}
+
+/* preview iframe inside modal */
+#previewFrame{
+  width:100%;flex:1;border:none;background:#fafafa;
+}
 </style>
 </head>
 <body>
@@ -168,6 +173,8 @@ footer{
   </div>
   <input type="text" id="repoFilter" placeholder="Filter..." />
   <div id="repoList"></div>
+  <!-- sandboxed preview iframe -->
+  <iframe id="previewFrame" sandbox="allow-scripts allow-same-origin"></iframe>
 </div>
 
 <script>
@@ -179,6 +186,9 @@ const actionTitle=document.getElementById("actionTitle");
 const repoFilter=document.getElementById("repoFilter");
 const repoList=document.getElementById("repoList");
 const closeAction=document.getElementById("closeAction");
+const previewFrame=document.getElementById("previewFrame");
+
+let selectedFileCode = "";
 
 // Dark mode toggle
 darkBtn.addEventListener("click",()=>{
@@ -195,13 +205,13 @@ darkBtn.addEventListener("click",()=>{
 
 // Help
 document.getElementById("helpBtn").addEventListener("click",()=>{
-  alert("Echo Jr Help:\\nAdd → Insert code\\nRemove → Delete parts\\nReplace → Swap code\\nDark → Toggle dark mode💗\\nType a GitHub username and press Enter to preview repos and files.");
+  alert("Echo Jr Help:\nAdd → Insert code\nRemove → Delete parts\nReplace → Swap code\nDark → Toggle dark mode💗\nType a GitHub username and press Enter to preview repos and files.");
 });
 
 // Open and close modal
 function openBox(title, content="") {
   actionTitle.textContent = title;
-  repoList.innerHTML = content; // Blank if not specified
+  repoList.innerHTML = content;
   actionBox.style.display = "flex";
   requestAnimationFrame(()=>actionBox.classList.add("active"));
 }
@@ -262,7 +272,7 @@ repoList.addEventListener("click", async e=>{
         return;
       }
       repoList.innerHTML = data.map(file=>`
-        <div class="repo" data-user="${user}" data-repo="${repo}" data-file="${file.name}">
+        <div class="repo" data-user="${user}" data-repo="${repo}" data-file="${file.name}" data-url="${file.download_url}">
           <a href="#" class="file-link">${file.name}</a>
           <div class="meta">${file.type}</div>
         </div>`).join("");
@@ -277,9 +287,19 @@ repoList.addEventListener("click", async e=>{
     e.preventDefault();
     const div = file.closest(".repo");
     const filename = div.dataset.file;
+    const fileUrl = div.dataset.url;
     input.value = filename;
     input.dataset.autofilled = "true";
     closeBox();
+
+    // Fetch file content and load into sandboxed iframe
+    try{
+      const res = await fetch(fileUrl);
+      selectedFileCode = await res.text();
+      previewFrame.srcdoc = selectedFileCode; // runs safely in iframe
+    }catch(err){
+      console.error("Failed to load file:", err);
+    }
   }
 });
 
