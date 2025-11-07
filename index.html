@@ -227,6 +227,38 @@ const codeEditor=document.getElementById("codeEditor");
 
 let selectedFileCode = "";
 
+// ---- GOD LOGIC: extract editable visual parts ----
+function extractVisualParts(html){
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(html,"text/html");
+  const parts = [];
+
+  // canvases
+  doc.querySelectorAll("canvas").forEach((c,i)=>{
+    parts.push(`// Canvas ${i+1}\n${c.outerHTML}`);
+  });
+
+  // svgs
+  doc.querySelectorAll("svg").forEach((s,i)=>{
+    parts.push(`// SVG ${i+1}\n${s.outerHTML}`);
+  });
+
+  // text blocks
+  doc.querySelectorAll("h1,h2,h3,p,div").forEach((el,i)=>{
+    if(el.textContent.trim()){
+      parts.push(`// Text block ${i+1}\n${el.outerHTML}`);
+    }
+  });
+
+  // images
+  doc.querySelectorAll("img").forEach((img,i)=>{
+    parts.push(`// Image ${i+1}\n${img.outerHTML}`);
+  });
+
+  return parts.join("\n\n");
+}
+// ---- END GOD LOGIC ----
+
 // Dark mode toggle
 darkBtn.addEventListener("click",()=>{
   if(darkFrame.style.display==="none"){
@@ -252,7 +284,6 @@ function openBox(title, content="") {
   actionBox.style.display = "flex";
   requestAnimationFrame(()=>actionBox.classList.add("active"));
 
-  // show phone preview and code editor only in Add, Remove, Replace
   if (["Add","Remove","Replace"].includes(title)) {
     phonePreview.style.display = "block";
     codeEditor.style.display = "block";
@@ -342,8 +373,12 @@ repoList.addEventListener("click", async e=>{
     try{
       const res = await fetch(fileUrl);
       selectedFileCode = await res.text();
-      previewFrame.srcdoc = selectedFileCode;
-      codeEditor.value = selectedFileCode;
+
+      // --- GOD LOGIC: extract editable parts ---
+      const editableParts = extractVisualParts(selectedFileCode);
+
+      previewFrame.srcdoc = selectedFileCode; // full file in sandbox
+      codeEditor.value = editableParts;        // only visual/editable blocks for user
     }catch(err){
       console.error("Failed to load file:", err);
     }
