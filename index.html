@@ -146,6 +146,7 @@ footer{
   overflow:hidden;
   background:#fff;
   box-shadow:0 0 20px rgba(255,47,137,0.4);
+  display:none; /* hidden by default */
 }
 #previewFrame{
   width:100%;
@@ -202,6 +203,7 @@ const repoFilter=document.getElementById("repoFilter");
 const repoList=document.getElementById("repoList");
 const closeAction=document.getElementById("closeAction");
 const previewFrame=document.getElementById("previewFrame");
+const phonePreview=document.getElementById("phonePreview");
 
 let selectedFileCode = "";
 
@@ -229,6 +231,13 @@ function openBox(title, content="") {
   repoList.innerHTML = content;
   actionBox.style.display = "flex";
   requestAnimationFrame(()=>actionBox.classList.add("active"));
+
+  // show phone preview only in Add, Remove, Replace
+  if (["Add","Remove","Replace"].includes(title)) {
+    phonePreview.style.display = "block";
+  } else {
+    phonePreview.style.display = "none";
+  }
 }
 function closeBox(){
   actionBox.classList.remove("active");
