@@ -146,7 +146,7 @@ footer{
   overflow:hidden;
   background:#fff;
   box-shadow:0 0 20px rgba(255,47,137,0.4);
-  display:none; /* hidden by default */
+  display:none;
 }
 #previewFrame{
   width:100%;
@@ -155,7 +155,7 @@ footer{
   background:#fafafa;
 }
 
-/* editable code area under preview (non-editable now) */
+/* non-editable visual code blocks */
 #codeEditor{
   width:90%;
   height:200px;
@@ -175,6 +175,8 @@ footer{
 .code-block{
   margin-bottom:10px;
   cursor:pointer;
+  padding:6px;
+  border-radius:6px;
 }
 .code-block:hover{
   background:rgba(255,47,137,0.2);
@@ -212,11 +214,9 @@ footer{
   </div>
   <input type="text" id="repoFilter" placeholder="Filter..." />
   <div id="repoList"></div>
-  <!-- phone-shaped preview -->
   <div id="phonePreview">
     <iframe id="previewFrame" sandbox="allow-scripts allow-same-origin"></iframe>
   </div>
-  <!-- non-editable code area -->
   <div id="codeEditor"></div>
 </div>
 
@@ -235,41 +235,45 @@ const codeEditor=document.getElementById("codeEditor");
 
 let selectedFileCode = "";
 
-// ---- GOD LOGIC: extract editable visual parts ----
+// ---- GOD LOGIC: extract visual blocks and track mapping ----
 function extractVisualParts(html){
   const parser = new DOMParser();
   const doc = parser.parseFromString(html,"text/html");
   const parts = [];
-
-  doc.querySelectorAll("canvas").forEach((c,i)=>parts.push(`// Canvas ${i+1}\n${c.outerHTML}`));
-  doc.querySelectorAll("svg").forEach((s,i)=>parts.push(`// SVG ${i+1}\n${s.outerHTML}`));
-  doc.querySelectorAll("h1,h2,h3,p,div").forEach((el,i)=>{
-    if(el.textContent.trim()) parts.push(`// Text block ${i+1}\n${el.outerHTML}`);
+  doc.querySelectorAll("canvas, svg, h1,h2,h3,p,div,img").forEach((el,i)=>{
+    if(el.tagName==="H1"||el.tagName==="H2"||el.tagName==="H3"||el.tagName==="P"||el.tagName==="DIV") if(!el.textContent.trim()) return;
+    parts.push({html:el.outerHTML, tag:el.tagName});
   });
-  doc.querySelectorAll("img").forEach((img,i)=>parts.push(`// Image ${i+1}\n${img.outerHTML}`));
-  return parts.join("\n\n");
+  return parts;
 }
 
-// Display visual blocks as tappable, non-editable divs
-function showEditableParts(editableParts){
-  codeEditor.innerHTML = "";
-  const blocks = editableParts.split("\n\n");
-  blocks.forEach(text=>{
-    const block = document.createElement("div");
+// Show tappable visual blocks
+function showEditableParts(parts){
+  codeEditor.innerHTML="";
+  parts.forEach((p,index)=>{
+    const block=document.createElement("div");
     block.className="code-block";
-    block.textContent = text;
-    block.addEventListener("click",()=>block.remove());
+    block.textContent=p.html;
+    block.dataset.index=index;
+    block.addEventListener("click",()=>{
+      const outer=p.html;
+      // remove from code editor
+      block.remove();
+      // remove from full code
+      const full = selectedFileCode;
+      const regex = new RegExp(outer.replace(/[-\/\\^$*+?.()|[\]{}]/g,'\\$&'),"g");
+      selectedFileCode = full.replace(regex,'');
+      // update preview
+      previewFrame.srcdoc = selectedFileCode;
+    });
     codeEditor.appendChild(block);
   });
 }
 
 // Dark mode toggle
 darkBtn.addEventListener("click",()=>{
-  if(darkFrame.style.display==="none"){
-    darkFrame.src="dark.html"; darkFrame.style.display="block"; darkBtn.textContent="Exit";
-  } else {
-    darkFrame.style.display="none"; darkFrame.src=""; darkBtn.textContent="Dark";
-  }
+  if(darkFrame.style.display==="none"){darkFrame.src="dark.html"; darkFrame.style.display="block"; darkBtn.textContent="Exit";}
+  else{darkFrame.style.display="none"; darkFrame.src=""; darkBtn.textContent="Dark";}
 });
 
 // Help
@@ -279,25 +283,20 @@ document.getElementById("helpBtn").addEventListener("click",()=>alert(
 
 // Open/close modal
 function openBox(title,content=""){
-  actionTitle.textContent = title;
-  repoList.innerHTML = content;
+  actionTitle.textContent=title;
+  repoList.innerHTML=content;
   actionBox.style.display="flex";
   requestAnimationFrame(()=>actionBox.classList.add("active"));
-  if(["Add","Remove","Replace"].includes(title)){
-    phonePreview.style.display="block";
-    codeEditor.style.display="block";
-  } else {
-    phonePreview.style.display="none";
-    codeEditor.style.display="none";
-  }
+  if(["Add","Remove","Replace"].includes(title)){phonePreview.style.display="block"; codeEditor.style.display="block";}
+  else{phonePreview.style.display="none"; codeEditor.style.display="none";}
 }
 function closeBox(){ actionBox.classList.remove("active"); setTimeout(()=>actionBox.style.display="none",300);}
 closeAction.addEventListener("click",closeBox);
 
 // Filter repos
 repoFilter.addEventListener("input",()=>{
-  const term = repoFilter.value.toLowerCase();
-  document.querySelectorAll(".repo").forEach(r=>r.style.display = r.textContent.toLowerCase().includes(term)?"block":"none");
+  const term=repoFilter.value.toLowerCase();
+  document.querySelectorAll(".repo").forEach(r=>r.style.display=r.textContent.toLowerCase().includes(term)?"block":"none");
 });
 
 // GitHub search
@@ -309,11 +308,9 @@ input.addEventListener("keydown",async e=>{
   openBox(`Repos · ${user}`, "<div class='meta'>Loading repositories…</div>");
   input.blur();
   try{
-    const res = await fetch(`https://api.github.com/users/${encodeURIComponent(user)}/repos?per_page=100&sort=updated`);
-    const data = await res.json();
-    if(!Array.isArray(data)||!data.length){
-      repoList.innerHTML=`<div class='meta'>No repositories found for <strong>${user}</strong>.</div>`; return;
-    }
+    const res=await fetch(`https://api.github.com/users/${encodeURIComponent(user)}/repos?per_page=100&sort=updated`);
+    const data=await res.json();
+    if(!Array.isArray(data)||!data.length){repoList.innerHTML=`<div class='meta'>No repositories found for <strong>${user}</strong>.</div>`; return;}
     repoList.innerHTML=data.map(repo=>`
       <div class="repo" data-user="${user}" data-repo="${repo.name}">
         <a href="#" class="repo-link">${repo.name}</a>
@@ -323,18 +320,18 @@ input.addEventListener("keydown",async e=>{
 
 // Click repo → load files
 repoList.addEventListener("click",async e=>{
-  const link = e.target.closest(".repo-link");
+  const link=e.target.closest(".repo-link");
   if(link){
     e.preventDefault();
-    const div = link.closest(".repo");
-    const user = div.dataset.user;
-    const repo = div.dataset.repo;
-    repoList.innerHTML = `<div class='meta'>Loading files for <strong>${repo}</strong>…</div>`;
+    const div=link.closest(".repo");
+    const user=div.dataset.user;
+    const repo=div.dataset.repo;
+    repoList.innerHTML=`<div class='meta'>Loading files for <strong>${repo}</strong>…</div>`;
     try{
-      const res = await fetch(`https://api.github.com/repos/${encodeURIComponent(user)}/${encodeURIComponent(repo)}/contents`);
-      const data = await res.json();
-      if(!Array.isArray(data)||!data.length){ repoList.innerHTML=`<div class='meta'>No files found in <strong>${repo}</strong>.</div>`; return; }
-      repoList.innerHTML = data.map(file=>`
+      const res=await fetch(`https://api.github.com/repos/${encodeURIComponent(user)}/${encodeURIComponent(repo)}/contents`);
+      const data=await res.json();
+      if(!Array.isArray(data)||!data.length){repoList.innerHTML=`<div class='meta'>No files found in <strong>${repo}</strong>.</div>`; return;}
+      repoList.innerHTML=data.map(file=>`
         <div class="repo" data-user="${user}" data-repo="${repo}" data-file="${file.name}" data-url="${file.download_url}">
           <a href="#" class="file-link">${file.name}</a>
           <div class="meta">${file.type}</div>
@@ -343,28 +340,26 @@ repoList.addEventListener("click",async e=>{
     }catch(err){repoList.innerHTML=`<div class='meta'>Failed to load files. ${err}</div>`;}
   }
 
-  const file = e.target.closest(".file-link");
+  const file=e.target.closest(".file-link");
   if(file){
     e.preventDefault();
-    const div = file.closest(".repo");
-    const fileUrl = div.dataset.url;
-    input.value = div.dataset.file;
+    const div=file.closest(".repo");
+    const fileUrl=div.dataset.url;
+    input.value=div.dataset.file;
     input.dataset.autofilled="true";
     closeBox();
     try{
-      const res = await fetch(fileUrl);
-      selectedFileCode = await res.text();
-      const editableParts = extractVisualParts(selectedFileCode);
-      previewFrame.srcdoc = selectedFileCode;
+      const res=await fetch(fileUrl);
+      selectedFileCode=await res.text();
+      const editableParts=extractVisualParts(selectedFileCode);
+      previewFrame.srcdoc=selectedFileCode;
       showEditableParts(editableParts);
     }catch(err){console.error("Failed to load file:",err);}
   }
 });
 
 // Clear input if autofilled
-input.addEventListener("focus",()=>{
-  if(input.dataset.autofilled==="true"){input.value=""; input.dataset.autofilled="false";}
-});
+input.addEventListener("focus",()=>{if(input.dataset.autofilled==="true"){input.value=""; input.dataset.autofilled="false";}});
 
 // Blank action windows
 document.getElementById("addBtn").addEventListener("click",()=>openBox("Add"));
