@@ -379,6 +379,28 @@ repoList.addEventListener("click", async e=>{
 
       previewFrame.srcdoc = selectedFileCode; // full file in sandbox
       codeEditor.value = editableParts;        // only visual/editable blocks for user
+
+      // --- GOD LOGIC: Remove Mode click-to-delete ---
+      previewFrame.onload = () => {
+        if(actionTitle.textContent === "Remove"){
+          const iframeDoc = previewFrame.contentDocument || previewFrame.contentWindow.document;
+          iframeDoc.body.addEventListener("click", e => {
+            e.preventDefault();
+            let target = e.target;
+
+            // Build outerHTML string to match codeEditor block
+            let outer = target.outerHTML.trim();
+            let editorContent = codeEditor.value;
+
+            // Remove block if exists
+            if(editorContent.includes(outer)){
+              const newContent = editorContent.split("\n\n").filter(block => !block.includes(outer)).join("\n\n");
+              codeEditor.value = newContent;
+              console.log("Removed block from code editor:", outer);
+            }
+          });
+        }
+      };
     }catch(err){
       console.error("Failed to load file:", err);
     }
