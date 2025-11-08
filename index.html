@@ -155,7 +155,7 @@ footer{
   background:#fafafa;
 }
 
-/* editable code area under preview */
+/* editable code area under preview (non-editable now) */
 #codeEditor{
   width:90%;
   height:200px;
@@ -168,8 +168,16 @@ footer{
   font-family:monospace;
   font-size:14px;
   overflow:auto;
-  resize:vertical;
-  display:none; /* hidden by default */
+  white-space:pre-wrap;
+  display:none;
+  cursor:default;
+}
+.code-block{
+  margin-bottom:10px;
+  cursor:pointer;
+}
+.code-block:hover{
+  background:rgba(255,47,137,0.2);
 }
 </style>
 </head>
@@ -208,8 +216,8 @@ footer{
   <div id="phonePreview">
     <iframe id="previewFrame" sandbox="allow-scripts allow-same-origin"></iframe>
   </div>
-  <!-- editable code area -->
-  <textarea id="codeEditor" placeholder="Code will appear here..." spellcheck="false"></textarea>
+  <!-- non-editable code area -->
+  <div id="codeEditor"></div>
 </div>
 
 <script>
@@ -233,77 +241,63 @@ function extractVisualParts(html){
   const doc = parser.parseFromString(html,"text/html");
   const parts = [];
 
-  // canvases
-  doc.querySelectorAll("canvas").forEach((c,i)=>{
-    parts.push(`// Canvas ${i+1}\n${c.outerHTML}`);
-  });
-
-  // svgs
-  doc.querySelectorAll("svg").forEach((s,i)=>{
-    parts.push(`// SVG ${i+1}\n${s.outerHTML}`);
-  });
-
-  // text blocks
+  doc.querySelectorAll("canvas").forEach((c,i)=>parts.push(`// Canvas ${i+1}\n${c.outerHTML}`));
+  doc.querySelectorAll("svg").forEach((s,i)=>parts.push(`// SVG ${i+1}\n${s.outerHTML}`));
   doc.querySelectorAll("h1,h2,h3,p,div").forEach((el,i)=>{
-    if(el.textContent.trim()){
-      parts.push(`// Text block ${i+1}\n${el.outerHTML}`);
-    }
+    if(el.textContent.trim()) parts.push(`// Text block ${i+1}\n${el.outerHTML}`);
   });
-
-  // images
-  doc.querySelectorAll("img").forEach((img,i)=>{
-    parts.push(`// Image ${i+1}\n${img.outerHTML}`);
-  });
-
+  doc.querySelectorAll("img").forEach((img,i)=>parts.push(`// Image ${i+1}\n${img.outerHTML}`));
   return parts.join("\n\n");
 }
-// ---- END GOD LOGIC ----
+
+// Display visual blocks as tappable, non-editable divs
+function showEditableParts(editableParts){
+  codeEditor.innerHTML = "";
+  const blocks = editableParts.split("\n\n");
+  blocks.forEach(text=>{
+    const block = document.createElement("div");
+    block.className="code-block";
+    block.textContent = text;
+    block.addEventListener("click",()=>block.remove());
+    codeEditor.appendChild(block);
+  });
+}
 
 // Dark mode toggle
 darkBtn.addEventListener("click",()=>{
   if(darkFrame.style.display==="none"){
-    darkFrame.src="dark.html";
-    darkFrame.style.display="block";
-    darkBtn.textContent="Exit";
+    darkFrame.src="dark.html"; darkFrame.style.display="block"; darkBtn.textContent="Exit";
   } else {
-    darkFrame.style.display="none";
-    darkFrame.src="";
-    darkBtn.textContent="Dark";
+    darkFrame.style.display="none"; darkFrame.src=""; darkBtn.textContent="Dark";
   }
 });
 
 // Help
-document.getElementById("helpBtn").addEventListener("click",()=>{
-  alert("Echo Jr Help:\nAdd → Insert code\nRemove → Delete parts\nReplace → Swap code\nDark → Toggle dark mode💗\nType a GitHub username and press Enter to preview repos and files.");
-});
+document.getElementById("helpBtn").addEventListener("click",()=>alert(
+  "Echo Jr Help:\nAdd → Insert code\nRemove → Delete parts\nReplace → Swap code\nDark → Toggle dark mode💗\nType a GitHub username and press Enter to preview repos and files."
+));
 
-// Open and close modal
-function openBox(title, content="") {
+// Open/close modal
+function openBox(title,content=""){
   actionTitle.textContent = title;
   repoList.innerHTML = content;
-  actionBox.style.display = "flex";
+  actionBox.style.display="flex";
   requestAnimationFrame(()=>actionBox.classList.add("active"));
-
-  if (["Add","Remove","Replace"].includes(title)) {
-    phonePreview.style.display = "block";
-    codeEditor.style.display = "block";
+  if(["Add","Remove","Replace"].includes(title)){
+    phonePreview.style.display="block";
+    codeEditor.style.display="block";
   } else {
-    phonePreview.style.display = "none";
-    codeEditor.style.display = "none";
+    phonePreview.style.display="none";
+    codeEditor.style.display="none";
   }
 }
-function closeBox(){
-  actionBox.classList.remove("active");
-  setTimeout(()=>actionBox.style.display="none",300);
-}
+function closeBox(){ actionBox.classList.remove("active"); setTimeout(()=>actionBox.style.display="none",300);}
 closeAction.addEventListener("click",closeBox);
 
 // Filter repos
 repoFilter.addEventListener("input",()=>{
   const term = repoFilter.value.toLowerCase();
-  document.querySelectorAll(".repo").forEach(r=>{
-    r.style.display = r.textContent.toLowerCase().includes(term)?"block":"none";
-  });
+  document.querySelectorAll(".repo").forEach(r=>r.style.display = r.textContent.toLowerCase().includes(term)?"block":"none");
 });
 
 // GitHub search
@@ -312,110 +306,67 @@ input.addEventListener("keydown",async e=>{
   e.preventDefault();
   const user=input.value.trim();
   if(!user) return;
-
   openBox(`Repos · ${user}`, "<div class='meta'>Loading repositories…</div>");
   input.blur();
-
-  try {
+  try{
     const res = await fetch(`https://api.github.com/users/${encodeURIComponent(user)}/repos?per_page=100&sort=updated`);
     const data = await res.json();
     if(!Array.isArray(data)||!data.length){
-      repoList.innerHTML=`<div class='meta'>No repositories found for <strong>${user}</strong>.</div>`;
-      return;
+      repoList.innerHTML=`<div class='meta'>No repositories found for <strong>${user}</strong>.</div>`; return;
     }
     repoList.innerHTML=data.map(repo=>`
       <div class="repo" data-user="${user}" data-repo="${repo.name}">
         <a href="#" class="repo-link">${repo.name}</a>
       </div>`).join("");
-  } catch(err) {
-    repoList.innerHTML=`<div class='meta'>Failed to load repos. ${err}</div>`;
-  }
+  }catch(err){repoList.innerHTML=`<div class='meta'>Failed to load repos. ${err}</div>`;}
 });
 
 // Click repo → load files
-repoList.addEventListener("click", async e=>{
+repoList.addEventListener("click",async e=>{
   const link = e.target.closest(".repo-link");
   if(link){
     e.preventDefault();
-    const repoDiv = link.closest(".repo");
-    const user = repoDiv.dataset.user;
-    const repo = repoDiv.dataset.repo;
+    const div = link.closest(".repo");
+    const user = div.dataset.user;
+    const repo = div.dataset.repo;
     repoList.innerHTML = `<div class='meta'>Loading files for <strong>${repo}</strong>…</div>`;
     try{
       const res = await fetch(`https://api.github.com/repos/${encodeURIComponent(user)}/${encodeURIComponent(repo)}/contents`);
       const data = await res.json();
-      if(!Array.isArray(data)||!data.length){
-        repoList.innerHTML=`<div class='meta'>No files found in <strong>${repo}</strong>.</div>`;
-        return;
-      }
+      if(!Array.isArray(data)||!data.length){ repoList.innerHTML=`<div class='meta'>No files found in <strong>${repo}</strong>.</div>`; return; }
       repoList.innerHTML = data.map(file=>`
         <div class="repo" data-user="${user}" data-repo="${repo}" data-file="${file.name}" data-url="${file.download_url}">
           <a href="#" class="file-link">${file.name}</a>
           <div class="meta">${file.type}</div>
         </div>`).join("");
       actionTitle.textContent=`Files · ${repo}`;
-    }catch(err){
-      repoList.innerHTML=`<div class='meta'>Failed to load files. ${err}</div>`;
-    }
+    }catch(err){repoList.innerHTML=`<div class='meta'>Failed to load files. ${err}</div>`;}
   }
 
   const file = e.target.closest(".file-link");
   if(file){
     e.preventDefault();
     const div = file.closest(".repo");
-    const filename = div.dataset.file;
     const fileUrl = div.dataset.url;
-    input.value = filename;
-    input.dataset.autofilled = "true";
+    input.value = div.dataset.file;
+    input.dataset.autofilled="true";
     closeBox();
-
-    // Fetch file content and load into sandboxed iframe & code editor
     try{
       const res = await fetch(fileUrl);
       selectedFileCode = await res.text();
-
-      // --- GOD LOGIC: extract editable parts ---
       const editableParts = extractVisualParts(selectedFileCode);
-
-      previewFrame.srcdoc = selectedFileCode; // full file in sandbox
-      codeEditor.value = editableParts;        // only visual/editable blocks for user
-
-      // --- GOD LOGIC: Remove Mode click-to-delete ---
-      previewFrame.onload = () => {
-        if(actionTitle.textContent === "Remove"){
-          const iframeDoc = previewFrame.contentDocument || previewFrame.contentWindow.document;
-          iframeDoc.body.addEventListener("click", e => {
-            e.preventDefault();
-            let target = e.target;
-
-            // Build outerHTML string to match codeEditor block
-            let outer = target.outerHTML.trim();
-            let editorContent = codeEditor.value;
-
-            // Remove block if exists
-            if(editorContent.includes(outer)){
-              const newContent = editorContent.split("\n\n").filter(block => !block.includes(outer)).join("\n\n");
-              codeEditor.value = newContent;
-              console.log("Removed block from code editor:", outer);
-            }
-          });
-        }
-      };
-    }catch(err){
-      console.error("Failed to load file:", err);
-    }
+      previewFrame.srcdoc = selectedFileCode;
+      showEditableParts(editableParts);
+    }catch(err){console.error("Failed to load file:",err);}
   }
 });
 
 // Clear input if autofilled
 input.addEventListener("focus",()=>{
-  if(input.dataset.autofilled==="true"){
-    input.value="";
-    input.dataset.autofilled="false";
-  }
+  if(input.dataset.autofilled==="true"){input.value=""; input.dataset.autofilled="false";}
 });
 
-// Blank action windows for Add, Remove, Replace
+// Blank action windows
 document.getElementById("addBtn").addEventListener("click",()=>openBox("Add"));
 document.getElementById("removeBtn").addEventListener("click",()=>openBox("Remove"));
 document.getElementById("replaceBtn").addEventListener("click",()=>openBox("Replace"));
